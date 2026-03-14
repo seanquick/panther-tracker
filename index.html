@@ -10,62 +10,64 @@
 
     <header class="bg-black p-6 shadow-xl border-b-4 border-red-700 flex flex-col items-center text-center">
         <img src="Panthers2.png" alt="Panthers" class="h-20 mb-2">
-        <h1 class="text-2xl font-black italic uppercase italic">Panther Power</h1>
+        <h1 class="text-2xl font-black italic uppercase">Panther Power</h1>
     </header>
 
     <div class="max-w-md mx-auto px-4 mt-6">
         
         <div id="auth-section" class="bg-gray-800 p-8 rounded-2xl border border-gray-700 shadow-2xl">
             <h2 class="text-xl font-bold mb-4 text-center uppercase">Player Access</h2>
-            <input id="player-name" type="text" placeholder="Full Name (for new players)" class="w-full bg-gray-700 p-3 rounded mb-3 border border-gray-600 outline-none focus:ring-2 focus:ring-red-700">
-            <input id="email" type="email" placeholder="Email (Jersey#@panthers.com)" class="w-full bg-gray-700 p-3 rounded mb-3 border border-gray-600">
+            <input id="player-name" type="text" placeholder="Full Name" class="w-full bg-gray-700 p-3 rounded mb-3 border border-gray-600 outline-none focus:ring-2 focus:ring-red-700">
+            <input id="email" type="email" placeholder="Email" class="w-full bg-gray-700 p-3 rounded mb-3 border border-gray-600">
             <input id="password" type="password" placeholder="Password" class="w-full bg-gray-700 p-3 rounded mb-4 border border-gray-600">
             <div class="flex gap-2">
-                <button onclick="handleAuth('login')" class="flex-1 bg-red-700 py-3 rounded font-bold hover:bg-red-600 uppercase">Login</button>
-                <button onclick="handleAuth('signup')" class="flex-1 border border-red-700 py-3 rounded font-bold hover:bg-red-900 uppercase">Sign Up</button>
+                <button onclick="handleAuth('login')" class="flex-1 bg-red-700 py-3 rounded font-bold uppercase">Login</button>
+                <button onclick="handleAuth('signup')" class="flex-1 border border-red-700 py-3 rounded font-bold uppercase">Sign Up</button>
             </div>
         </div>
 
         <div id="lobby-section" class="hidden space-y-4">
             <div class="flex justify-between items-center bg-gray-800 p-4 rounded-xl border border-gray-700">
                 <span id="user-display" class="text-sm font-bold text-red-500 uppercase"></span>
-                <button onclick="logout()" class="text-xs text-gray-400 font-bold underline">LOGOUT</button>
+                <button onclick="logout()" class="text-xs text-gray-400 font-bold underline uppercase">Logout</button>
             </div>
             
-            <button onclick="showView('rack')" class="w-full bg-gray-800 border-2 border-red-700 p-8 rounded-2xl text-2xl font-black italic uppercase shadow-xl hover:bg-red-900/20 transition">
+            <button onclick="showView('rack')" class="w-full bg-gray-800 border-2 border-red-700 p-6 rounded-2xl text-xl font-black italic uppercase shadow-xl hover:bg-red-900/20 transition">
                 🏋️ The Rack
-                <span class="block text-xs font-normal text-gray-400 mt-2">Log Max Lifts (Every 6 Months)</span>
             </button>
 
-            <button onclick="showView('kitchen')" class="w-full bg-gray-800 border-2 border-green-700 p-8 rounded-2xl text-2xl font-black italic uppercase shadow-xl hover:bg-green-900/20 transition">
+            <button onclick="showView('kitchen')" class="w-full bg-gray-800 border-2 border-green-700 p-6 rounded-2xl text-xl font-black italic uppercase shadow-xl hover:bg-green-900/20 transition">
                 🍳 The Kitchen
-                <span class="block text-xs font-normal text-gray-400 mt-2">Log Daily Meals & Macros</span>
+            </button>
+
+            <button onclick="showView('goals')" class="w-full bg-gray-800 border-2 border-yellow-600 p-6 rounded-2xl text-xl font-black italic uppercase shadow-xl hover:bg-yellow-900/20 transition">
+                🎯 My Goals
             </button>
         </div>
 
         <div id="rack-view" class="hidden space-y-6">
-            <button onclick="showView('lobby')" class="text-red-500 font-bold text-sm uppercase">← Back to Lobby</button>
+            <button onclick="showView('lobby')" class="text-red-500 font-bold text-xs uppercase">← Back to Lobby</button>
             <section class="bg-gray-800 p-6 rounded-2xl border border-gray-700 shadow-2xl">
                 <h2 class="text-xl font-bold mb-4 text-red-600 uppercase italic">Update Maxes</h2>
                 <div class="grid grid-cols-2 gap-4">
-                    <div><label class="text-[10px] text-gray-400 font-bold">BENCH</label><input id="bench" type="number" class="w-full bg-gray-700 rounded p-2 font-bold text-center"></div>
-                    <div><label class="text-[10px] text-gray-400 font-bold">SQUAT</label><input id="squat" type="number" class="w-full bg-gray-700 rounded p-2 font-bold text-center"></div>
-                    <div><label class="text-[10px] text-gray-400 font-bold">CLEAN</label><input id="clean" type="number" class="w-full bg-gray-700 rounded p-2 font-bold text-center"></div>
-                    <div><label class="text-[10px] text-gray-400 font-bold">DEADLIFT</label><input id="deadlift" type="number" class="w-full bg-gray-700 rounded p-2 font-bold text-center"></div>
-                    <div class="col-span-2"><label class="text-[10px] text-gray-400 font-bold">PUSH PRESS</label><input id="pushpress" type="number" class="w-full bg-gray-700 rounded p-2 font-bold text-center"></div>
+                    <div><label class="text-[10px] text-gray-400 font-bold">BENCH</label><input id="bench" type="number" class="w-full bg-gray-700 rounded p-2 text-center font-bold"></div>
+                    <div><label class="text-[10px] text-gray-400 font-bold">SQUAT</label><input id="squat" type="number" class="w-full bg-gray-700 rounded p-2 text-center font-bold"></div>
+                    <div><label class="text-[10px] text-gray-400 font-bold">CLEAN</label><input id="clean" type="number" class="w-full bg-gray-700 rounded p-2 text-center font-bold"></div>
+                    <div><label class="text-[10px] text-gray-400 font-bold">DEADLIFT</label><input id="deadlift" type="number" class="w-full bg-gray-700 rounded p-2 text-center font-bold"></div>
+                    <div class="col-span-2"><label class="text-[10px] text-gray-400 font-bold uppercase text-center block">Push Press</label><input id="pushpress" type="number" class="w-full bg-gray-700 rounded p-2 text-center font-bold"></div>
                 </div>
-                <button onclick="saveRack()" class="w-full bg-red-700 mt-6 py-4 rounded-xl font-black uppercase">Record Maxes</button>
+                <button onclick="saveRack()" class="w-full bg-red-700 mt-6 py-4 rounded-xl font-black uppercase shadow-lg">Record Maxes</button>
             </section>
         </div>
 
         <div id="kitchen-view" class="hidden space-y-6">
-            <button onclick="showView('lobby')" class="text-green-500 font-bold text-sm uppercase">← Back to Lobby</button>
+            <button onclick="showView('lobby')" class="text-green-500 font-bold text-xs uppercase">← Back to Lobby</button>
             <section class="bg-gray-800 p-6 rounded-2xl border border-gray-700 shadow-2xl">
-                <h2 class="text-xl font-bold mb-4 text-green-600 uppercase italic">Log Meal</h2>
+                <h2 class="text-xl font-bold mb-4 text-green-600 uppercase italic">Log Entry</h2>
                 <div class="space-y-4">
                     <div>
-                        <label class="text-[10px] text-gray-400 font-bold">CHOOSE MEAL</label>
-                        <select id="meal-type" class="w-full bg-gray-700 p-3 rounded font-bold border-none">
+                        <label class="text-[10px] text-gray-400 font-bold">MEAL TYPE</label>
+                        <select id="meal-type" class="w-full bg-gray-700 p-3 rounded font-bold border-none outline-none">
                             <option value="Breakfast">Breakfast</option>
                             <option value="Lunch">Lunch</option>
                             <option value="Dinner">Dinner</option>
@@ -73,14 +75,34 @@
                         </select>
                     </div>
                     <div class="grid grid-cols-2 gap-3">
-                        <div><label class="text-[10px] text-gray-400 mb-1">PROTEIN</label><input id="protein" type="number" class="w-full bg-gray-700 rounded p-2 text-center"></div>
-                        <div><label class="text-[10px] text-gray-400 mb-1">CARBS</label><input id="carbs" type="number" class="w-full bg-gray-700 rounded p-2 text-center"></div>
-                        <div><label class="text-[10px] text-gray-400 mb-1">FAT</label><input id="fat" type="number" class="w-full bg-gray-700 rounded p-2 text-center"></div>
-                        <div><label class="text-[10px] text-gray-400 mb-1">CALORIES</label><input id="calories" type="number" class="w-full bg-gray-700 rounded p-2 text-center text-green-400"></div>
+                        <div><label class="text-[10px] text-gray-400">PROTEIN</label><input id="protein" type="number" class="w-full bg-gray-700 rounded p-2 text-center font-bold"></div>
+                        <div><label class="text-[10px] text-gray-400">CARBS</label><input id="carbs" type="number" class="w-full bg-gray-700 rounded p-2 text-center font-bold"></div>
+                        <div><label class="text-[10px] text-gray-400">FAT</label><input id="fat" type="number" class="w-full bg-gray-700 rounded p-2 text-center font-bold"></div>
+                        <div><label class="text-[10px] text-gray-400">CALORIES</label><input id="calories" type="number" class="w-full bg-gray-700 rounded p-2 text-center font-bold text-green-400"></div>
                     </div>
-                    <div><label class="text-[10px] text-gray-400 mb-1">CURRENT BODY WEIGHT</label><input id="weight" type="number" class="w-full bg-gray-700 rounded p-2 text-center"></div>
+                    <div><label class="text-[10px] text-gray-400">BODY WEIGHT (LBS)</label><input id="weight" type="number" class="w-full bg-gray-700 rounded p-3 text-center font-bold"></div>
                 </div>
-                <button onclick="saveKitchen()" class="w-full bg-green-700 mt-6 py-4 rounded-xl font-black uppercase">Log Meal</button>
+                <button onclick="saveKitchen()" class="w-full bg-green-700 mt-6 py-4 rounded-xl font-black uppercase shadow-lg">Log Entry</button>
+            </section>
+        </div>
+
+        <div id="goals-view" class="hidden space-y-6">
+            <button onclick="showView('lobby')" class="text-yellow-500 font-bold text-xs uppercase">← Back to Lobby</button>
+            <section class="bg-gray-800 p-6 rounded-2xl border border-gray-700 shadow-2xl">
+                <h2 class="text-xl font-bold mb-4 text-yellow-600 uppercase italic font-black">Set Target Goals</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label class="text-[10px] text-gray-400 font-bold uppercase">Goal Body Weight</label>
+                        <input id="goal-weight" type="number" class="w-full bg-gray-700 rounded p-2 font-black text-center border-2 border-yellow-900/30">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div><label class="text-[10px] text-gray-400 font-bold">BENCH GOAL</label><input id="goal-bench" type="number" class="w-full bg-gray-700 rounded p-2 text-center font-bold"></div>
+                        <div><label class="text-[10px] text-gray-400 font-bold">SQUAT GOAL</label><input id="goal-squat" type="number" class="w-full bg-gray-700 rounded p-2 text-center font-bold"></div>
+                        <div><label class="text-[10px] text-gray-400 font-bold">CLEAN GOAL</label><input id="goal-clean" type="number" class="w-full bg-gray-700 rounded p-2 text-center font-bold"></div>
+                        <div><label class="text-[10px] text-gray-400 font-bold">DEADLIFT GOAL</label><input id="goal-deadlift" type="number" class="w-full bg-gray-700 rounded p-2 text-center font-bold"></div>
+                    </div>
+                </div>
+                <button onclick="saveGoals()" class="w-full bg-yellow-600 mt-6 py-4 rounded-xl font-black uppercase text-black shadow-lg">Update Goals</button>
             </section>
         </div>
 
@@ -90,7 +112,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, addDoc, serverTimestamp, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBdY26nH0CAn05IpjzoFvG5E1H-bv8fPwA",
@@ -105,25 +127,31 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // UI View Controller
+        // View Controller
         window.showView = (view) => {
-            const sections = ['auth-section', 'lobby-section', 'rack-view', 'kitchen-view'];
-            sections.forEach(s => document.getElementById(s).classList.add('hidden'));
-            
-            if (view === 'lobby') document.getElementById('lobby-section').classList.remove('hidden');
-            if (view === 'rack') document.getElementById('rack-view').classList.remove('hidden');
-            if (view === 'kitchen') document.getElementById('kitchen-view').classList.remove('hidden');
+            ['auth-section', 'lobby-section', 'rack-view', 'kitchen-view', 'goals-view'].forEach(s => {
+                const el = document.getElementById(s);
+                if(el) el.classList.add('hidden');
+            });
+            const target = (view === 'lobby' || view === 'auth') ? view + '-section' : view + '-view';
+            document.getElementById(target).classList.remove('hidden');
         };
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 const docSnap = await getDoc(doc(db, "players", user.uid));
-                document.getElementById('user-display').innerText = docSnap.exists() ? docSnap.data().playerName : "Player";
+                if(docSnap.exists()){
+                    const data = docSnap.data();
+                    document.getElementById('user-display').innerText = data.playerName;
+                    // Load Existing Goals
+                    document.getElementById('goal-weight').value = data.goalWeight || '';
+                    document.getElementById('goal-bench').value = data.goalBench || '';
+                    document.getElementById('goal-squat').value = data.goalSquat || '';
+                    document.getElementById('goal-clean').value = data.goalClean || '';
+                    document.getElementById('goal-deadlift').value = data.goalDeadlift || '';
+                }
                 showView('lobby');
-            } else {
-                document.getElementById('auth-section').classList.remove('hidden');
-                document.getElementById('lobby-section').classList.add('hidden');
-            }
+            } else { showView('auth'); }
         });
 
         window.handleAuth = async (type) => {
@@ -132,6 +160,7 @@
             const name = document.getElementById('player-name').value;
             try {
                 if (type === 'signup') {
+                    if(!name) return alert("Enter Full Name");
                     const res = await createUserWithEmailAndPassword(auth, email, pass);
                     await setDoc(doc(db, "players", res.user.uid), { playerName: name, email: email });
                 } else { await signInWithEmailAndPassword(auth, email, pass); }
@@ -140,36 +169,34 @@
 
         window.logout = () => signOut(auth);
 
-        // DATA SAVING
         window.saveRack = async () => {
-            const user = auth.currentUser;
-            await addDoc(collection(db, "players", user.uid, "maxes"), {
-                bench: document.getElementById('bench').value,
-                squat: document.getElementById('squat').value,
-                clean: document.getElementById('clean').value,
-                deadlift: document.getElementById('deadlift').value,
-                pushpress: document.getElementById('pushpress').value,
-                date: new Date().toLocaleDateString(),
-                timestamp: serverTimestamp()
+            await addDoc(collection(db, "players", auth.currentUser.uid, "maxes"), {
+                bench: document.getElementById('bench').value, squat: document.getElementById('squat').value,
+                clean: document.getElementById('clean').value, deadlift: document.getElementById('deadlift').value,
+                pushpress: document.getElementById('pushpress').value, date: new Date().toLocaleDateString(), timestamp: serverTimestamp()
             });
-            alert("New Maxes Recorded!");
-            showView('lobby');
+            alert("Rack Updated!"); showView('lobby');
         };
 
         window.saveKitchen = async () => {
-            const user = auth.currentUser;
-            await addDoc(collection(db, "players", user.uid, "meals"), {
-                meal: document.getElementById('meal-type').value,
-                protein: document.getElementById('protein').value,
-                carbs: document.getElementById('carbs').value,
-                fat: document.getElementById('fat').value,
-                calories: document.getElementById('calories').value,
-                bodyWeight: document.getElementById('weight').value,
-                date: new Date().toLocaleDateString(),
-                timestamp: serverTimestamp()
+            await addDoc(collection(db, "players", auth.currentUser.uid, "meals"), {
+                meal: document.getElementById('meal-type').value, protein: document.getElementById('protein').value,
+                carbs: document.getElementById('carbs').value, fat: document.getElementById('fat').value,
+                calories: document.getElementById('calories').value, bodyWeight: document.getElementById('weight').value,
+                date: new Date().toLocaleDateString(), timestamp: serverTimestamp()
             });
-            alert("Meal Logged!");
-            showView('lobby');
+            alert("Entry Logged!"); showView('lobby');
+        };
+
+        window.saveGoals = async () => {
+            await updateDoc(doc(db, "players", auth.currentUser.uid), {
+                goalWeight: document.getElementById('goal-weight').value,
+                goalBench: document.getElementById('goal-bench').value,
+                goalSquat: document.getElementById('goal-squat').value,
+                goalClean: document.getElementById('goal-clean').value,
+                goalDeadlift: document.getElementById('goal-deadlift').value
+            });
+            alert("Goals Set!"); showView('lobby');
         };
     </script>
 </body>

@@ -3,35 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coach View - Panther Power</title>
+    <title>Coach Dashboard - Panther Power</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-900 text-white font-sans p-2 sm:p-6">
 
     <div class="max-w-6xl mx-auto">
-        <div class="flex items-center justify-between mb-8 border-b-2 border-red-700 pb-4">
-            <img src="Panthers2.png" class="h-16">
-            <div>
-                <h1 class="text-2xl font-black italic uppercase">Team Roster</h1>
-                <p class="text-[10px] text-gray-400 uppercase tracking-widest">Showing Latest Entry for Each Player</p>
+        <header class="flex flex-col sm:flex-row items-center justify-between mb-8 border-b-2 border-red-700 pb-4 gap-4">
+            <div class="flex items-center gap-4">
+                <img src="Panthers2.png" class="h-16">
+                <h1 class="text-2xl font-black italic uppercase">Coach Dashboard</h1>
             </div>
-            <a href="index.html" class="bg-gray-800 text-xs px-3 py-1 rounded border border-gray-600">App Home</a>
-        </div>
+            <div class="flex gap-2">
+                <button onclick="showSection('rack')" class="bg-red-700 px-4 py-2 rounded font-bold text-xs uppercase shadow-lg">The Rack</button>
+                <button onclick="showSection('kitchen')" class="bg-green-700 px-4 py-2 rounded font-bold text-xs uppercase shadow-lg">The Kitchen</button>
+                <a href="index.html" class="bg-gray-800 px-4 py-2 rounded text-xs border border-gray-600 uppercase font-bold">App</a>
+            </div>
+        </header>
 
-        <div class="bg-gray-800 rounded-xl overflow-hidden shadow-2xl border border-gray-700">
-            <div class="overflow-x-auto">
+        <div id="section-rack" class="space-y-4">
+            <div class="flex justify-between items-end">
+                <h2 class="text-xl font-black italic text-red-500 uppercase">Weight Room Analytics</h2>
+                <button onclick="exportMaxes()" class="bg-white text-black px-3 py-1 rounded text-[10px] font-black uppercase shadow-lg">Download CSV</button>
+            </div>
+            <div class="bg-gray-800 rounded-xl overflow-hidden shadow-2xl border border-gray-700">
                 <table class="w-full text-left border-collapse">
                     <thead class="bg-black text-red-500 uppercase text-[10px] tracking-widest">
                         <tr>
                             <th class="p-4">Player</th>
                             <th class="p-4 text-center">Latest Maxes (B/S/C/D/PP)</th>
-                            <th class="p-4 text-center">Last Meal Logged</th>
-                            <th class="p-4 text-center">Latest Macros (P/C/F)</th>
-                            <th class="p-4 text-center">Body Wt</th>
+                            <th class="p-4 text-center">Total LBS</th>
+                            <th class="p-4 text-center">Last Update</th>
                         </tr>
                     </thead>
-                    <tbody id="leaderboard-body" class="divide-y divide-gray-700">
-                        </tbody>
+                    <tbody id="rack-body" class="divide-y divide-gray-700"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="section-kitchen" class="hidden space-y-4">
+            <h2 class="text-xl font-black italic text-green-500 uppercase">Nutrition & Weight Goals</h2>
+            <div class="bg-gray-800 rounded-xl overflow-hidden shadow-2xl border border-gray-700">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-black text-green-500 uppercase text-[10px] tracking-widest">
+                        <tr>
+                            <th class="p-4">Player</th>
+                            <th class="p-4 text-center">Last Meal</th>
+                            <th class="p-4 text-center">Macros (P/C/F)</th>
+                            <th class="p-4 text-center">Progress to Goal</th>
+                        </tr>
+                    </thead>
+                    <tbody id="kitchen-body" class="divide-y divide-gray-700"></tbody>
                 </table>
             </div>
         </div>
@@ -53,52 +75,80 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        async function loadLeaderboard() {
+        window.showSection = (section) => {
+            document.getElementById('section-rack').classList.toggle('hidden', section !== 'rack');
+            document.getElementById('section-kitchen').classList.toggle('hidden', section !== 'kitchen');
+        };
+
+        let exportData = [];
+
+        async function loadData() {
             const playersSnapshot = await getDocs(collection(db, "players"));
-            const tbody = document.getElementById('leaderboard-body');
-            tbody.innerHTML = '';
+            const rackBody = document.getElementById('rack-body');
+            const kitchenBody = document.getElementById('kitchen-body');
+            rackBody.innerHTML = ''; kitchenBody.innerHTML = ''; exportData = [];
 
             for (const playerDoc of playersSnapshot.docs) {
                 const p = playerDoc.data();
                 const uid = playerDoc.id;
 
-                // 1. Get Latest Maxes
-                const maxQuery = query(collection(db, "players", uid, "maxes"), orderBy("timestamp", "desc"), limit(1));
-                const maxSnap = await getDocs(maxQuery);
+                // Latest Maxes
+                const maxQ = query(collection(db, "players", uid, "maxes"), orderBy("timestamp", "desc"), limit(1));
+                const maxSnap = await getDocs(maxQ);
                 const latestMax = maxSnap.docs[0]?.data() || {};
+                const total = (Number(latestMax.bench)||0) + (Number(latestMax.squat)||0) + (Number(latestMax.clean)||0) + (Number(latestMax.deadlift)||0) + (Number(latestMax.pushpress)||0);
 
-                // 2. Get Latest Meal
-                const mealQuery = query(collection(db, "players", uid, "meals"), orderBy("timestamp", "desc"), limit(1));
-                const mealSnap = await getDocs(mealQuery);
+                // Latest Meal
+                const mealQ = query(collection(db, "players", uid, "meals"), orderBy("timestamp", "desc"), limit(1));
+                const mealSnap = await getDocs(mealQ);
                 const latestMeal = mealSnap.docs[0]?.data() || {};
 
-                const row = `
-                    <tr class="hover:bg-gray-700/50 transition">
-                        <td class="p-4">
-                            <div class="font-bold text-red-400 text-sm">${p.playerName || 'Unknown'}</div>
-                            <div class="text-[9px] text-gray-500 uppercase tracking-tighter">${p.email || ''}</div>
+                // Goal Comparison
+                const weightDiff = (latestMeal.bodyWeight && p.goalWeight) ? (latestMeal.bodyWeight - p.goalWeight) : 0;
+                const statusColor = Math.abs(weightDiff) > 5 ? 'text-red-500' : 'text-green-500';
+
+                // Rack Row
+                rackBody.innerHTML += `
+                    <tr class="hover:bg-gray-700/50">
+                        <td class="p-4 font-bold text-red-400 text-sm">${p.playerName}</td>
+                        <td class="p-4 text-center font-mono text-[11px]">${latestMax.bench||0}/${latestMax.squat||0}/${latestMax.clean||0}/${latestMax.deadlift||0}/${latestMax.pushpress||0}</td>
+                        <td class="p-4 text-center font-black">${total}</td>
+                        <td class="p-4 text-center text-[10px] text-gray-500">${latestMax.date || '---'}</td>
+                    </tr>
+                `;
+
+                // Kitchen Row
+                kitchenBody.innerHTML += `
+                    <tr class="hover:bg-gray-700/50">
+                        <td class="p-4 font-bold text-green-400 text-sm">
+                            ${p.playerName}
+                            <div class="text-[9px] text-gray-500">GOAL: ${p.goalWeight || '??'}</div>
                         </td>
-                        <td class="p-4 text-center font-mono text-[11px]">
-                            ${latestMax.bench || '-'}/${latestMax.squat || '-'}/${latestMax.clean || '-'}/${latestMax.deadlift || '-'}/<span class="text-red-500 font-bold">${latestMax.pushpress || '-'}</span>
-                            <div class="text-[8px] text-gray-500 mt-1">${latestMax.date || 'No Data'}</div>
+                        <td class="p-4 text-center text-[10px] uppercase font-bold text-gray-400">
+                            ${latestMeal.meal || '---'}
+                            <div class="text-white text-xs">${latestMeal.calories || 0} CALS</div>
                         </td>
-                        <td class="p-4 text-center">
-                            <span class="text-xs font-bold text-green-500 uppercase">${latestMeal.meal || '---'}</span>
-                            <div class="text-[10px] text-white font-black">${latestMeal.calories || '0'} <span class="text-[8px] font-normal text-gray-400">CALS</span></div>
-                        </td>
-                        <td class="p-4 text-center text-[10px] text-gray-300 font-bold uppercase">
-                            P:${latestMeal.protein || '-'}/C:${latestMeal.carbs || '-'}/F:${latestMeal.fat || '-'}
-                            <div class="text-[8px] text-gray-500 mt-1 uppercase">${latestMeal.date || ''}</div>
-                        </td>
-                        <td class="p-4 text-center text-xs font-bold">
-                            ${latestMeal.bodyWeight || '-'} <span class="text-[9px] text-gray-500">lbs</span>
+                        <td class="p-4 text-center text-[10px] text-gray-500">P:${latestMeal.protein||0}/C:${latestMeal.carbs||0}/F:${latestMeal.fat||0}</td>
+                        <td class="p-4 text-center ${statusColor} font-bold text-sm">
+                            ${latestMeal.bodyWeight || '--'} lbs
+                            <div class="text-[9px] font-normal uppercase">${weightDiff > 0 ? '+' : ''}${weightDiff.toFixed(1)} to goal</div>
                         </td>
                     </tr>
                 `;
-                tbody.innerHTML += row;
+
+                exportData.push({ Player: p.playerName, Bench: latestMax.bench||0, Squat: latestMax.squat||0, Total: total });
             }
         }
-        loadLeaderboard();
+
+        window.exportMaxes = () => {
+            const csv = "Player,Bench,Squat,Total\n" + exportData.map(r => `${r.Player},${r.Bench},${r.Squat},${r.Total}`).join("\n");
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = 'Panther_Maxes.csv'; a.click();
+        };
+
+        loadData();
     </script>
 </body>
 </html>
