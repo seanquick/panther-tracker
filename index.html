@@ -3,28 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panther Performance</title>
+    <title>Panther Performance v4.8</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { background-color: #0f172a; color: white; }
         .club-card { background: linear-gradient(145deg, #1a1a1a, #262626); border-top: 3px solid #b91c1c; }
         
+        /* High Contrast Inputs */
         input, select, textarea { 
-            background-color: #1f2937 !important; 
-            color: #ffffff !important; 
-            border: 2px solid #374151 !important;
-            padding: 1rem !important;
-            border-radius: 0.75rem !important;
-            width: 100% !important;
-            margin-bottom: 0.75rem !important;
-            display: block !important;
-            font-weight: 600 !important;
+            background-color: #1f2937 !important; color: #ffffff !important; 
+            border: 2px solid #374151 !important; padding: 1rem !important;
+            border-radius: 0.75rem !important; width: 100% !important;
+            margin-bottom: 0.75rem !important; display: block !important; font-weight: 600 !important;
         }
         input:focus { border-color: #dc2626 !important; background-color: #111827 !important; }
         ::placeholder { color: #9ca3af !important; opacity: 1; }
         
         .social-btn { @apply flex items-center justify-center gap-2 p-3 rounded-xl font-bold uppercase text-xs transition-transform active:scale-95 text-white; }
         .hidden { display: none !important; }
+        .admin-box { border: 2px dashed #dc2626; padding: 1rem; border-radius: 1rem; margin-bottom: 1.5rem; background: rgba(220, 38, 38, 0.05); }
     </style>
 </head>
 <body class="font-sans pb-10">
@@ -49,7 +46,7 @@
                     <option value="player">PLAYER</option>
                     <option value="coach">COACH (ADMIN)</option>
                 </select>
-                <input id="coach-code" type="password" placeholder="Coach Access Code" class="hidden" style="border-color: #7f1d1d !important;">
+                <input id="coach-code" type="password" placeholder="Coach Access Code" class="hidden">
             </div>
 
             <div class="flex gap-3">
@@ -64,7 +61,7 @@
                 <button onclick="logout()" class="text-xs text-gray-400 font-bold underline uppercase">Logout</button>
             </div>
             
-            <div id="coach-tools" class="hidden bg-red-900/20 border border-red-900/40 p-4 rounded-2xl">
+            <div id="coach-tools" class="hidden space-y-2">
                 <button onclick="loadRoster(); showView('roster')" class="w-full bg-red-700 p-3 rounded-xl font-black uppercase text-sm italic shadow-lg text-white">📋 Manage Roster</button>
             </div>
 
@@ -97,7 +94,13 @@
 
         <div id="rack-view" class="hidden space-y-6">
             <button onclick="showView('lobby')" class="text-red-500 font-bold text-xs uppercase">← Back</button>
-            <section class="bg-gray-800 p-6 rounded-2xl border border-gray-700">
+            
+            <div id="rack-admin" class="hidden admin-box">
+                <h3 class="text-red-500 font-black text-xs mb-3 uppercase italic tracking-widest">Coach Analysis</h3>
+                <button onclick="exportRackCSV()" class="w-full bg-white text-black py-4 rounded-xl font-black text-xs uppercase shadow-lg active:scale-95 transition-all">📥 Export All Lifts to Excel</button>
+            </div>
+
+            <section class="bg-gray-800 p-6 rounded-2xl border border-gray-700 shadow-2xl">
                 <h2 class="text-xl font-bold mb-4 text-red-600 uppercase italic font-black">Record Maxes</h2>
                 <div class="grid grid-cols-2 gap-4">
                     <input id="bench" type="number" placeholder="Bench">
@@ -106,13 +109,22 @@
                     <input id="deadlift" type="number" placeholder="Deadlift">
                     <input id="pushpress" type="number" placeholder="Push Press" class="col-span-2">
                 </div>
-                <button onclick="saveRack()" class="w-full bg-red-700 py-4 rounded-xl font-black uppercase tracking-widest text-white">Update Lifts</button>
+                <button onclick="saveRack()" class="w-full bg-red-700 py-4 rounded-xl font-black uppercase text-white shadow-xl">Update Lifts</button>
             </section>
         </div>
 
         <div id="kitchen-view" class="hidden space-y-6">
             <button onclick="showView('lobby')" class="text-green-500 font-bold text-xs uppercase">← Back</button>
-            <section class="bg-gray-800 p-6 rounded-2xl border border-gray-700">
+            
+            <div id="kitchen-admin" class="hidden admin-box">
+                <h3 class="text-green-500 font-black text-xs mb-3 uppercase italic tracking-widest">Player Watch</h3>
+                <select id="player-select-kitchen" onchange="loadPlayerKitchen()">
+                    <option value="">Select a Player...</option>
+                </select>
+                <div id="admin-kitchen-list" class="mt-4 space-y-2 max-h-64 overflow-y-auto"></div>
+            </div>
+
+            <section class="bg-gray-800 p-6 rounded-2xl border border-gray-700 shadow-2xl">
                 <h2 class="text-xl font-bold mb-4 text-green-600 uppercase italic font-black text-center">Log Nutrition</h2>
                 <select id="meal-type"><option>Breakfast</option><option>Lunch</option><option>Dinner</option><option>Snack</option></select>
                 <div class="grid grid-cols-2 gap-3">
@@ -122,15 +134,15 @@
                     <input id="calories" type="number" placeholder="Calories">
                 </div>
                 <input id="weight" type="number" placeholder="Body Weight (lbs)">
-                <textarea id="meal-notes" placeholder="Notes..." class="h-20"></textarea>
-                <button onclick="saveKitchen()" class="w-full bg-green-700 py-4 rounded-xl font-black uppercase tracking-widest text-white">Save Log</button>
+                <textarea id="meal-notes" placeholder="Notes (e.g. Chicken, Rice, etc)..." class="h-24"></textarea>
+                <button onclick="saveKitchen()" class="w-full bg-green-700 py-4 rounded-xl font-black uppercase text-white shadow-xl">Save Log</button>
             </section>
         </div>
 
         <div id="goals-view" class="hidden space-y-6">
             <button onclick="showView('lobby')" class="text-yellow-500 font-bold text-xs uppercase">← Back</button>
-            <section class="bg-gray-800 p-6 rounded-2xl border border-gray-700">
-                <h2 class="text-xl font-bold mb-4 text-yellow-600 uppercase italic font-black text-center text-lg">Target Goals</h2>
+            <section class="bg-gray-800 p-6 rounded-2xl border border-gray-700 shadow-2xl">
+                <h2 class="text-xl font-bold mb-4 text-yellow-600 uppercase italic font-black text-center">Target Goals</h2>
                 <input id="goal-weight" type="number" placeholder="Goal Body Weight">
                 <div class="grid grid-cols-2 gap-4">
                     <input id="goal-bench" type="number" placeholder="Bench Goal">
@@ -138,7 +150,7 @@
                     <input id="goal-clean" type="number" placeholder="Clean Goal">
                     <input id="goal-deadlift" type="number" placeholder="Deadlift Goal">
                 </div>
-                <button onclick="saveGoals()" class="w-full bg-yellow-600 py-4 rounded-xl font-black uppercase text-black">Update Goals</button>
+                <button onclick="saveGoals()" class="w-full bg-yellow-600 py-4 rounded-xl font-black uppercase text-black shadow-xl">Update Goals</button>
             </section>
         </div>
 
@@ -151,8 +163,8 @@
         <div id="history-view" class="hidden space-y-4">
             <button onclick="showView('lobby')" class="text-gray-500 font-bold text-xs uppercase">← Back</button>
             <div class="flex gap-2 mb-4">
-                <button onclick="toggleHist('rack')" class="flex-1 bg-blue-700 py-3 rounded-lg text-xs font-black uppercase tracking-widest text-white">Lifts</button>
-                <button onclick="toggleHist('kitchen')" class="flex-1 bg-gray-800 py-3 rounded-lg text-xs font-black uppercase tracking-widest text-white">Kitchen</button>
+                <button onclick="toggleHist('rack')" class="flex-1 bg-blue-700 py-3 rounded-lg text-xs font-black uppercase text-white">Lifts</button>
+                <button onclick="toggleHist('kitchen')" class="flex-1 bg-gray-800 py-3 rounded-lg text-xs font-black uppercase text-white">Kitchen</button>
             </div>
             <div id="hist-rack-list" class="space-y-3"></div>
             <div id="hist-kitchen-list" class="hidden space-y-3"></div>
@@ -180,61 +192,87 @@
         const COACH_SECRET = "PANTHERS2026"; 
         let userData = {};
 
-        // ADMIN FUNCTIONS
-        window.resetPassword = async (email) => {
-            if(!email) return alert("Email missing.");
-            try {
-                await sendPasswordResetEmail(auth, email);
-                alert("Reset link sent to " + email);
-            } catch (err) { alert(err.message); }
+        // --- ADMIN TOOLS ---
+
+        window.exportRackCSV = async () => {
+            const players = await getDocs(collection(db, "players"));
+            let csv = "Player,Email,Date,Bench,Squat,Clean,Deadlift,PushPress\n";
+            for (const p of players.docs) {
+                const pd = p.data();
+                const mS = await getDocs(query(collection(db, "players", p.id, "maxes"), orderBy("timestamp", "desc")));
+                mS.forEach(m => {
+                    const md = m.data();
+                    csv += `${pd.playerName},${pd.email},${md.date},${md.bench},${md.squat},${md.clean},${md.deadlift},${md.pushpress}\n`;
+                });
+            }
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = `Panther_Lifts_${new Date().toLocaleDateString()}.csv`;
+            a.click();
         };
 
-        window.toggleRole = async (id, currentRole) => {
-            const nextRole = currentRole === 'coach' ? 'player' : 'coach';
-            if(confirm(`Change user to ${nextRole.toUpperCase()}?`)) {
-                await updateDoc(doc(db, "players", id), { role: nextRole });
+        window.loadPlayerKitchen = async () => {
+            const pid = document.getElementById('player-select-kitchen').value;
+            const container = document.getElementById('admin-kitchen-list');
+            if(!pid) { container.innerHTML = ""; return; }
+            container.innerHTML = "<p class='text-xs italic'>Syncing logs...</p>";
+            const snap = await getDocs(query(collection(db, "players", pid, "meals"), orderBy("timestamp", "desc"), limit(30)));
+            container.innerHTML = snap.empty ? "No data for this player." : "";
+            snap.forEach(d => {
+                const k = d.data();
+                container.innerHTML += `<div class="bg-gray-700 p-3 rounded-xl border-l-4 border-green-500 text-left">
+                    <p class="text-[10px] font-black uppercase">${k.date} - ${k.meal}</p>
+                    <p class="text-sm font-bold text-green-400">${k.calories} CAL | ${k.bodyWeight} LBS</p>
+                    <p class="text-[10px] text-gray-300 italic">${k.notes || ''}</p>
+                </div>`;
+            });
+        };
+
+        window.resetPassword = async (email) => {
+            try { await sendPasswordResetEmail(auth, email); alert("Reset email sent!"); } catch (e) { alert(e.message); }
+        };
+
+        window.toggleRole = async (id, cur) => {
+            const next = cur === 'coach' ? 'player' : 'coach';
+            if(confirm(`Set to ${next.toUpperCase()}?`)) {
+                await updateDoc(doc(db, "players", id), { role: next });
                 loadRoster();
             }
         };
 
-        window.deletePlayer = async (id) => { 
-            if(confirm("Delete this player's data? You must still delete their login from Firebase Auth manually.")) { 
-                await deleteDoc(doc(db, "players", id)); 
-                loadRoster(); 
-            } 
+        window.deletePlayer = async (id) => {
+            if(confirm("Permanently delete player data?")) {
+                await deleteDoc(doc(db, "players", id));
+                loadRoster();
+            }
         };
 
-        // NAVIGATION LOGIC (FIXED)
+        // --- CORE UI & AUTH ---
+
         window.showView = (v) => {
             const views = ['auth-section', 'lobby-section', 'rack-view', 'kitchen-view', 'goals-view', 'history-view', 'leaderboard-view', 'roster-view'];
-            views.forEach(s => {
-                const el = document.getElementById(s);
-                if(el) el.classList.add('hidden');
-            });
-            
-            // Map keywords to IDs
-            let targetId = v.includes('-') ? v : (v === 'lobby' || v === 'auth' ? v + '-section' : v + '-view');
-            const target = document.getElementById(targetId);
-            if(target) target.classList.remove('hidden');
+            views.forEach(s => { if(document.getElementById(s)) document.getElementById(s).classList.add('hidden'); });
+            let tid = v.includes('-') ? v : (v === 'lobby' || v === 'auth' ? v + '-section' : v + '-view');
+            if(document.getElementById(tid)) document.getElementById(tid).classList.remove('hidden');
         };
 
-        window.toggleCoachCode = () => {
-            const role = document.getElementById('reg-role').value;
-            const cc = document.getElementById('coach-code');
-            cc.style.display = (role === 'coach') ? 'block' : 'none';
-        };
-
-        // AUTH
         onAuthStateChanged(auth, async (u) => {
             if (u) {
                 const snap = await getDoc(doc(db, "players", u.uid));
                 if(snap.exists()){
                     userData = snap.data();
                     document.getElementById('user-display').innerText = userData.playerName;
-                    document.getElementById('role-tag').innerText = "— " + userData.role + " ACCESS —";
+                    document.getElementById('role-tag').innerText = `— ${userData.role} —`;
                     if(userData.role === 'coach') {
                         document.getElementById('coach-tools').classList.remove('hidden');
+                        document.getElementById('rack-admin').classList.remove('hidden');
+                        document.getElementById('kitchen-admin').classList.remove('hidden');
                         document.getElementById('coach-pdf').classList.remove('hidden');
+                        const pSnap = await getDocs(collection(db, "players"));
+                        const sel = document.getElementById('player-select-kitchen');
+                        sel.innerHTML = '<option value="">Select a Player...</option>';
+                        pSnap.forEach(p => { if(p.data().role === 'player') sel.innerHTML += `<option value="${p.id}">${p.data().playerName}</option>`; });
                     }
                 }
                 showView('lobby');
@@ -243,20 +281,15 @@
 
         window.handleAuth = async (t) => {
             const e = document.getElementById('email').value, p = document.getElementById('password').value, n = document.getElementById('player-name').value, r = document.getElementById('reg-role').value, cc = document.getElementById('coach-code').value;
-            if(!e || !p) return alert("Fill in credentials.");
             try {
                 if (t === 'signup') {
-                    if(!n) return alert("Name required.");
-                    if(r === 'coach' && cc !== COACH_SECRET) return alert("Invalid Code.");
+                    if(r === 'coach' && cc !== COACH_SECRET) return alert("Invalid Code");
                     const res = await createUserWithEmailAndPassword(auth, e, p);
                     await setDoc(doc(db, "players", res.user.uid), { playerName: n, email: e, role: r });
                 } else { await signInWithEmailAndPassword(auth, e, p); }
             } catch (err) { alert(err.message); }
         };
 
-        window.logout = () => { signOut(auth); location.reload(); };
-
-        // DATA METHODS
         window.saveRack = async () => {
             await addDoc(collection(db, "players", auth.currentUser.uid, "maxes"), {
                 bench: Number(document.getElementById('bench').value), squat: Number(document.getElementById('squat').value),
@@ -271,25 +304,23 @@
                 meal: document.getElementById('meal-type').value, protein: Number(document.getElementById('protein').value), carbs: Number(document.getElementById('carbs').value), fat: Number(document.getElementById('fat').value), calories: Number(document.getElementById('calories').value),
                 bodyWeight: Number(document.getElementById('weight').value), notes: document.getElementById('meal-notes').value, date: new Date().toLocaleDateString(), timestamp: serverTimestamp()
             });
-            alert("Nutrition Logged!"); showView('lobby');
+            alert("Nutrition Saved!"); showView('lobby');
         };
 
         window.saveGoals = async () => {
             await updateDoc(doc(db, "players", auth.currentUser.uid), {
                 goalWeight: document.getElementById('goal-weight').value, goalBench: document.getElementById('goal-bench').value, goalSquat: document.getElementById('goal-squat').value, goalClean: document.getElementById('goal-clean').value, goalDeadlift: document.getElementById('goal-deadlift').value
             });
-            alert("Goals Set!"); showView('lobby');
+            alert("Goals Saved!"); showView('lobby');
         };
 
         window.loadRoster = async () => {
-            const list = document.getElementById('roster-list');
-            list.innerHTML = 'Syncing...';
+            const list = document.getElementById('roster-list'); list.innerHTML = 'Syncing...';
             const snap = await getDocs(collection(db, "players"));
             list.innerHTML = '';
             snap.forEach(d => {
                 const p = d.data();
-                list.innerHTML += `
-                <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 text-left">
+                list.innerHTML += `<div class="bg-gray-800 p-4 rounded-xl border border-gray-700 text-left">
                     <div class="flex justify-between items-start mb-2">
                         <div><p class="font-bold uppercase text-sm">${p.playerName}</p><p class="text-[9px] text-gray-500 font-bold uppercase">${p.email}</p></div>
                         <button onclick="deletePlayer('${d.id}')" class="text-red-600 text-[10px] font-black underline">REMOVE</button>
@@ -324,12 +355,14 @@
             const rL = document.getElementById('hist-rack-list'), kL = document.getElementById('hist-kitchen-list');
             const sM = await getDocs(query(collection(db, "players", auth.currentUser.uid, "maxes"), orderBy("timestamp", "desc")));
             const sK = await getDocs(query(collection(db, "players", auth.currentUser.uid, "meals"), orderBy("timestamp", "desc")));
-            rL.innerHTML = ''; sM.forEach(d => { const m = d.data(); rL.innerHTML += `<div class="bg-gray-800 p-4 rounded-xl border-l-4 border-blue-600 mb-2 shadow-xl text-left"><div class="flex justify-between text-[9px] font-black text-gray-500 uppercase"><span>${m.date}</span><button onclick="deleteEntry('maxes','${d.id}')" class="text-red-600">DELETE</button></div><div class="grid grid-cols-4 text-center text-xs font-black mt-2"><div>B:${m.bench}</div><div>S:${m.squat}</div><div>C:${m.clean}</div><div>D:${m.deadlift}</div></div></div>`; });
+            rL.innerHTML = ''; sM.forEach(d => { const m = d.data(); rL.innerHTML += `<div class="bg-gray-800 p-4 rounded-xl border-l-4 border-blue-600 mb-2 shadow-xl text-left"><div class="flex justify-between text-[9px] font-black text-gray-500 uppercase"><span>${m.date}</span><button onclick="deleteEntry('maxes','${d.id}')" class="text-red-600">DELETE</button></div><div class="grid grid-cols-5 text-center text-[10px] font-black mt-2"><div>B:${m.bench}</div><div>S:${m.squat}</div><div>C:${m.clean}</div><div>D:${m.deadlift}</div><div>P:${m.pushpress}</div></div></div>`; });
             kL.innerHTML = ''; sK.forEach(d => { const k = d.data(); kL.innerHTML += `<div class="bg-gray-800 p-4 rounded-xl border-l-4 border-green-600 mb-2 text-xs flex justify-between items-center shadow-xl text-left"><div><p class="font-bold text-gray-400 text-[10px] uppercase">${k.date} — ${k.meal}</p><p class="text-green-400 font-black">${k.bodyWeight} LBS</p></div><button onclick="deleteEntry('meals','${d.id}')" class="text-red-600 font-bold text-[10px]">DELETE</button></div>`; });
         };
 
         window.deleteEntry = async (col, id) => { if(confirm("Delete entry?")) { await deleteDoc(doc(db, "players", auth.currentUser.uid, col, id)); loadMyHistory(); } };
         window.toggleHist = (t) => { document.getElementById('hist-rack-list').classList.toggle('hidden', t !== 'rack'); document.getElementById('hist-kitchen-list').classList.toggle('hidden', t !== 'kitchen'); };
+        window.logout = () => { signOut(auth); location.reload(); };
+        window.toggleCoachCode = () => { document.getElementById('coach-code').classList.toggle('hidden', document.getElementById('reg-role').value !== 'coach'); };
     </script>
 </body>
 </html>
