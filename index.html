@@ -187,7 +187,7 @@
             }
             grid.innerHTML = ''; 
             // V5.4: Expanded range for all categories
-            for(let t = 700; t >= 400; t -= 50) {
+            for(let t = 700; t >= 400; t -= 100) {
                 const mem = s.filter(x => x.score >= t && x.score < t+100);
                 if(mem.length > 0) {
                     grid.innerHTML += `<div class="club-card p-4 rounded-xl mb-4"><div class="text-red-500 font-black italic uppercase">${t} LB CLUB</div>${mem.map(m => `<div class="flex justify-between text-xs font-bold py-1"><span>${m.name}</span><span class="text-blue-400">${m.score}</span></div>`).join('')}</div>`;
