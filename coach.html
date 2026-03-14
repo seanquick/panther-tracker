@@ -6,34 +6,27 @@
     <title>Coach Dashboard - Panther Power</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-900 text-white font-sans p-2 sm:p-6 text-sm">
+<body class="bg-gray-900 text-white font-sans p-6 text-sm">
 
     <div class="max-w-6xl mx-auto">
-        <header class="flex flex-col sm:flex-row items-center justify-between mb-8 border-b-2 border-red-700 pb-4 gap-4">
-            <div class="flex items-center gap-4">
-                <img src="Panthers2.png" class="h-16">
-                <h1 class="text-2xl font-black italic uppercase tracking-tighter">Coach Dashboard</h1>
-            </div>
+        <header class="flex justify-between items-center mb-8 border-b-2 border-red-700 pb-4">
+            <h1 class="text-2xl font-black italic uppercase italic">Coach Dashboard</h1>
             <div class="flex gap-2">
-                <button onclick="showSection('rack')" class="bg-red-700 px-4 py-2 rounded font-bold text-xs uppercase shadow-lg">The Rack</button>
-                <button onclick="showSection('kitchen')" class="bg-green-700 px-4 py-2 rounded font-bold text-xs uppercase shadow-lg">The Kitchen</button>
-                <a href="index.html" class="bg-gray-800 px-4 py-2 rounded text-xs border border-gray-600 uppercase font-bold">Player App</a>
+                <button onclick="showSection('rack')" class="bg-red-700 px-4 py-2 rounded font-bold uppercase text-xs">The Rack</button>
+                <button onclick="showSection('kitchen')" class="bg-green-700 px-4 py-2 rounded font-bold uppercase text-xs">The Kitchen</button>
             </div>
         </header>
 
         <div id="section-rack" class="space-y-4">
-            <div class="flex justify-between items-end">
-                <h2 class="text-xl font-black italic text-red-500 uppercase">Weight Room Analytics</h2>
-                <button onclick="exportMaxes()" class="bg-white text-black px-3 py-1 rounded text-[10px] font-black uppercase">Download CSV</button>
-            </div>
-            <div class="bg-gray-800 rounded-xl overflow-hidden shadow-2xl border border-gray-700">
-                <table class="w-full text-left border-collapse">
-                    <thead class="bg-black text-red-500 uppercase text-[10px] tracking-widest">
+            <h2 class="text-xl font-black italic text-red-500 uppercase">Weight Club Rankings</h2>
+            <div class="bg-gray-800 rounded-xl overflow-hidden border border-gray-700">
+                <table class="w-full text-left">
+                    <thead class="bg-black text-red-500 uppercase text-[10px]">
                         <tr>
                             <th class="p-4">Player</th>
-                            <th class="p-4 text-center">Latest Maxes (B/S/C/D/PP)</th>
-                            <th class="p-4 text-center">Total LBS</th>
-                            <th class="p-4 text-center">Last Update</th>
+                            <th class="p-4 text-center">B/S/C/D</th>
+                            <th class="p-4 text-center">Body Wt</th>
+                            <th class="p-4 text-center bg-red-950">Weight Club Score</th>
                         </tr>
                     </thead>
                     <tbody id="rack-body" class="divide-y divide-gray-700"></tbody>
@@ -42,27 +35,13 @@
         </div>
 
         <div id="section-kitchen" class="hidden space-y-4">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <h2 class="text-xl font-black italic text-green-500 uppercase">Nutrition History</h2>
-                <div class="w-full sm:w-64">
-                    <select id="player-selector" onchange="loadPlayerHistory(this.value)" class="w-full bg-gray-700 border border-green-700 p-2 rounded font-bold text-green-400 outline-none">
-                        <option value="">-- Choose a Player --</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="bg-gray-800 rounded-xl overflow-hidden shadow-2xl border border-gray-700">
-                <table class="w-full text-left border-collapse">
-                    <thead class="bg-black text-green-500 uppercase text-[10px] tracking-widest">
-                        <tr>
-                            <th class="p-4">Entry Details</th>
-                            <th class="p-4 text-center">Calories/Macros</th>
-                            <th class="p-4 text-center">Weight Goal Progress</th>
-                        </tr>
-                    </thead>
-                    <tbody id="kitchen-history-body" class="divide-y divide-gray-700">
-                        <tr><td colspan="3" class="p-10 text-center text-gray-500 italic">Select a player to see their full meal history and notes...</td></tr>
-                    </tbody>
+            <h2 class="text-xl font-black italic text-green-500 uppercase">Nutrition History</h2>
+            <select id="player-selector" onchange="loadPlayerHistory(this.value)" class="w-64 bg-gray-700 border border-green-700 p-2 rounded font-bold text-green-400">
+                <option value="">-- Choose a Player --</option>
+            </select>
+            <div class="bg-gray-800 rounded-xl overflow-hidden border border-gray-700">
+                <table class="w-full text-left">
+                    <tbody id="kitchen-history-body" class="divide-y divide-gray-700"></tbody>
                 </table>
             </div>
         </div>
@@ -89,75 +68,57 @@
             document.getElementById('section-kitchen').classList.toggle('hidden', section !== 'kitchen');
         };
 
-        let exportData = [];
-
         async function loadInitialData() {
             const playersSnapshot = await getDocs(collection(db, "players"));
             const rackBody = document.getElementById('rack-body');
             const selector = document.getElementById('player-selector');
-            rackBody.innerHTML = '';
-            selector.innerHTML = '<option value="">-- Choose a Player --</option>';
+            rackBody.innerHTML = ''; selector.innerHTML = '<option value="">-- Choose a Player --</option>';
 
             for (const playerDoc of playersSnapshot.docs) {
                 const p = playerDoc.data();
                 const uid = playerDoc.id;
+                
+                // Dropdown
                 const opt = document.createElement('option'); opt.value = uid; opt.innerText = p.playerName; selector.appendChild(opt);
 
+                // Latest Weight
+                const mealQ = query(collection(db, "players", uid, "meals"), orderBy("timestamp", "desc"), limit(1));
+                const mealSnap = await getDocs(mealQ);
+                const latestBW = mealSnap.docs[0]?.data().bodyWeight || 0;
+
+                // Latest Maxes
                 const maxQ = query(collection(db, "players", uid, "maxes"), orderBy("timestamp", "desc"), limit(1));
                 const maxSnap = await getDocs(maxQ);
-                const latestMax = maxSnap.docs[0]?.data() || {};
-                const total = (Number(latestMax.bench)||0) + (Number(latestMax.squat)||0) + (Number(latestMax.clean)||0) + (Number(latestMax.deadlift)||0) + (Number(latestMax.pushpress)||0);
+                const m = maxSnap.docs[0]?.data() || {};
+                
+                // MATH: (B+S+C+D) - (cappedBW * 4)
+                const totalLifts = (Number(m.bench)||0) + (Number(m.squat)||0) + (Number(m.clean)||0) + (Number(m.deadlift)||0);
+                const cappedBW = latestBW > 200 ? 200 : latestBW;
+                const clubScore = latestBW > 0 ? (totalLifts - (cappedBW * 4)) : 'TBD';
 
-                rackBody.innerHTML += `<tr class="hover:bg-gray-700/50">
+                rackBody.innerHTML += `<tr>
                     <td class="p-4 font-bold text-red-400">${p.playerName}</td>
-                    <td class="p-4 text-center font-mono text-[11px]">${latestMax.bench||0}/${latestMax.squat||0}/${latestMax.clean||0}/${latestMax.deadlift||0}/${latestMax.pushpress||0}</td>
-                    <td class="p-4 text-center font-black">${total}</td>
-                    <td class="p-4 text-center text-[10px] text-gray-500">${latestMax.date || '---'}</td>
+                    <td class="p-4 text-center font-mono text-xs">${m.bench||0}/${m.squat||0}/${m.clean||0}/${m.deadlift||0}</td>
+                    <td class="p-4 text-center text-gray-400">${latestBW} lbs</td>
+                    <td class="p-4 text-center font-black text-lg ${clubScore >= 0 ? 'text-green-400' : 'text-white'}">${clubScore}</td>
                 </tr>`;
-                exportData.push({ Player: p.playerName, Total: total });
             }
         }
 
         window.loadPlayerHistory = async (uid) => {
             if(!uid) return;
             const historyBody = document.getElementById('kitchen-history-body');
-            historyBody.innerHTML = '<tr><td colspan="3" class="p-10 text-center text-green-500 uppercase font-bold animate-pulse">Loading Logs...</td></tr>';
-
-            const playerSnap = await getDoc(doc(db, "players", uid));
-            const goalWeight = playerSnap.data().goalWeight || 0;
             const mealQ = query(collection(db, "players", uid, "meals"), orderBy("timestamp", "desc"));
             const mealSnap = await getDocs(mealQ);
-            
             historyBody.innerHTML = '';
-            mealSnap.forEach((doc) => {
+            mealSnap.forEach(doc => {
                 const m = doc.data();
-                const diff = (m.bodyWeight && goalWeight) ? (m.bodyWeight - goalWeight).toFixed(1) : '--';
-                const color = Math.abs(diff) > 5 ? 'text-red-500' : 'text-green-500';
-
-                historyBody.innerHTML += `
-                    <tr class="hover:bg-gray-700/30 border-b border-gray-800">
-                        <td class="p-4">
-                            <div class="text-[10px] text-gray-500 font-bold uppercase">${m.date}</div>
-                            <div class="font-black italic uppercase">${m.meal}</div>
-                            ${m.notes ? `<div class="text-[11px] text-gray-400 italic mt-1 bg-black/20 p-2 rounded">"${m.notes}"</div>` : ''}
-                        </td>
-                        <td class="p-4 text-center">
-                            <div class="font-bold text-green-400 text-sm">${m.calories || 0} Cal</div>
-                            <div class="text-[9px] text-gray-500">P:${m.protein||0} C:${m.carbs||0} F:${m.fat||0}</div>
-                        </td>
-                        <td class="p-4 text-center">
-                            <div class="font-bold">${m.bodyWeight || '--'} lbs</div>
-                            <div class="text-[9px] ${color} font-black uppercase">${diff > 0 ? '+' : ''}${diff} from goal</div>
-                        </td>
-                    </tr>`;
+                historyBody.innerHTML += `<tr class="p-4">
+                    <td class="p-4 font-bold uppercase italic text-xs">${m.date} - ${m.meal}</td>
+                    <td class="p-4 text-gray-400 italic">"${m.notes || ''}"</td>
+                    <td class="p-4 text-right font-black text-green-500">${m.bodyWeight} lbs</td>
+                </tr>`;
             });
-        };
-
-        window.exportMaxes = () => {
-            const csv = "Player,Total\n" + exportData.map(r => `${r.Player},${r.Total}`).join("\n");
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a'); a.href = url; a.download = 'Team_Maxes.csv'; a.click();
         };
 
         loadInitialData();
