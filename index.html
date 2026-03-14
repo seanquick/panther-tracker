@@ -6,12 +6,14 @@
     <title>Panther Performance</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        /* Global High-Contrast Styles */
+        body { background-color: #0f172a; color: white; }
         .club-card { background: linear-gradient(145deg, #1a1a1a, #262626); border-top: 3px solid #b91c1c; }
         
-        /* FORCED CONTRAST CORE CSS */
+        /* Forced Visibility for Inputs */
         input, select, textarea { 
-            background-color: #1f2937 !important; /* Dark Gray */
-            color: #ffffff !important; /* Pure White */
+            background-color: #1f2937 !important; 
+            color: #ffffff !important; 
             border: 2px solid #374151 !important;
             padding: 1rem !important;
             border-radius: 0.75rem !important;
@@ -20,22 +22,18 @@
             display: block !important;
             font-weight: 600 !important;
         }
-
-        input:focus { 
-            border-color: #dc2626 !important; /* Panther Red */
-            background-color: #111827 !important;
-        }
-
+        input:focus { border-color: #dc2626 !important; background-color: #111827 !important; }
         ::placeholder { color: #9ca3af !important; opacity: 1; }
-
-        .social-btn { @apply flex items-center justify-center gap-2 p-3 rounded-xl font-bold uppercase text-xs transition-transform active:scale-95; }
+        
+        .social-btn { @apply flex items-center justify-center gap-2 p-3 rounded-xl font-bold uppercase text-xs transition-transform active:scale-95 text-white; }
+        .hidden { display: none !important; }
     </style>
 </head>
-<body class="bg-[#0f172a] text-white font-sans pb-10">
+<body class="font-sans pb-10">
 
     <header class="bg-black p-6 shadow-xl border-b-4 border-red-700 flex flex-col items-center text-center">
         <img src="Panthers2.png" alt="Panthers" class="h-20 mb-2">
-        <h1 class="text-2xl font-black italic uppercase tracking-tighter text-white">Panther Power</h1>
+        <h1 class="text-2xl font-black italic uppercase tracking-tighter">Panther Power</h1>
         <span id="role-tag" class="text-red-600 text-[10px] block tracking-widest mt-1 font-bold"></span>
     </header>
 
@@ -43,25 +41,22 @@
         
         <div id="auth-section" class="bg-[#1e293b] p-6 rounded-2xl border border-gray-700 shadow-2xl">
             <h2 class="text-xl font-bold mb-6 text-center uppercase text-sm tracking-widest text-red-500">Secure Access</h2>
+            <input id="player-name" type="text" placeholder="Full Name (Signup Only)">
+            <input id="email" type="email" placeholder="Email Address">
+            <input id="password" type="password" placeholder="Password">
             
-            <div id="auth-fields">
-                <input id="player-name" type="text" placeholder="Full Name (Signup Only)">
-                <input id="email" type="email" placeholder="Email Address">
-                <input id="password" type="password" placeholder="Password">
-                
-                <div class="border-t border-gray-700 my-4 pt-4">
-                    <p class="text-[10px] font-bold text-gray-400 mb-2 uppercase">Account Type</p>
-                    <select id="reg-role" onchange="toggleCoachCode()">
-                        <option value="player" class="bg-gray-800">PLAYER</option>
-                        <option value="coach" class="bg-gray-800">COACH (ADMIN)</option>
-                    </select>
-                    <input id="coach-code" type="password" placeholder="Coach Access Code" class="hidden" style="border-color: #7f1d1d !important;">
-                </div>
+            <div class="border-t border-gray-700 my-4 pt-4">
+                <p class="text-[10px] font-bold text-gray-400 mb-2 uppercase">Account Type</p>
+                <select id="reg-role" onchange="toggleCoachCode()">
+                    <option value="player">PLAYER</option>
+                    <option value="coach">COACH (ADMIN)</option>
+                </select>
+                <input id="coach-code" type="password" placeholder="Coach Access Code" class="hidden" style="border-color: #7f1d1d !important;">
+            </div>
 
-                <div class="flex gap-3 mt-2">
-                    <button onclick="handleAuth('login')" class="flex-1 bg-gray-700 hover:bg-gray-600 py-4 rounded-xl font-black uppercase text-xs tracking-widest transition-all text-white border border-gray-600">Login</button>
-                    <button onclick="handleAuth('signup')" class="flex-1 bg-red-700 hover:bg-red-600 py-4 rounded-xl font-black uppercase text-xs tracking-widest shadow-lg transition-all text-white">Sign Up</button>
-                </div>
+            <div class="flex gap-3">
+                <button onclick="handleAuth('login')" class="flex-1 bg-gray-700 py-4 rounded-xl font-black uppercase text-xs tracking-widest border border-gray-600">Login</button>
+                <button onclick="handleAuth('signup')" class="flex-1 bg-red-700 py-4 rounded-xl font-black uppercase text-xs tracking-widest">Sign Up</button>
             </div>
         </div>
 
@@ -89,8 +84,8 @@
             </div>
 
             <div class="grid grid-cols-2 gap-3 pt-2">
-                <a href="https://www.facebook.com/profile.php?id=61573011830957" target="_blank" class="social-btn bg-[#1877F2] text-white">FB</a>
-                <a href="https://www.instagram.com/hsfairbanksfb/" target="_blank" class="social-btn bg-gradient-to-tr from-[#f9ce34] via-[#ee2a7b] to-[#6228d7] text-white">IG</a>
+                <a href="https://www.facebook.com/profile.php?id=61573011830957" target="_blank" class="social-btn bg-[#1877F2]">FB</a>
+                <a href="https://www.instagram.com/hsfairbanksfb/" target="_blank" class="social-btn bg-gradient-to-tr from-[#f9ce34] via-[#ee2a7b] to-[#6228d7]">IG</a>
             </div>
 
             <button onclick="loadMyHistory(); showView('history')" class="w-full bg-gray-800 border border-gray-600 p-4 rounded-2xl text-xs font-bold uppercase text-gray-400 tracking-widest">📊 My History</button>
@@ -99,7 +94,7 @@
         <div id="roster-view" class="hidden space-y-4">
             <button onclick="showView('lobby')" class="text-red-500 font-bold text-xs uppercase">← Back</button>
             <h2 class="text-xl font-black italic uppercase text-red-600">Team Roster</h2>
-            <div id="roster-list" class="space-y-2"></div>
+            <div id="roster-list" class="space-y-4"></div>
         </div>
 
         <div id="rack-view" class="hidden space-y-6">
@@ -111,7 +106,7 @@
                     <input id="squat" type="number" placeholder="Squat">
                     <input id="clean" type="number" placeholder="Clean">
                     <input id="deadlift" type="number" placeholder="Deadlift">
-                    <input id="pushpress" type="number" placeholder="Push Press">
+                    <input id="pushpress" type="number" placeholder="Push Press" class="col-span-2">
                 </div>
                 <button onclick="saveRack()" class="w-full bg-red-700 py-4 rounded-xl font-black uppercase tracking-widest">Update Lifts</button>
             </section>
@@ -121,7 +116,7 @@
             <button onclick="showView('lobby')" class="text-green-500 font-bold text-xs uppercase">← Back</button>
             <section class="bg-gray-800 p-6 rounded-2xl border border-gray-700">
                 <h2 class="text-xl font-bold mb-4 text-green-600 uppercase italic font-black text-center">Log Nutrition</h2>
-                <select id="meal-type"><option value="Breakfast">Breakfast</option><option value="Lunch">Lunch</option><option value="Dinner">Dinner</option><option value="Snack">Snack</option></select>
+                <select id="meal-type"><option>Breakfast</option><option>Lunch</option><option>Dinner</option><option>Snack</option></select>
                 <div class="grid grid-cols-2 gap-3">
                     <input id="protein" type="number" placeholder="Protein">
                     <input id="carbs" type="number" placeholder="Carbs">
@@ -129,7 +124,7 @@
                     <input id="calories" type="number" placeholder="Calories">
                 </div>
                 <input id="weight" type="number" placeholder="Body Weight (lbs)">
-                <textarea id="meal-notes" placeholder="Notes..." class="h-20" style="width:100% !important; background-color:#1f2937 !important; color:white !important;"></textarea>
+                <textarea id="meal-notes" placeholder="Notes..." class="h-20"></textarea>
                 <button onclick="saveKitchen()" class="w-full bg-green-700 py-4 rounded-xl font-black uppercase tracking-widest">Save Log</button>
             </section>
         </div>
@@ -158,8 +153,8 @@
         <div id="history-view" class="hidden space-y-4">
             <button onclick="showView('lobby')" class="text-gray-500 font-bold text-xs uppercase">← Back</button>
             <div class="flex gap-2 mb-4">
-                <button onclick="toggleHist('rack')" class="flex-1 bg-blue-700 py-3 rounded-lg text-xs font-black uppercase tracking-widest">Lifts</button>
-                <button onclick="toggleHist('kitchen')" class="flex-1 bg-gray-800 py-3 rounded-lg text-xs font-black uppercase tracking-widest">Kitchen</button>
+                <button onclick="toggleHist('rack')" class="flex-1 bg-blue-700 py-3 rounded-lg text-xs font-black uppercase tracking-widest text-white">Lifts</button>
+                <button onclick="toggleHist('kitchen')" class="flex-1 bg-gray-800 py-3 rounded-lg text-xs font-black uppercase tracking-widest text-white">Kitchen</button>
             </div>
             <div id="hist-rack-list" class="space-y-3"></div>
             <div id="hist-kitchen-list" class="hidden space-y-3"></div>
@@ -169,7 +164,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, collection, addDoc, serverTimestamp, updateDoc, query, orderBy, getDocs, limit, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -185,21 +180,50 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
         const COACH_SECRET = "PANTHERS2026"; 
-        let userData = {}; let latestBW = 0;
+        let userData = {};
+
+        // ADMIN FUNCTIONS
+        window.resetPassword = async (email) => {
+            if(!email) return alert("No email on file for this user.");
+            try {
+                await sendPasswordResetEmail(auth, email);
+                alert("Reset link sent to " + email);
+            } catch (err) { alert(err.message); }
+        };
+
+        window.toggleRole = async (id, currentRole) => {
+            const nextRole = currentRole === 'coach' ? 'player' : 'coach';
+            if(confirm(`Promote/Demote to ${nextRole.toUpperCase()}?`)) {
+                await updateDoc(doc(db, "players", id), { role: nextRole });
+                loadRoster();
+            }
+        };
+
+        window.deletePlayer = async (id) => { 
+            if(confirm("Permanently delete this player's data? (NOTE: You must still manually delete their email from the Firebase 'Authentication' tab to fully remove them).")) { 
+                await deleteDoc(doc(db, "players", id)); 
+                loadRoster(); 
+            } 
+        };
+
+        // UI NAVIGATION
+        window.showView = (v) => {
+            ['auth-section', 'lobby-section', 'rack-view', 'kitchen-view', 'goals-view', 'history-view', 'leaderboard-view', 'roster-view'].forEach(s => {
+                const el = document.getElementById(s);
+                if(el) el.classList.add('hidden');
+            });
+            const t = v.includes('-') ? v : (v === 'lobby' || v === 'auth' ? v + '-section' : v + '-view');
+            const target = document.getElementById(t);
+            if(target) target.classList.remove('hidden');
+        };
 
         window.toggleCoachCode = () => {
             const role = document.getElementById('reg-role').value;
             const cc = document.getElementById('coach-code');
-            if(role === 'coach') cc.style.display = 'block';
-            else cc.style.display = 'none';
+            cc.style.display = (role === 'coach') ? 'block' : 'none';
         };
 
-        window.showView = (v) => {
-            ['auth-section', 'lobby-section', 'rack-view', 'kitchen-view', 'goals-view', 'history-view', 'leaderboard-view', 'roster-view'].forEach(s => document.getElementById(s).classList.add('hidden'));
-            const t = v.includes('-') ? v : (v === 'lobby' || v === 'auth' ? v + '-section' : v + '-view');
-            document.getElementById(t).classList.remove('hidden');
-        };
-
+        // AUTH LOGIC
         onAuthStateChanged(auth, async (u) => {
             if (u) {
                 const snap = await getDoc(doc(db, "players", u.uid));
@@ -218,7 +242,7 @@
 
         window.handleAuth = async (t) => {
             const e = document.getElementById('email').value, p = document.getElementById('password').value, n = document.getElementById('player-name').value, r = document.getElementById('reg-role').value, cc = document.getElementById('coach-code').value;
-            if(!e || !p) return alert("Missing login credentials");
+            if(!e || !p) return alert("Credentials required");
             try {
                 if (t === 'signup') {
                     if(!n) return alert("Name required");
@@ -231,6 +255,7 @@
 
         window.logout = () => { signOut(auth); location.reload(); };
 
+        // DATA SAVING
         window.saveRack = async () => {
             await addDoc(collection(db, "players", auth.currentUser.uid, "maxes"), {
                 bench: Number(document.getElementById('bench').value), squat: Number(document.getElementById('squat').value),
@@ -255,8 +280,33 @@
             alert("Goals Set!"); showView('lobby');
         };
 
+        // ROSTER & BOARD
+        window.loadRoster = async () => {
+            const list = document.getElementById('roster-list');
+            list.innerHTML = '<p class="text-center italic text-xs">Syncing Team...</p>';
+            const snap = await getDocs(collection(db, "players"));
+            list.innerHTML = '';
+            snap.forEach(d => {
+                const p = d.data();
+                list.innerHTML += `
+                <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow-md">
+                    <div class="flex justify-between items-start mb-3 text-left">
+                        <div>
+                            <p class="font-bold uppercase text-sm">${p.playerName}</p>
+                            <p class="text-[9px] text-gray-500 font-bold tracking-widest uppercase">${p.email || 'No Email'}</p>
+                        </div>
+                        <button onclick="deletePlayer('${d.id}')" class="text-red-600 text-[10px] font-black underline">REMOVE</button>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="toggleRole('${d.id}', '${p.role}')" class="flex-1 bg-gray-700 py-2 rounded text-[10px] font-black uppercase border border-gray-600">Role: ${p.role}</button>
+                        <button onclick="resetPassword('${p.email}')" class="flex-1 bg-blue-900/30 text-blue-400 py-2 rounded text-[10px] font-black uppercase border border-blue-800/50">Reset PW</button>
+                    </div>
+                </div>`;
+            });
+        };
+
         window.loadLeaderboard = async () => {
-            const grid = document.getElementById('player-club-grid'); grid.innerHTML = '<p class="text-center text-xs italic">Syncing Lifts...</p>';
+            const grid = document.getElementById('player-club-grid'); grid.innerHTML = 'Syncing Lifts...';
             const pSnap = await getDocs(collection(db, "players"));
             let s = [];
             for (const d of pSnap.docs) {
@@ -269,21 +319,9 @@
             }
             grid.innerHTML = ''; [700, 650, 600, 550, 500, 450, 400, 350].forEach(t => {
                 const mem = s.filter(x => x.score >= t && x.score < t+50);
-                grid.innerHTML += `<div class="club-card p-4 rounded-xl shadow-lg"><div class="text-red-500 font-black italic text-lg uppercase">${t} LB CLUB</div>${mem.map(m => `<div class="flex justify-between text-xs font-bold uppercase py-1 border-b border-gray-800 last:border-0"><span>${m.name}</span><span class="text-blue-400">${m.score}</span></div>`).join('') || '<span class="text-gray-600 italic text-[10px]">VACANT</span>'}</div>`;
+                grid.innerHTML += `<div class="club-card p-4 rounded-xl shadow-lg mb-4"><div class="text-red-500 font-black italic text-lg uppercase">${t} LB CLUB</div>${mem.map(m => `<div class="flex justify-between text-xs font-bold uppercase py-1 border-b border-gray-800 last:border-0"><span>${m.name}</span><span class="text-blue-400">${m.score}</span></div>`).join('') || '<span class="text-gray-600 italic text-[10px]">VACANT</span>'}</div>`;
             });
         };
-
-        window.loadRoster = async () => {
-            const list = document.getElementById('roster-list'); list.innerHTML = 'Syncing...';
-            const snap = await getDocs(collection(db, "players"));
-            list.innerHTML = '';
-            snap.forEach(d => {
-                const p = d.data();
-                list.innerHTML += `<div class="bg-gray-800 p-4 rounded-xl flex justify-between items-center border border-gray-700 shadow-md"><div class="text-left"><p class="font-bold uppercase text-sm">${p.playerName}</p><p class="text-[9px] text-gray-500 font-bold tracking-widest uppercase">${p.role}</p></div><button onclick="deletePlayer('${d.id}')" class="bg-red-900/50 text-red-500 text-[10px] px-3 py-2 rounded-lg font-black border border-red-800/50">REMOVE</button></div>`;
-            });
-        };
-
-        window.deletePlayer = async (id) => { if(confirm("Permanently remove this user?")) { await deleteDoc(doc(db, "players", id)); loadRoster(); } };
 
         window.loadMyHistory = async () => {
             const rL = document.getElementById('hist-rack-list'), kL = document.getElementById('hist-kitchen-list');
