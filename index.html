@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panther Performance v5.2</title>
+    <title>Panther Performance v5.3</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { background-color: #0f172a; color: white; }
@@ -25,7 +25,7 @@
 
     <header class="bg-black p-6 border-b-4 border-red-700 flex flex-col items-center text-center shadow-2xl">
         <img src="Panthers2.png" alt="Panthers" class="h-20 mb-2">
-        <h1 class="text-2xl font-black italic uppercase tracking-tighter">Panther Power</h1>
+        <h1 class="text-2xl font-black italic uppercase tracking-tighter text-white">Panther Power</h1>
         <span id="role-tag" class="text-red-600 text-[10px] block tracking-widest mt-1 font-bold uppercase"></span>
     </header>
 
@@ -42,7 +42,6 @@
                 <button onclick="handleAuth('login')" class="flex-1 bg-gray-700 py-4 rounded-xl font-black uppercase text-xs">Login</button>
                 <button onclick="handleAuth('signup')" class="flex-1 bg-red-700 py-4 rounded-xl font-black uppercase text-xs">Sign Up</button>
             </div>
-            <p class="text-[9px] text-gray-500 mt-4 text-center">Already have an account? Just use <b>Login</b>. Only use <b>Sign Up</b> for new registrations.</p>
         </div>
 
         <div id="lobby-section" class="hidden space-y-4">
@@ -63,10 +62,12 @@
                     <button onclick="loadRoster(); showView('roster')" class="bg-gray-800 p-3 rounded-lg font-black uppercase text-[10px] border border-gray-700 text-gray-300">Manage Roster</button>
                     <button onclick="exportRackCSV()" class="bg-white text-black p-3 rounded-lg font-black uppercase text-[10px]">Export CSV</button>
                 </div>
+
+                <a href="Varsity Football Coaches Guidelines.pdf" target="_blank" class="block w-full bg-red-900/40 text-red-400 text-center py-3 rounded-xl text-[10px] font-black uppercase border border-red-900/50">📋 Coaches Guidelines PDF</a>
             </div>
 
             <div id="player-dash" class="flex justify-between items-center bg-gray-800 p-4 rounded-xl border border-gray-700">
-                <span id="user-display" class="text-sm font-bold text-red-500 uppercase italic"></span>
+                <span id="user-display" class="text-sm font-bold text-red-500 uppercase italic text-white"></span>
                 <button onclick="logout()" class="text-xs text-gray-400 font-bold underline uppercase">Logout</button>
             </div>
 
@@ -112,9 +113,9 @@
         <div id="kitchen-view" class="hidden space-y-6">
             <button onclick="showView('lobby')" class="text-green-500 font-bold text-xs uppercase">← Back</button>
             <div id="kitchen-admin" class="hidden admin-box">
-                <h3 class="text-green-500 font-black text-[10px] mb-2 uppercase italic tracking-widest">Player Nutrition Audit</h3>
-                <select id="player-select-kitchen" onchange="loadPlayerKitchen()"><option value="">Select Player...</option></select>
-                <div id="admin-kitchen-list" class="mt-4 space-y-2 max-h-64 overflow-y-auto"></div>
+                <h3 class="text-green-500 font-black text-[10px] mb-2 uppercase italic tracking-widest">Master Player Audit</h3>
+                <select id="player-select-kitchen" onchange="loadMasterAudit()"><option value="">Select Player...</option></select>
+                <div id="master-audit-display" class="mt-4 space-y-4"></div>
             </div>
             <section class="bg-gray-800 p-6 rounded-2xl border border-gray-700 shadow-2xl">
                 <h2 class="text-xl font-bold mb-4 text-green-600 uppercase italic font-black text-center">Log Nutrition</h2>
@@ -128,7 +129,7 @@
 
         <div id="roster-view" class="hidden space-y-4"><button onclick="showView('lobby')" class="text-red-500 font-bold text-xs uppercase">← BACK</button><div id="roster-list" class="space-y-4"></div></div>
         <div id="leaderboard-view" class="hidden space-y-6"><button onclick="showView('lobby')" class="text-blue-500 font-bold text-xs uppercase">← Back</button><div id="player-club-grid" class="space-y-4"></div></div>
-        <div id="history-view" class="hidden space-y-4"><button onclick="showView('lobby')" class="text-gray-500 font-bold text-xs uppercase">← Back</button><div class="flex gap-2"><button onclick="toggleHist('rack')" class="flex-1 bg-blue-700 py-3 rounded-lg text-xs font-black uppercase">Lifts</button><button onclick="toggleHist('kitchen')" class="flex-1 bg-gray-800 py-3 rounded-lg text-xs font-black uppercase">Kitchen</button></div><div id="hist-rack-list" class="space-y-3"></div><div id="hist-kitchen-list" class="hidden space-y-3"></div></div>
+        <div id="history-view" class="hidden space-y-4"><button onclick="showView('lobby')" class="text-gray-500 font-bold text-xs uppercase">← Back</button><div class="flex gap-2"><button onclick="toggleHist('rack')" class="flex-1 bg-blue-700 py-3 rounded-lg text-xs font-black uppercase">Lifts</button><button onclick="toggleHist('kitchen')" class="flex-1 bg-gray-800 py-3 rounded-lg text-xs font-black uppercase">Kitchen</button></div><div id="hist-rack-list" class="space-y-3 text-white"></div><div id="hist-kitchen-list" class="hidden space-y-3 text-white"></div></div>
         <div id="bulk-view" class="hidden space-y-4 text-left"><button onclick="showView('lobby')" class="text-orange-500 font-bold text-xs uppercase">← Back</button><div class="bg-gray-800 p-6 rounded-2xl border border-orange-500"><h2 class="text-orange-500 font-black italic uppercase text-lg mb-2">Bulk Up Guide</h2><p class="text-xs">Focus on protein (0.8-1g/lb) and caloric surplus (200-300 extra daily).</p></div></div>
         <div id="lean-view" class="hidden space-y-4 text-left"><button onclick="showView('lobby')" class="text-blue-500 font-bold text-xs uppercase">← Back</button><div class="bg-gray-800 p-6 rounded-2xl border border-blue-500"><h2 class="text-blue-500 font-black italic uppercase text-lg mb-2">Lean Out Guide</h2><p class="text-xs">Prioritize whole foods, 60 mins activity, and hydration.</p></div></div>
     </div>
@@ -142,7 +143,41 @@
         const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app);
         let userData = {};
 
-        // ADMIN LOGIC
+        // MASTER AUDIT LOGIC
+        window.loadMasterAudit = async () => {
+            const pid = document.getElementById('player-select-kitchen').value;
+            const container = document.getElementById('master-audit-display');
+            if(!pid) { container.innerHTML = ""; return; }
+            
+            // Fetch Lifts
+            const liftSnap = await getDocs(query(collection(db, "players", pid, "maxes"), orderBy("timestamp", "desc"), limit(1)));
+            // Fetch Meals
+            const mealSnap = await getDocs(query(collection(db, "players", pid, "meals"), orderBy("timestamp", "desc"), limit(5)));
+            
+            let html = `<div class="bg-red-900/20 border border-red-900 p-3 rounded-xl">
+                <p class="text-[10px] font-black uppercase text-red-500 mb-2">Current Maxes</p>`;
+            if(!liftSnap.empty) {
+                const l = liftSnap.docs[0].data();
+                html += `<div class="grid grid-cols-4 gap-1 text-[10px] font-bold text-center">
+                    <div class="bg-black/40 p-1 rounded">B: ${l.bench}</div>
+                    <div class="bg-black/40 p-1 rounded">S: ${l.squat}</div>
+                    <div class="bg-black/40 p-1 rounded">C: ${l.clean}</div>
+                    <div class="bg-black/40 p-1 rounded">D: ${l.deadlift}</div>
+                </div><p class="text-[8px] mt-2 text-gray-500">Updated: ${l.date}</p>`;
+            } else { html += `<p class="text-xs text-gray-600 italic">No lifts recorded.</p>`; }
+            html += `</div><div class="space-y-2"><p class="text-[10px] font-black uppercase text-green-500 px-1">Recent Nutrition</p>`;
+            
+            mealSnap.forEach(d => {
+                const k = d.data();
+                const dStr = k.timestamp ? k.timestamp.toDate().toLocaleString() : k.date;
+                html += `<div class="bg-gray-800 p-3 rounded-xl text-[10px] border-l-2 border-green-500">
+                    <div class="flex justify-between border-b border-gray-700 mb-1 pb-1"><b>${k.meal}</b><span class="text-gray-400">${dStr}</span></div>
+                    ${k.calories} Cal | ${k.bodyWeight} lbs
+                </div>`;
+            });
+            container.innerHTML = html + `</div>`;
+        };
+
         window.exportRackCSV = async () => {
             const players = await getDocs(collection(db, "players"));
             let csv = "Player,Email,Date,Bench,Squat,Clean,Deadlift,PushPress\n";
@@ -155,25 +190,6 @@
             const a = document.createElement('a'); a.href = window.URL.createObjectURL(blob); a.download = "Panther_Lifts.csv"; a.click();
         };
 
-        window.loadPlayerKitchen = async () => {
-            const pid = document.getElementById('player-select-kitchen').value;
-            const container = document.getElementById('admin-kitchen-list');
-            if(!pid) { container.innerHTML = ""; return; }
-            const snap = await getDocs(query(collection(db, "players", pid, "meals"), orderBy("timestamp", "desc"), limit(20)));
-            container.innerHTML = snap.empty ? "No data." : "";
-            snap.forEach(d => { 
-                const k = d.data(); 
-                const dStr = k.timestamp ? k.timestamp.toDate().toLocaleString() : k.date;
-                container.innerHTML += `<div class="bg-gray-700 p-3 rounded-xl text-[10px] text-left mb-2 border-l-2 border-green-500">
-                    <div class="flex justify-between border-b border-gray-600 mb-1 pb-1">
-                        <b>${k.meal}</b><span class="text-gray-400">${dStr}</span>
-                    </div>
-                    ${k.calories} Cal | ${k.bodyWeight} lbs
-                </div>`; 
-            });
-        };
-
-        // NAV
         window.showView = (v) => {
             const ids = ['auth-section', 'lobby-section', 'rack-view', 'kitchen-view', 'goals-view', 'history-view', 'leaderboard-view', 'roster-view', 'bulk-view', 'lean-view'];
             ids.forEach(id => document.getElementById(id)?.classList.add('hidden'));
@@ -247,6 +263,14 @@
                 const mem = s.filter(x => x.score >= t && x.score < t+100);
                 grid.innerHTML += `<div class="club-card p-4 rounded-xl mb-4"><div class="text-red-500 font-black italic uppercase">${t} LB CLUB</div>${mem.map(m => `<div class="flex justify-between text-xs font-bold uppercase py-1"><span>${m.name}</span><span class="text-blue-400">${m.score}</span></div>`).join('') || '<span class="text-gray-600 italic text-[10px]">VACANT</span>'}</div>`;
             });
+        };
+
+        window.loadMyHistory = async () => {
+            const rL = document.getElementById('hist-rack-list'), kL = document.getElementById('hist-kitchen-list');
+            const sM = await getDocs(query(collection(db, "players", auth.currentUser.uid, "maxes"), orderBy("timestamp", "desc")));
+            const sK = await getDocs(query(collection(db, "players", auth.currentUser.uid, "meals"), orderBy("timestamp", "desc")));
+            rL.innerHTML = ''; sM.forEach(d => { const m = d.data(); rL.innerHTML += `<div class="bg-gray-800 p-4 rounded-xl text-left text-[10px] mb-2"><b>${m.date}</b><div class="flex gap-2 font-black"><span>B:${m.bench}</span><span>S:${m.squat}</span><span>C:${m.clean}</span><span>D:${m.deadlift}</span></div></div>`; });
+            kL.innerHTML = ''; sK.forEach(d => { const k = d.data(); kL.innerHTML += `<div class="bg-gray-800 p-4 rounded-xl text-left text-[10px] mb-2"><b>${k.date}</b> - ${k.bodyWeight} LBS</div>`; });
         };
 
         window.deletePlayer = async (id) => { if(confirm("Delete?")) { await deleteDoc(doc(db, "players", id)); loadRoster(); } };
