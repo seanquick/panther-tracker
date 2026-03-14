@@ -3,13 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panther Performance v4.8</title>
+    <title>Panther Performance v4.9</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { background-color: #0f172a; color: white; }
         .club-card { background: linear-gradient(145deg, #1a1a1a, #262626); border-top: 3px solid #b91c1c; }
-        
-        /* High Contrast Inputs */
         input, select, textarea { 
             background-color: #1f2937 !important; color: #ffffff !important; 
             border: 2px solid #374151 !important; padding: 1rem !important;
@@ -18,15 +16,15 @@
         }
         input:focus { border-color: #dc2626 !important; background-color: #111827 !important; }
         ::placeholder { color: #9ca3af !important; opacity: 1; }
-        
-        .social-btn { @apply flex items-center justify-center gap-2 p-3 rounded-xl font-bold uppercase text-xs transition-transform active:scale-95 text-white; }
         .hidden { display: none !important; }
         .admin-box { border: 2px dashed #dc2626; padding: 1rem; border-radius: 1rem; margin-bottom: 1.5rem; background: rgba(220, 38, 38, 0.05); }
+        .guide-text p { margin-bottom: 1rem; line-height: 1.6; }
+        .guide-text h3 { color: #ef4444; font-weight: 800; text-transform: uppercase; margin-top: 1.5rem; margin-bottom: 0.5rem; font-style: italic; }
     </style>
 </head>
 <body class="font-sans pb-10">
 
-    <header class="bg-black p-6 shadow-xl border-b-4 border-red-700 flex flex-col items-center text-center">
+    <header class="bg-black p-6 border-b-4 border-red-700 flex flex-col items-center text-center shadow-2xl">
         <img src="Panthers2.png" alt="Panthers" class="h-20 mb-2">
         <h1 class="text-2xl font-black italic uppercase tracking-tighter">Panther Power</h1>
         <span id="role-tag" class="text-red-600 text-[10px] block tracking-widest mt-1 font-bold uppercase"></span>
@@ -35,23 +33,15 @@
     <div class="max-w-md mx-auto px-4 mt-6">
         
         <div id="auth-section" class="bg-[#1e293b] p-6 rounded-2xl border border-gray-700 shadow-2xl">
-            <h2 class="text-xl font-bold mb-6 text-center uppercase text-sm tracking-widest text-red-500">Secure Access</h2>
+            <h2 class="text-xl font-bold mb-6 text-center uppercase text-red-500">Secure Access</h2>
             <input id="player-name" type="text" placeholder="Full Name (Signup Only)">
             <input id="email" type="email" placeholder="Email Address">
             <input id="password" type="password" placeholder="Password">
-            
-            <div class="border-t border-gray-700 my-4 pt-4">
-                <p class="text-[10px] font-bold text-gray-400 mb-2 uppercase">Account Type</p>
-                <select id="reg-role" onchange="toggleCoachCode()">
-                    <option value="player">PLAYER</option>
-                    <option value="coach">COACH (ADMIN)</option>
-                </select>
-                <input id="coach-code" type="password" placeholder="Coach Access Code" class="hidden">
-            </div>
-
+            <select id="reg-role" onchange="toggleCoachCode()"><option value="player">PLAYER</option><option value="coach">COACH</option></select>
+            <input id="coach-code" type="password" placeholder="Coach Access Code" class="hidden">
             <div class="flex gap-3">
-                <button onclick="handleAuth('login')" class="flex-1 bg-gray-700 py-4 rounded-xl font-black uppercase text-xs tracking-widest border border-gray-600">Login</button>
-                <button onclick="handleAuth('signup')" class="flex-1 bg-red-700 py-4 rounded-xl font-black uppercase text-xs tracking-widest text-white">Sign Up</button>
+                <button onclick="handleAuth('login')" class="flex-1 bg-gray-700 py-4 rounded-xl font-black uppercase text-xs">Login</button>
+                <button onclick="handleAuth('signup')" class="flex-1 bg-red-700 py-4 rounded-xl font-black uppercase text-xs">Sign Up</button>
             </div>
         </div>
 
@@ -61,52 +51,64 @@
                 <button onclick="logout()" class="text-xs text-gray-400 font-bold underline uppercase">Logout</button>
             </div>
             
-            <div id="coach-tools" class="hidden space-y-2">
-                <button onclick="loadRoster(); showView('roster')" class="w-full bg-red-700 p-3 rounded-xl font-black uppercase text-sm italic shadow-lg text-white">📋 Manage Roster</button>
-            </div>
+            <div id="coach-tools" class="hidden"><button onclick="loadRoster(); showView('roster')" class="w-full bg-red-700 p-3 rounded-xl font-black uppercase text-sm italic shadow-lg">📋 Manage Roster</button></div>
 
-            <button onclick="showView('rack')" class="w-full bg-gray-800 border-2 border-red-700 p-5 rounded-2xl text-xl font-black italic uppercase shadow-xl text-white">🏋️ The Rack</button>
-            <button onclick="showView('kitchen')" class="w-full bg-gray-800 border-2 border-green-700 p-5 rounded-2xl text-xl font-black italic uppercase shadow-xl text-white">🍳 The Kitchen</button>
+            <button onclick="showView('rack')" class="w-full bg-gray-800 border-2 border-red-700 p-5 rounded-2xl text-xl font-black italic uppercase shadow-xl">🏋️ The Rack</button>
+            <button onclick="showView('kitchen')" class="w-full bg-gray-800 border-2 border-green-700 p-5 rounded-2xl text-xl font-black italic uppercase shadow-xl">🍳 The Kitchen</button>
             
+            <button onclick="showView('bulk')" class="w-full bg-gradient-to-r from-orange-600 to-red-700 p-4 rounded-2xl text-lg font-black italic uppercase shadow-xl border-b-4 border-red-900">📈 Bulk Up (Guide)</button>
+
             <div class="grid grid-cols-2 gap-3">
-                <button onclick="showView('goals')" class="bg-gray-800 border border-yellow-600 py-4 rounded-xl text-sm font-black uppercase text-white">🎯 Goals</button>
-                <button onclick="loadLeaderboard(); showView('leaderboard')" class="bg-gray-800 border border-blue-600 py-4 rounded-xl text-sm font-black uppercase text-white">🏆 Board</button>
+                <button onclick="showView('goals')" class="bg-gray-800 border border-yellow-600 py-4 rounded-xl text-sm font-black uppercase">🎯 Goals</button>
+                <button onclick="loadLeaderboard(); showView('leaderboard')" class="bg-gray-800 border border-blue-600 py-4 rounded-xl text-sm font-black uppercase">🏆 Board</button>
             </div>
 
             <div class="space-y-3">
                 <a href="Panthers Football Culture Playbook.pdf" target="_blank" class="block w-full bg-white text-black text-center p-4 rounded-2xl text-lg font-black italic uppercase shadow-lg border-b-4 border-gray-400">📖 Culture Playbook</a>
-                <a id="coach-pdf" href="Varsity Football Coaches Guidelines.pdf" target="_blank" class="hidden block w-full bg-red-800 text-white text-center p-4 rounded-2xl text-lg font-black italic uppercase shadow-lg border-b-4 border-red-950">📋 Coaches Guidelines</a>
+                <a id="coach-pdf" href="Varsity Football Coaches Guidelines.pdf" target="_blank" class="hidden block w-full bg-red-800 text-white text-center p-4 rounded-2xl text-lg font-black italic uppercase border-b-4 border-red-950">📋 Coaches Guidelines</a>
             </div>
 
-            <div class="grid grid-cols-2 gap-3 pt-2">
-                <a href="https://www.facebook.com/profile.php?id=61573011830957" target="_blank" class="social-btn bg-[#1877F2]">FB</a>
-                <a href="https://www.instagram.com/hsfairbanksfb/" target="_blank" class="social-btn bg-gradient-to-tr from-[#f9ce34] via-[#ee2a7b] to-[#6228d7]">IG</a>
-            </div>
-
-            <button onclick="loadMyHistory(); showView('history')" class="w-full bg-gray-800 border border-gray-600 p-4 rounded-2xl text-xs font-bold uppercase text-gray-400 tracking-widest">📊 My History</button>
+            <button onclick="loadMyHistory(); showView('history')" class="w-full bg-gray-800 border border-gray-600 p-4 rounded-2xl text-xs font-bold uppercase text-gray-400">📊 My History</button>
         </div>
 
-        <div id="roster-view" class="hidden space-y-4">
-            <button onclick="showView('lobby')" class="text-red-500 font-bold text-xs uppercase">← Back</button>
-            <h2 class="text-xl font-black italic uppercase text-red-600">Team Roster</h2>
-            <div id="roster-list" class="space-y-4"></div>
+        <div id="bulk-view" class="hidden space-y-6">
+            <button onclick="showView('lobby')" class="text-orange-500 font-bold text-xs uppercase">← Back to Lobby</button>
+            <div class="bg-gray-800 p-6 rounded-3xl border border-orange-600/50 shadow-2xl guide-text">
+                <h2 class="text-2xl font-black italic text-orange-500 uppercase mb-4 tracking-tighter">Teen Muscle Growth</h2>
+                
+                <p class="text-sm font-bold border-b border-gray-700 pb-4">To gain muscle as a teenager, focus on a consistent caloric surplus (eating more than you burn) with a diet high in protein and complex carbohydrates.</p>
+
+                <h3>Nutritional Strategies</h3>
+                <ul class="space-y-4 text-sm">
+                    <li><b class="text-red-400 uppercase">Protein (The Builder):</b> Essential for muscle development. Aim for 30–35% of daily calories (roughly 0.8–1g per lb of body weight). Sources: Chicken, fish, eggs, dairy, beans, lean meat.</li>
+                    <li><b class="text-blue-400 uppercase">Carbohydrates (The Fuel):</b> Crucial for fueling workouts. Aim for 40–50% of calories. Sources: Whole-grain pasta, rice, oats, fruits, starchy vegetables.</li>
+                    <li><b class="text-green-400 uppercase">Fats (The Support):</b> Necessary for hormone production. Aim for 20–30% of calories. Sources: Nuts, seeds, avocados, olive oil.</li>
+                </ul>
+
+                <h3>Execution</h3>
+                <ul class="space-y-2 text-sm list-disc pl-4 text-gray-300">
+                    <li><b>Caloric Surplus:</b> Increase daily intake by 200–300 calories if not gaining weight.</li>
+                    <li><b>Hydration:</b> Drink water throughout the day and around workouts.</li>
+                    <li><b>Consistency:</b> Muscle growth happens over months, not days.</li>
+                    <li><b>Prioritize Sleep:</b> Muscle grows while you rest.</li>
+                </ul>
+
+                <div class="mt-8 p-4 bg-red-900/20 rounded-xl border border-red-900/50">
+                    <p class="text-[10px] text-red-300 uppercase font-bold text-center leading-tight"><b>Disclaimer:</b> Consult with a doctor or registered dietitian before making significant diet changes during growth phases.</p>
+                </div>
+            </div>
         </div>
 
         <div id="rack-view" class="hidden space-y-6">
             <button onclick="showView('lobby')" class="text-red-500 font-bold text-xs uppercase">← Back</button>
-            
             <div id="rack-admin" class="hidden admin-box">
-                <h3 class="text-red-500 font-black text-xs mb-3 uppercase italic tracking-widest">Coach Analysis</h3>
-                <button onclick="exportRackCSV()" class="w-full bg-white text-black py-4 rounded-xl font-black text-xs uppercase shadow-lg active:scale-95 transition-all">📥 Export All Lifts to Excel</button>
+                <button onclick="exportRackCSV()" class="w-full bg-white text-black py-4 rounded-xl font-black text-xs uppercase">📥 Export All Lifts to Excel</button>
             </div>
-
             <section class="bg-gray-800 p-6 rounded-2xl border border-gray-700 shadow-2xl">
                 <h2 class="text-xl font-bold mb-4 text-red-600 uppercase italic font-black">Record Maxes</h2>
                 <div class="grid grid-cols-2 gap-4">
-                    <input id="bench" type="number" placeholder="Bench">
-                    <input id="squat" type="number" placeholder="Squat">
-                    <input id="clean" type="number" placeholder="Clean">
-                    <input id="deadlift" type="number" placeholder="Deadlift">
+                    <input id="bench" type="number" placeholder="Bench"><input id="squat" type="number" placeholder="Squat">
+                    <input id="clean" type="number" placeholder="Clean"><input id="deadlift" type="number" placeholder="Deadlift">
                     <input id="pushpress" type="number" placeholder="Push Press" class="col-span-2">
                 </div>
                 <button onclick="saveRack()" class="w-full bg-red-700 py-4 rounded-xl font-black uppercase text-white shadow-xl">Update Lifts</button>
@@ -115,61 +117,24 @@
 
         <div id="kitchen-view" class="hidden space-y-6">
             <button onclick="showView('lobby')" class="text-green-500 font-bold text-xs uppercase">← Back</button>
-            
             <div id="kitchen-admin" class="hidden admin-box">
-                <h3 class="text-green-500 font-black text-xs mb-3 uppercase italic tracking-widest">Player Watch</h3>
-                <select id="player-select-kitchen" onchange="loadPlayerKitchen()">
-                    <option value="">Select a Player...</option>
-                </select>
+                <select id="player-select-kitchen" onchange="loadPlayerKitchen()"><option value="">Select a Player...</option></select>
                 <div id="admin-kitchen-list" class="mt-4 space-y-2 max-h-64 overflow-y-auto"></div>
             </div>
-
             <section class="bg-gray-800 p-6 rounded-2xl border border-gray-700 shadow-2xl">
                 <h2 class="text-xl font-bold mb-4 text-green-600 uppercase italic font-black text-center">Log Nutrition</h2>
                 <select id="meal-type"><option>Breakfast</option><option>Lunch</option><option>Dinner</option><option>Snack</option></select>
-                <div class="grid grid-cols-2 gap-3">
-                    <input id="protein" type="number" placeholder="Protein">
-                    <input id="carbs" type="number" placeholder="Carbs">
-                    <input id="fat" type="number" placeholder="Fat">
-                    <input id="calories" type="number" placeholder="Calories">
-                </div>
+                <div class="grid grid-cols-2 gap-3"><input id="protein" type="number" placeholder="Prot"><input id="carbs" type="number" placeholder="Carbs"><input id="fat" type="number" placeholder="Fat"><input id="calories" type="number" placeholder="Cals"></div>
                 <input id="weight" type="number" placeholder="Body Weight (lbs)">
-                <textarea id="meal-notes" placeholder="Notes (e.g. Chicken, Rice, etc)..." class="h-24"></textarea>
+                <textarea id="meal-notes" placeholder="Notes..."></textarea>
                 <button onclick="saveKitchen()" class="w-full bg-green-700 py-4 rounded-xl font-black uppercase text-white shadow-xl">Save Log</button>
             </section>
         </div>
 
-        <div id="goals-view" class="hidden space-y-6">
-            <button onclick="showView('lobby')" class="text-yellow-500 font-bold text-xs uppercase">← Back</button>
-            <section class="bg-gray-800 p-6 rounded-2xl border border-gray-700 shadow-2xl">
-                <h2 class="text-xl font-bold mb-4 text-yellow-600 uppercase italic font-black text-center">Target Goals</h2>
-                <input id="goal-weight" type="number" placeholder="Goal Body Weight">
-                <div class="grid grid-cols-2 gap-4">
-                    <input id="goal-bench" type="number" placeholder="Bench Goal">
-                    <input id="goal-squat" type="number" placeholder="Squat Goal">
-                    <input id="goal-clean" type="number" placeholder="Clean Goal">
-                    <input id="goal-deadlift" type="number" placeholder="Deadlift Goal">
-                </div>
-                <button onclick="saveGoals()" class="w-full bg-yellow-600 py-4 rounded-xl font-black uppercase text-black shadow-xl">Update Goals</button>
-            </section>
-        </div>
-
-        <div id="leaderboard-view" class="hidden space-y-6">
-            <button onclick="showView('lobby')" class="text-blue-500 font-bold text-xs uppercase">← Back</button>
-            <h2 class="text-2xl font-black italic text-center text-red-600 uppercase tracking-tighter">The Weight Club</h2>
-            <div id="player-club-grid" class="space-y-4"></div>
-        </div>
-
-        <div id="history-view" class="hidden space-y-4">
-            <button onclick="showView('lobby')" class="text-gray-500 font-bold text-xs uppercase">← Back</button>
-            <div class="flex gap-2 mb-4">
-                <button onclick="toggleHist('rack')" class="flex-1 bg-blue-700 py-3 rounded-lg text-xs font-black uppercase text-white">Lifts</button>
-                <button onclick="toggleHist('kitchen')" class="flex-1 bg-gray-800 py-3 rounded-lg text-xs font-black uppercase text-white">Kitchen</button>
-            </div>
-            <div id="hist-rack-list" class="space-y-3"></div>
-            <div id="hist-kitchen-list" class="hidden space-y-3"></div>
-        </div>
-
+        <div id="roster-view" class="hidden space-y-4"><button onclick="showView('lobby')" class="text-red-500 font-bold text-xs">← BACK</button><div id="roster-list" class="space-y-4"></div></div>
+        <div id="goals-view" class="hidden space-y-6"><button onclick="showView('lobby')" class="text-yellow-500 font-bold text-xs uppercase">← Back</button><section class="bg-gray-800 p-6 rounded-2xl border border-gray-700"><input id="goal-weight" type="number" placeholder="Goal Weight"><div class="grid grid-cols-2 gap-4"><input id="goal-bench" type="number" placeholder="Bench Goal"><input id="goal-squat" type="number" placeholder="Squat Goal"><input id="goal-clean" type="number" placeholder="Clean Goal"><input id="goal-deadlift" type="number" placeholder="Deadlift Goal"></div><button onclick="saveGoals()" class="w-full bg-yellow-600 py-4 rounded-xl font-black uppercase text-black">Save Goals</button></section></div>
+        <div id="leaderboard-view" class="hidden space-y-6"><button onclick="showView('lobby')" class="text-blue-500 font-bold text-xs uppercase">← Back</button><div id="player-club-grid" class="space-y-4"></div></div>
+        <div id="history-view" class="hidden space-y-4"><button onclick="showView('lobby')" class="text-gray-500 font-bold text-xs uppercase">← Back</button><div class="flex gap-2"><button onclick="toggleHist('rack')" class="flex-1 bg-blue-700 py-3 rounded-lg text-xs font-black uppercase">Lifts</button><button onclick="toggleHist('kitchen')" class="flex-1 bg-gray-800 py-3 rounded-lg text-xs font-black uppercase">Kitchen</button></div><div id="hist-rack-list" class="space-y-3"></div><div id="hist-kitchen-list" class="hidden space-y-3"></div></div>
     </div>
 
     <script type="module">
@@ -178,83 +143,41 @@
         import { getFirestore, doc, setDoc, getDoc, collection, addDoc, serverTimestamp, updateDoc, query, orderBy, getDocs, limit, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
-            apiKey: "AIzaSyBdY26nH0CAn05IpjzoFvG5E1H-bv8fPwA",
-            authDomain: "panthertracker-b8ff6.firebaseapp.com",
-            projectId: "panthertracker-b8ff6",
-            storageBucket: "panthertracker-b8ff6.firebasestorage.app",
-            messagingSenderId: "647881105335",
-            appId: "1:647881105335:web:bbb79bb3fe9740de1e1232"
+            apiKey: "AIzaSyBdY26nH0CAn05IpjzoFvG5E1H-bv8fPwA", authDomain: "panthertracker-b8ff6.firebaseapp.com", projectId: "panthertracker-b8ff6", storageBucket: "panthertracker-b8ff6.firebasestorage.app", messagingSenderId: "647881105335", appId: "1:647881105335:web:bbb79bb3fe9740de1e1232"
         };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const COACH_SECRET = "PANTHERS2026"; 
+        const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app);
         let userData = {};
 
-        // --- ADMIN TOOLS ---
-
+        // ADMIN FUNCTIONS
         window.exportRackCSV = async () => {
             const players = await getDocs(collection(db, "players"));
             let csv = "Player,Email,Date,Bench,Squat,Clean,Deadlift,PushPress\n";
             for (const p of players.docs) {
                 const pd = p.data();
                 const mS = await getDocs(query(collection(db, "players", p.id, "maxes"), orderBy("timestamp", "desc")));
-                mS.forEach(m => {
-                    const md = m.data();
-                    csv += `${pd.playerName},${pd.email},${md.date},${md.bench},${md.squat},${md.clean},${md.deadlift},${md.pushpress}\n`;
-                });
+                mS.forEach(m => { const md = m.data(); csv += `${pd.playerName},${pd.email},${md.date},${md.bench},${md.squat},${md.clean},${md.deadlift},${md.pushpress}\n`; });
             }
             const blob = new Blob([csv], { type: 'text/csv' });
             const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url; a.download = `Panther_Lifts_${new Date().toLocaleDateString()}.csv`;
-            a.click();
+            const a = document.createElement('a'); a.href = url; a.download = "Panther_Lifts.csv"; a.click();
         };
 
         window.loadPlayerKitchen = async () => {
             const pid = document.getElementById('player-select-kitchen').value;
             const container = document.getElementById('admin-kitchen-list');
             if(!pid) { container.innerHTML = ""; return; }
-            container.innerHTML = "<p class='text-xs italic'>Syncing logs...</p>";
-            const snap = await getDocs(query(collection(db, "players", pid, "meals"), orderBy("timestamp", "desc"), limit(30)));
-            container.innerHTML = snap.empty ? "No data for this player." : "";
-            snap.forEach(d => {
-                const k = d.data();
-                container.innerHTML += `<div class="bg-gray-700 p-3 rounded-xl border-l-4 border-green-500 text-left">
-                    <p class="text-[10px] font-black uppercase">${k.date} - ${k.meal}</p>
-                    <p class="text-sm font-bold text-green-400">${k.calories} CAL | ${k.bodyWeight} LBS</p>
-                    <p class="text-[10px] text-gray-300 italic">${k.notes || ''}</p>
-                </div>`;
-            });
+            container.innerHTML = "Syncing...";
+            const snap = await getDocs(query(collection(db, "players", pid, "meals"), orderBy("timestamp", "desc"), limit(20)));
+            container.innerHTML = snap.empty ? "No data." : "";
+            snap.forEach(d => { const k = d.data(); container.innerHTML += `<div class="bg-gray-700 p-3 rounded-xl border-l-4 border-green-500 text-left text-xs"><b>${k.date} - ${k.meal}</b><br>${k.calories} Cal | ${k.bodyWeight} lbs<br><i class="text-gray-400">${k.notes||''}</i></div>`; });
         };
 
-        window.resetPassword = async (email) => {
-            try { await sendPasswordResetEmail(auth, email); alert("Reset email sent!"); } catch (e) { alert(e.message); }
-        };
-
-        window.toggleRole = async (id, cur) => {
-            const next = cur === 'coach' ? 'player' : 'coach';
-            if(confirm(`Set to ${next.toUpperCase()}?`)) {
-                await updateDoc(doc(db, "players", id), { role: next });
-                loadRoster();
-            }
-        };
-
-        window.deletePlayer = async (id) => {
-            if(confirm("Permanently delete player data?")) {
-                await deleteDoc(doc(db, "players", id));
-                loadRoster();
-            }
-        };
-
-        // --- CORE UI & AUTH ---
-
+        // NAVIGATION
         window.showView = (v) => {
-            const views = ['auth-section', 'lobby-section', 'rack-view', 'kitchen-view', 'goals-view', 'history-view', 'leaderboard-view', 'roster-view'];
-            views.forEach(s => { if(document.getElementById(s)) document.getElementById(s).classList.add('hidden'); });
+            const ids = ['auth-section', 'lobby-section', 'rack-view', 'kitchen-view', 'goals-view', 'history-view', 'leaderboard-view', 'roster-view', 'bulk-view'];
+            ids.forEach(id => document.getElementById(id)?.classList.add('hidden'));
             let tid = v.includes('-') ? v : (v === 'lobby' || v === 'auth' ? v + '-section' : v + '-view');
-            if(document.getElementById(tid)) document.getElementById(tid).classList.remove('hidden');
+            document.getElementById(tid)?.classList.remove('hidden');
         };
 
         onAuthStateChanged(auth, async (u) => {
@@ -283,7 +206,7 @@
             const e = document.getElementById('email').value, p = document.getElementById('password').value, n = document.getElementById('player-name').value, r = document.getElementById('reg-role').value, cc = document.getElementById('coach-code').value;
             try {
                 if (t === 'signup') {
-                    if(r === 'coach' && cc !== COACH_SECRET) return alert("Invalid Code");
+                    if(r === 'coach' && cc !== "PANTHERS2026") return alert("Invalid Code");
                     const res = await createUserWithEmailAndPassword(auth, e, p);
                     await setDoc(doc(db, "players", res.user.uid), { playerName: n, email: e, role: r });
                 } else { await signInWithEmailAndPassword(auth, e, p); }
@@ -292,51 +215,30 @@
 
         window.saveRack = async () => {
             await addDoc(collection(db, "players", auth.currentUser.uid, "maxes"), {
-                bench: Number(document.getElementById('bench').value), squat: Number(document.getElementById('squat').value),
-                clean: Number(document.getElementById('clean').value), deadlift: Number(document.getElementById('deadlift').value),
-                pushpress: Number(document.getElementById('pushpress').value), date: new Date().toLocaleDateString(), timestamp: serverTimestamp()
-            });
-            alert("Lifts Updated!"); showView('lobby');
+                bench: Number(document.getElementById('bench').value), squat: Number(document.getElementById('squat').value), clean: Number(document.getElementById('clean').value), deadlift: Number(document.getElementById('deadlift').value), pushpress: Number(document.getElementById('pushpress').value), date: new Date().toLocaleDateString(), timestamp: serverTimestamp()
+            }); alert("Lifts Updated!"); showView('lobby');
         };
 
         window.saveKitchen = async () => {
             await addDoc(collection(db, "players", auth.currentUser.uid, "meals"), {
-                meal: document.getElementById('meal-type').value, protein: Number(document.getElementById('protein').value), carbs: Number(document.getElementById('carbs').value), fat: Number(document.getElementById('fat').value), calories: Number(document.getElementById('calories').value),
-                bodyWeight: Number(document.getElementById('weight').value), notes: document.getElementById('meal-notes').value, date: new Date().toLocaleDateString(), timestamp: serverTimestamp()
-            });
-            alert("Nutrition Saved!"); showView('lobby');
+                meal: document.getElementById('meal-type').value, protein: Number(document.getElementById('protein').value), carbs: Number(document.getElementById('carbs').value), fat: Number(document.getElementById('fat').value), calories: Number(document.getElementById('calories').value), bodyWeight: Number(document.getElementById('weight').value), notes: document.getElementById('meal-notes').value, date: new Date().toLocaleDateString(), timestamp: serverTimestamp()
+            }); alert("Saved!"); showView('lobby');
         };
 
         window.saveGoals = async () => {
-            await updateDoc(doc(db, "players", auth.currentUser.uid), {
-                goalWeight: document.getElementById('goal-weight').value, goalBench: document.getElementById('goal-bench').value, goalSquat: document.getElementById('goal-squat').value, goalClean: document.getElementById('goal-clean').value, goalDeadlift: document.getElementById('goal-deadlift').value
-            });
+            await updateDoc(doc(db, "players", auth.currentUser.uid), { goalWeight: document.getElementById('goal-weight').value, goalBench: document.getElementById('goal-bench').value, goalSquat: document.getElementById('goal-squat').value, goalClean: document.getElementById('goal-clean').value, goalDeadlift: document.getElementById('goal-deadlift').value });
             alert("Goals Saved!"); showView('lobby');
         };
 
         window.loadRoster = async () => {
             const list = document.getElementById('roster-list'); list.innerHTML = 'Syncing...';
-            const snap = await getDocs(collection(db, "players"));
-            list.innerHTML = '';
-            snap.forEach(d => {
-                const p = d.data();
-                list.innerHTML += `<div class="bg-gray-800 p-4 rounded-xl border border-gray-700 text-left">
-                    <div class="flex justify-between items-start mb-2">
-                        <div><p class="font-bold uppercase text-sm">${p.playerName}</p><p class="text-[9px] text-gray-500 font-bold uppercase">${p.email}</p></div>
-                        <button onclick="deletePlayer('${d.id}')" class="text-red-600 text-[10px] font-black underline">REMOVE</button>
-                    </div>
-                    <div class="flex gap-2">
-                        <button onclick="toggleRole('${d.id}', '${p.role}')" class="flex-1 bg-gray-700 py-2 rounded text-[10px] font-black uppercase">Role: ${p.role}</button>
-                        <button onclick="resetPassword('${p.email}')" class="flex-1 bg-blue-900/30 text-blue-400 py-2 rounded text-[10px] font-black uppercase">Reset PW</button>
-                    </div>
-                </div>`;
-            });
+            const snap = await getDocs(collection(db, "players")); list.innerHTML = '';
+            snap.forEach(d => { const p = d.data(); list.innerHTML += `<div class="bg-gray-800 p-4 rounded-xl border border-gray-700 text-left"><div class="flex justify-between items-start"><div><p class="font-bold uppercase text-sm">${p.playerName}</p><p class="text-[9px] text-gray-500 uppercase">${p.email}</p></div><button onclick="deletePlayer('${d.id}')" class="text-red-600 text-[10px] underline font-black">REMOVE</button></div><div class="flex gap-2 mt-2"><button onclick="toggleRole('${d.id}', '${p.role}')" class="flex-1 bg-gray-700 py-2 rounded text-[10px] font-black uppercase">Role: ${p.role}</button><button onclick="sendPasswordResetEmail(auth, '${p.email}')" class="flex-1 bg-blue-900/30 text-blue-400 py-2 rounded text-[10px] font-black uppercase">Reset PW</button></div></div>`; });
         };
 
         window.loadLeaderboard = async () => {
             const grid = document.getElementById('player-club-grid'); grid.innerHTML = 'Calculating...';
-            const pSnap = await getDocs(collection(db, "players"));
-            let s = [];
+            const pSnap = await getDocs(collection(db, "players")); let s = [];
             for (const d of pSnap.docs) {
                 const mS = await getDocs(query(collection(db, "players", d.id, "maxes"), orderBy("timestamp", "desc"), limit(1)));
                 const wS = await getDocs(query(collection(db, "players", d.id, "meals"), orderBy("timestamp", "desc"), limit(1)));
@@ -347,7 +249,7 @@
             }
             grid.innerHTML = ''; [700, 650, 600, 550, 500, 450, 400, 350].forEach(t => {
                 const mem = s.filter(x => x.score >= t && x.score < t+50);
-                grid.innerHTML += `<div class="club-card p-4 rounded-xl shadow-lg mb-4"><div class="text-red-500 font-black italic text-lg uppercase">${t} LB CLUB</div>${mem.map(m => `<div class="flex justify-between text-xs font-bold uppercase py-1 border-b border-gray-800 last:border-0"><span>${m.name}</span><span class="text-blue-400">${m.score}</span></div>`).join('') || '<span class="text-gray-600 italic text-[10px]">VACANT</span>'}</div>`;
+                grid.innerHTML += `<div class="club-card p-4 rounded-xl mb-4"><div class="text-red-500 font-black italic text-lg uppercase">${t} LB CLUB</div>${mem.map(m => `<div class="flex justify-between text-xs font-bold uppercase py-1 border-b border-gray-800 last:border-0"><span>${m.name}</span><span class="text-blue-400">${m.score}</span></div>`).join('') || '<span class="text-gray-600 italic text-[10px]">VACANT</span>'}</div>`;
             });
         };
 
@@ -355,11 +257,11 @@
             const rL = document.getElementById('hist-rack-list'), kL = document.getElementById('hist-kitchen-list');
             const sM = await getDocs(query(collection(db, "players", auth.currentUser.uid, "maxes"), orderBy("timestamp", "desc")));
             const sK = await getDocs(query(collection(db, "players", auth.currentUser.uid, "meals"), orderBy("timestamp", "desc")));
-            rL.innerHTML = ''; sM.forEach(d => { const m = d.data(); rL.innerHTML += `<div class="bg-gray-800 p-4 rounded-xl border-l-4 border-blue-600 mb-2 shadow-xl text-left"><div class="flex justify-between text-[9px] font-black text-gray-500 uppercase"><span>${m.date}</span><button onclick="deleteEntry('maxes','${d.id}')" class="text-red-600">DELETE</button></div><div class="grid grid-cols-5 text-center text-[10px] font-black mt-2"><div>B:${m.bench}</div><div>S:${m.squat}</div><div>C:${m.clean}</div><div>D:${m.deadlift}</div><div>P:${m.pushpress}</div></div></div>`; });
-            kL.innerHTML = ''; sK.forEach(d => { const k = d.data(); kL.innerHTML += `<div class="bg-gray-800 p-4 rounded-xl border-l-4 border-green-600 mb-2 text-xs flex justify-between items-center shadow-xl text-left"><div><p class="font-bold text-gray-400 text-[10px] uppercase">${k.date} — ${k.meal}</p><p class="text-green-400 font-black">${k.bodyWeight} LBS</p></div><button onclick="deleteEntry('meals','${d.id}')" class="text-red-600 font-bold text-[10px]">DELETE</button></div>`; });
+            rL.innerHTML = ''; sM.forEach(d => { const m = d.data(); rL.innerHTML += `<div class="bg-gray-800 p-4 rounded-xl border-l-4 border-blue-600 mb-2 text-left text-[10px]"><b>${m.date}</b><div class="grid grid-cols-5 gap-1 mt-1 text-center font-black"><div>B:${m.bench}</div><div>S:${m.squat}</div><div>C:${m.clean}</div><div>D:${m.deadlift}</div><div>P:${m.pushpress}</div></div></div>`; });
+            kL.innerHTML = ''; sK.forEach(d => { const k = d.data(); kL.innerHTML += `<div class="bg-gray-800 p-4 rounded-xl border-l-4 border-green-600 mb-2 text-[10px] text-left"><b>${k.date} - ${k.meal}</b><br>${k.bodyWeight} LBS | ${k.calories} CAL</div>`; });
         };
 
-        window.deleteEntry = async (col, id) => { if(confirm("Delete entry?")) { await deleteDoc(doc(db, "players", auth.currentUser.uid, col, id)); loadMyHistory(); } };
+        window.deletePlayer = async (id) => { if(confirm("Delete player?")) { await deleteDoc(doc(db, "players", id)); loadRoster(); } };
         window.toggleHist = (t) => { document.getElementById('hist-rack-list').classList.toggle('hidden', t !== 'rack'); document.getElementById('hist-kitchen-list').classList.toggle('hidden', t !== 'kitchen'); };
         window.logout = () => { signOut(auth); location.reload(); };
         window.toggleCoachCode = () => { document.getElementById('coach-code').classList.toggle('hidden', document.getElementById('reg-role').value !== 'coach'); };
