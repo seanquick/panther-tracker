@@ -17,7 +17,7 @@
         
         <div id="auth-section" class="bg-gray-800 p-8 rounded-2xl border border-gray-700 shadow-2xl">
             <h2 class="text-xl font-bold mb-4 text-center uppercase">Player Access</h2>
-            <input id="player-name" type="text" placeholder="Full Name" class="w-full bg-gray-700 p-3 rounded mb-3 border border-gray-600 outline-none focus:ring-2 focus:ring-red-700">
+            <input id="player-name" type="text" placeholder="Full Name" class="w-full bg-gray-700 p-3 rounded mb-3 border border-gray-600 outline-none">
             <input id="email" type="email" placeholder="Email" class="w-full bg-gray-700 p-3 rounded mb-3 border border-gray-600">
             <input id="password" type="password" placeholder="Password" class="w-full bg-gray-700 p-3 rounded mb-4 border border-gray-600">
             <div class="flex gap-2">
@@ -28,91 +28,84 @@
 
         <div id="lobby-section" class="hidden space-y-4">
             <div class="flex justify-between items-center bg-gray-800 p-4 rounded-xl border border-gray-700">
-                <span id="user-display" class="text-sm font-bold text-red-500 uppercase"></span>
+                <span id="user-display" class="text-sm font-bold text-red-500 uppercase tracking-tighter"></span>
                 <button onclick="logout()" class="text-xs text-gray-400 font-bold underline uppercase">Logout</button>
             </div>
-            
-            <button onclick="showView('rack')" class="w-full bg-gray-800 border-2 border-red-700 p-6 rounded-2xl text-xl font-black italic uppercase shadow-xl hover:bg-red-900/20 transition">
-                🏋️ The Rack
-            </button>
-
-            <button onclick="showView('kitchen')" class="w-full bg-gray-800 border-2 border-green-700 p-6 rounded-2xl text-xl font-black italic uppercase shadow-xl hover:bg-green-900/20 transition">
-                🍳 The Kitchen
-            </button>
-
-            <button onclick="showView('goals')" class="w-full bg-gray-800 border-2 border-yellow-600 p-6 rounded-2xl text-xl font-black italic uppercase shadow-xl hover:bg-yellow-900/20 transition">
-                🎯 My Goals
-            </button>
+            <button onclick="showView('rack')" class="w-full bg-gray-800 border-2 border-red-700 p-5 rounded-2xl text-xl font-black italic uppercase">🏋️ The Rack</button>
+            <button onclick="showView('kitchen')" class="w-full bg-gray-800 border-2 border-green-700 p-5 rounded-2xl text-xl font-black italic uppercase">🍳 The Kitchen</button>
+            <button onclick="showView('goals')" class="w-full bg-gray-800 border-2 border-yellow-600 p-5 rounded-2xl text-xl font-black italic uppercase">🎯 My Goals</button>
+            <button onclick="loadMyHistory(); showView('history')" class="w-full bg-gray-800 border-2 border-blue-600 p-5 rounded-2xl text-xl font-black italic uppercase">📊 My History</button>
         </div>
 
         <div id="rack-view" class="hidden space-y-6">
-            <button onclick="showView('lobby')" class="text-red-500 font-bold text-xs uppercase">← Back to Lobby</button>
+            <button onclick="showView('lobby')" class="text-red-500 font-bold text-xs uppercase">← Back</button>
             <section class="bg-gray-800 p-6 rounded-2xl border border-gray-700 shadow-2xl">
-                <h2 class="text-xl font-bold mb-4 text-red-600 uppercase italic">Update Maxes</h2>
+                <h2 class="text-xl font-bold mb-4 text-red-600 uppercase italic font-black">Record Maxes</h2>
                 <div class="grid grid-cols-2 gap-4">
-                    <div><label class="text-[10px] text-gray-400 font-bold">BENCH</label><input id="bench" type="number" class="w-full bg-gray-700 rounded p-2 text-center font-bold"></div>
-                    <div><label class="text-[10px] text-gray-400 font-bold">SQUAT</label><input id="squat" type="number" class="w-full bg-gray-700 rounded p-2 text-center font-bold"></div>
-                    <div><label class="text-[10px] text-gray-400 font-bold">CLEAN</label><input id="clean" type="number" class="w-full bg-gray-700 rounded p-2 text-center font-bold"></div>
-                    <div><label class="text-[10px] text-gray-400 font-bold">DEADLIFT</label><input id="deadlift" type="number" class="w-full bg-gray-700 rounded p-2 text-center font-bold"></div>
-                    <div class="col-span-2"><label class="text-[10px] text-gray-400 font-bold uppercase text-center block">Push Press</label><input id="pushpress" type="number" class="w-full bg-gray-700 rounded p-2 text-center font-bold"></div>
+                    <input id="bench" type="number" placeholder="Bench" class="bg-gray-700 rounded p-2 text-center font-bold">
+                    <input id="squat" type="number" placeholder="Squat" class="bg-gray-700 rounded p-2 text-center font-bold">
+                    <input id="clean" type="number" placeholder="Clean" class="bg-gray-700 rounded p-2 text-center font-bold">
+                    <input id="deadlift" type="number" placeholder="Deadlift" class="bg-gray-700 rounded p-2 text-center font-bold">
+                    <input id="pushpress" type="number" placeholder="Push Press" class="col-span-2 bg-gray-700 rounded p-2 text-center font-bold">
                 </div>
-                <button onclick="saveRack()" class="w-full bg-red-700 mt-6 py-4 rounded-xl font-black uppercase shadow-lg">Record Maxes</button>
+                <button onclick="saveRack()" class="w-full bg-red-700 mt-6 py-4 rounded-xl font-black uppercase">Record Maxes</button>
             </section>
         </div>
 
         <div id="kitchen-view" class="hidden space-y-6">
-            <button onclick="showView('lobby')" class="text-green-500 font-bold text-xs uppercase">← Back to Lobby</button>
+            <button onclick="showView('lobby')" class="text-green-500 font-bold text-xs uppercase">← Back</button>
             <section class="bg-gray-800 p-6 rounded-2xl border border-gray-700 shadow-2xl">
-                <h2 class="text-xl font-bold mb-4 text-green-600 uppercase italic">Log Entry</h2>
+                <h2 class="text-xl font-bold mb-4 text-green-600 uppercase italic font-black">Log Nutrition</h2>
                 <div class="space-y-4">
-                    <div>
-                        <label class="text-[10px] text-gray-400 font-bold">MEAL TYPE</label>
-                        <select id="meal-type" class="w-full bg-gray-700 p-3 rounded font-bold border-none outline-none">
-                            <option value="Breakfast">Breakfast</option>
-                            <option value="Lunch">Lunch</option>
-                            <option value="Dinner">Dinner</option>
-                            <option value="Snack">Snack</option>
-                        </select>
-                    </div>
+                    <select id="meal-type" class="w-full bg-gray-700 p-3 rounded font-bold">
+                        <option value="Breakfast">Breakfast</option><option value="Lunch">Lunch</option><option value="Dinner">Dinner</option><option value="Snack">Snack</option>
+                    </select>
                     <div class="grid grid-cols-2 gap-3">
-                        <div><label class="text-[10px] text-gray-400">PROTEIN</label><input id="protein" type="number" class="w-full bg-gray-700 rounded p-2 text-center font-bold"></div>
-                        <div><label class="text-[10px] text-gray-400">CARBS</label><input id="carbs" type="number" class="w-full bg-gray-700 rounded p-2 text-center font-bold"></div>
-                        <div><label class="text-[10px] text-gray-400">FAT</label><input id="fat" type="number" class="w-full bg-gray-700 rounded p-2 text-center font-bold"></div>
-                        <div><label class="text-[10px] text-gray-400">CALORIES</label><input id="calories" type="number" class="w-full bg-gray-700 rounded p-2 text-center font-bold text-green-400"></div>
+                        <input id="protein" type="number" placeholder="Protein" class="bg-gray-700 rounded p-2 text-center font-bold">
+                        <input id="carbs" type="number" placeholder="Carbs" class="bg-gray-700 rounded p-2 text-center font-bold">
+                        <input id="fat" type="number" placeholder="Fat" class="bg-gray-700 rounded p-2 text-center font-bold">
+                        <input id="calories" type="number" placeholder="Calories" class="bg-gray-700 rounded p-2 text-center font-bold text-green-400">
                     </div>
-                    <div><label class="text-[10px] text-gray-400">BODY WEIGHT (LBS)</label><input id="weight" type="number" class="w-full bg-gray-700 rounded p-3 text-center font-bold"></div>
+                    <input id="weight" type="number" placeholder="Body Weight (lbs)" class="w-full bg-gray-700 rounded p-3 text-center font-bold">
+                    <textarea id="meal-notes" placeholder="Notes (e.g. Chicken, rice, protein shake...)" class="w-full bg-gray-700 rounded p-3 text-sm h-20 outline-none border border-gray-600"></textarea>
                 </div>
-                <button onclick="saveKitchen()" class="w-full bg-green-700 mt-6 py-4 rounded-xl font-black uppercase shadow-lg">Log Entry</button>
+                <button onclick="saveKitchen()" class="w-full bg-green-700 mt-6 py-4 rounded-xl font-black uppercase">Save Entry</button>
             </section>
         </div>
 
         <div id="goals-view" class="hidden space-y-6">
-            <button onclick="showView('lobby')" class="text-yellow-500 font-bold text-xs uppercase">← Back to Lobby</button>
+            <button onclick="showView('lobby')" class="text-yellow-500 font-bold text-xs uppercase">← Back</button>
             <section class="bg-gray-800 p-6 rounded-2xl border border-gray-700 shadow-2xl">
-                <h2 class="text-xl font-bold mb-4 text-yellow-600 uppercase italic font-black">Set Target Goals</h2>
+                <h2 class="text-xl font-bold mb-4 text-yellow-600 uppercase italic font-black">Target Goals</h2>
                 <div class="space-y-4">
-                    <div>
-                        <label class="text-[10px] text-gray-400 font-bold uppercase">Goal Body Weight</label>
-                        <input id="goal-weight" type="number" class="w-full bg-gray-700 rounded p-2 font-black text-center border-2 border-yellow-900/30">
-                    </div>
+                    <input id="goal-weight" type="number" placeholder="Goal Body Weight" class="w-full bg-gray-700 rounded p-3 text-center font-bold border border-yellow-900">
                     <div class="grid grid-cols-2 gap-4">
-                        <div><label class="text-[10px] text-gray-400 font-bold">BENCH GOAL</label><input id="goal-bench" type="number" class="w-full bg-gray-700 rounded p-2 text-center font-bold"></div>
-                        <div><label class="text-[10px] text-gray-400 font-bold">SQUAT GOAL</label><input id="goal-squat" type="number" class="w-full bg-gray-700 rounded p-2 text-center font-bold"></div>
-                        <div><label class="text-[10px] text-gray-400 font-bold">CLEAN GOAL</label><input id="goal-clean" type="number" class="w-full bg-gray-700 rounded p-2 text-center font-bold"></div>
-                        <div><label class="text-[10px] text-gray-400 font-bold">DEADLIFT GOAL</label><input id="goal-deadlift" type="number" class="w-full bg-gray-700 rounded p-2 text-center font-bold"></div>
+                        <input id="goal-bench" type="number" placeholder="Bench Goal" class="bg-gray-700 rounded p-2 text-center">
+                        <input id="goal-squat" type="number" placeholder="Squat Goal" class="bg-gray-700 rounded p-2 text-center">
+                        <input id="goal-clean" type="number" placeholder="Clean Goal" class="bg-gray-700 rounded p-2 text-center">
+                        <input id="goal-deadlift" type="number" placeholder="Deadlift Goal" class="bg-gray-700 rounded p-2 text-center">
                     </div>
                 </div>
-                <button onclick="saveGoals()" class="w-full bg-yellow-600 mt-6 py-4 rounded-xl font-black uppercase text-black shadow-lg">Update Goals</button>
+                <button onclick="saveGoals()" class="w-full bg-yellow-600 mt-6 py-4 rounded-xl font-black uppercase text-black">Update Goals</button>
             </section>
         </div>
 
-        <img src="1773084097632.png" class="mx-auto h-24 opacity-10 mt-10">
+        <div id="history-view" class="hidden space-y-4">
+            <button onclick="showView('lobby')" class="text-blue-500 font-bold text-xs uppercase">← Back</button>
+            <div class="flex gap-2">
+                <button onclick="toggleHist('rack')" id="btn-hist-rack" class="flex-1 bg-blue-700 py-2 rounded text-[10px] font-black uppercase">Lifts</button>
+                <button onclick="toggleHist('kitchen')" id="btn-hist-kitchen" class="flex-1 bg-gray-800 py-2 rounded text-[10px] font-black uppercase">Kitchen</button>
+            </div>
+            <div id="hist-rack-list" class="space-y-3"></div>
+            <div id="hist-kitchen-list" class="hidden space-y-3"></div>
+        </div>
+
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, collection, addDoc, serverTimestamp, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, addDoc, serverTimestamp, updateDoc, query, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBdY26nH0CAn05IpjzoFvG5E1H-bv8fPwA",
@@ -126,13 +119,10 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
+        let myGoals = {};
 
-        // View Controller
         window.showView = (view) => {
-            ['auth-section', 'lobby-section', 'rack-view', 'kitchen-view', 'goals-view'].forEach(s => {
-                const el = document.getElementById(s);
-                if(el) el.classList.add('hidden');
-            });
+            ['auth-section', 'lobby-section', 'rack-view', 'kitchen-view', 'goals-view', 'history-view'].forEach(s => document.getElementById(s).classList.add('hidden'));
             const target = (view === 'lobby' || view === 'auth') ? view + '-section' : view + '-view';
             document.getElementById(target).classList.remove('hidden');
         };
@@ -141,14 +131,13 @@
             if (user) {
                 const docSnap = await getDoc(doc(db, "players", user.uid));
                 if(docSnap.exists()){
-                    const data = docSnap.data();
-                    document.getElementById('user-display').innerText = data.playerName;
-                    // Load Existing Goals
-                    document.getElementById('goal-weight').value = data.goalWeight || '';
-                    document.getElementById('goal-bench').value = data.goalBench || '';
-                    document.getElementById('goal-squat').value = data.goalSquat || '';
-                    document.getElementById('goal-clean').value = data.goalClean || '';
-                    document.getElementById('goal-deadlift').value = data.goalDeadlift || '';
+                    myGoals = docSnap.data();
+                    document.getElementById('user-display').innerText = myGoals.playerName;
+                    document.getElementById('goal-weight').value = myGoals.goalWeight || '';
+                    document.getElementById('goal-bench').value = myGoals.goalBench || '';
+                    document.getElementById('goal-squat').value = myGoals.goalSquat || '';
+                    document.getElementById('goal-clean').value = myGoals.goalClean || '';
+                    document.getElementById('goal-deadlift').value = myGoals.goalDeadlift || '';
                 }
                 showView('lobby');
             } else { showView('auth'); }
@@ -160,7 +149,6 @@
             const name = document.getElementById('player-name').value;
             try {
                 if (type === 'signup') {
-                    if(!name) return alert("Enter Full Name");
                     const res = await createUserWithEmailAndPassword(auth, email, pass);
                     await setDoc(doc(db, "players", res.user.uid), { playerName: name, email: email });
                 } else { await signInWithEmailAndPassword(auth, email, pass); }
@@ -175,7 +163,7 @@
                 clean: document.getElementById('clean').value, deadlift: document.getElementById('deadlift').value,
                 pushpress: document.getElementById('pushpress').value, date: new Date().toLocaleDateString(), timestamp: serverTimestamp()
             });
-            alert("Rack Updated!"); showView('lobby');
+            alert("Success!"); showView('lobby');
         };
 
         window.saveKitchen = async () => {
@@ -183,9 +171,11 @@
                 meal: document.getElementById('meal-type').value, protein: document.getElementById('protein').value,
                 carbs: document.getElementById('carbs').value, fat: document.getElementById('fat').value,
                 calories: document.getElementById('calories').value, bodyWeight: document.getElementById('weight').value,
+                notes: document.getElementById('meal-notes').value,
                 date: new Date().toLocaleDateString(), timestamp: serverTimestamp()
             });
-            alert("Entry Logged!"); showView('lobby');
+            document.getElementById('meal-notes').value = ""; // Clear notes
+            alert("Logged!"); showView('lobby');
         };
 
         window.saveGoals = async () => {
@@ -196,7 +186,48 @@
                 goalClean: document.getElementById('goal-clean').value,
                 goalDeadlift: document.getElementById('goal-deadlift').value
             });
-            alert("Goals Set!"); showView('lobby');
+            alert("Goals Updated!"); showView('lobby');
+        };
+
+        window.toggleHist = (type) => {
+            document.getElementById('hist-rack-list').classList.toggle('hidden', type !== 'rack');
+            document.getElementById('hist-kitchen-list').classList.toggle('hidden', type !== 'kitchen');
+        };
+
+        window.loadMyHistory = async () => {
+            const uid = auth.currentUser.uid;
+            const rackList = document.getElementById('hist-rack-list');
+            const kitList = document.getElementById('hist-kitchen-list');
+            rackList.innerHTML = '<p class="text-center italic p-4">Loading...</p>';
+            kitList.innerHTML = '<p class="text-center italic p-4">Loading...</p>';
+
+            const qMax = query(collection(db, "players", uid, "maxes"), orderBy("timestamp", "desc"));
+            const snapMax = await getDocs(qMax);
+            rackList.innerHTML = '';
+            snapMax.forEach(d => {
+                const m = d.data();
+                rackList.innerHTML += `<div class="bg-gray-800 p-4 rounded-xl border-l-4 border-blue-600 mb-2">
+                    <div class="text-[10px] text-gray-500 font-bold uppercase">${m.date}</div>
+                    <div class="grid grid-cols-5 text-center text-xs font-black mt-1">
+                        <div>B:${m.bench||0}</div><div>S:${m.squat||0}</div><div>C:${m.clean||0}</div><div>D:${m.deadlift||0}</div><div>PP:${m.pushpress||0}</div>
+                    </div>
+                </div>`;
+            });
+
+            const qMeal = query(collection(db, "players", uid, "meals"), orderBy("timestamp", "desc"));
+            const snapMeal = await getDocs(qMeal);
+            kitList.innerHTML = '';
+            snapMeal.forEach(d => {
+                const m = d.data();
+                const diff = (m.bodyWeight && myGoals.goalWeight) ? (m.bodyWeight - myGoals.goalWeight).toFixed(1) : '--';
+                kitList.innerHTML += `<div class="bg-gray-800 p-4 rounded-xl border-l-4 border-green-600 mb-2">
+                    <div class="flex justify-between items-start">
+                        <div><div class="text-[10px] text-gray-500 uppercase font-bold">${m.date}</div><div class="font-black italic uppercase">${m.meal}</div></div>
+                        <div class="text-right"><div class="text-sm font-bold text-green-400">${m.bodyWeight||'--'} lbs</div><div class="text-[9px] text-gray-400 font-bold">${diff > 0 ? '+' : ''}${diff} FROM GOAL</div></div>
+                    </div>
+                    ${m.notes ? `<div class="mt-2 text-[11px] text-gray-300 italic bg-black/30 p-2 rounded">"${m.notes}"</div>` : ''}
+                </div>`;
+            });
         };
     </script>
 </body>

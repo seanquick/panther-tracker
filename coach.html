@@ -6,25 +6,25 @@
     <title>Coach Dashboard - Panther Power</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-900 text-white font-sans p-2 sm:p-6">
+<body class="bg-gray-900 text-white font-sans p-2 sm:p-6 text-sm">
 
     <div class="max-w-6xl mx-auto">
         <header class="flex flex-col sm:flex-row items-center justify-between mb-8 border-b-2 border-red-700 pb-4 gap-4">
             <div class="flex items-center gap-4">
                 <img src="Panthers2.png" class="h-16">
-                <h1 class="text-2xl font-black italic uppercase">Coach Dashboard</h1>
+                <h1 class="text-2xl font-black italic uppercase tracking-tighter">Coach Dashboard</h1>
             </div>
             <div class="flex gap-2">
                 <button onclick="showSection('rack')" class="bg-red-700 px-4 py-2 rounded font-bold text-xs uppercase shadow-lg">The Rack</button>
                 <button onclick="showSection('kitchen')" class="bg-green-700 px-4 py-2 rounded font-bold text-xs uppercase shadow-lg">The Kitchen</button>
-                <a href="index.html" class="bg-gray-800 px-4 py-2 rounded text-xs border border-gray-600 uppercase font-bold">App</a>
+                <a href="index.html" class="bg-gray-800 px-4 py-2 rounded text-xs border border-gray-600 uppercase font-bold">Player App</a>
             </div>
         </header>
 
         <div id="section-rack" class="space-y-4">
             <div class="flex justify-between items-end">
                 <h2 class="text-xl font-black italic text-red-500 uppercase">Weight Room Analytics</h2>
-                <button onclick="exportMaxes()" class="bg-white text-black px-3 py-1 rounded text-[10px] font-black uppercase shadow-lg">Download CSV</button>
+                <button onclick="exportMaxes()" class="bg-white text-black px-3 py-1 rounded text-[10px] font-black uppercase">Download CSV</button>
             </div>
             <div class="bg-gray-800 rounded-xl overflow-hidden shadow-2xl border border-gray-700">
                 <table class="w-full text-left border-collapse">
@@ -42,18 +42,27 @@
         </div>
 
         <div id="section-kitchen" class="hidden space-y-4">
-            <h2 class="text-xl font-black italic text-green-500 uppercase">Nutrition & Weight Goals</h2>
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <h2 class="text-xl font-black italic text-green-500 uppercase">Nutrition History</h2>
+                <div class="w-full sm:w-64">
+                    <select id="player-selector" onchange="loadPlayerHistory(this.value)" class="w-full bg-gray-700 border border-green-700 p-2 rounded font-bold text-green-400 outline-none">
+                        <option value="">-- Choose a Player --</option>
+                    </select>
+                </div>
+            </div>
+
             <div class="bg-gray-800 rounded-xl overflow-hidden shadow-2xl border border-gray-700">
                 <table class="w-full text-left border-collapse">
                     <thead class="bg-black text-green-500 uppercase text-[10px] tracking-widest">
                         <tr>
-                            <th class="p-4">Player</th>
-                            <th class="p-4 text-center">Last Meal</th>
-                            <th class="p-4 text-center">Macros (P/C/F)</th>
-                            <th class="p-4 text-center">Progress to Goal</th>
+                            <th class="p-4">Entry Details</th>
+                            <th class="p-4 text-center">Calories/Macros</th>
+                            <th class="p-4 text-center">Weight Goal Progress</th>
                         </tr>
                     </thead>
-                    <tbody id="kitchen-body" class="divide-y divide-gray-700"></tbody>
+                    <tbody id="kitchen-history-body" class="divide-y divide-gray-700">
+                        <tr><td colspan="3" class="p-10 text-center text-gray-500 italic">Select a player to see their full meal history and notes...</td></tr>
+                    </tbody>
                 </table>
             </div>
         </div>
@@ -61,7 +70,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, query, orderBy, limit, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBdY26nH0CAn05IpjzoFvG5E1H-bv8fPwA",
@@ -82,73 +91,76 @@
 
         let exportData = [];
 
-        async function loadData() {
+        async function loadInitialData() {
             const playersSnapshot = await getDocs(collection(db, "players"));
             const rackBody = document.getElementById('rack-body');
-            const kitchenBody = document.getElementById('kitchen-body');
-            rackBody.innerHTML = ''; kitchenBody.innerHTML = ''; exportData = [];
+            const selector = document.getElementById('player-selector');
+            rackBody.innerHTML = '';
+            selector.innerHTML = '<option value="">-- Choose a Player --</option>';
 
             for (const playerDoc of playersSnapshot.docs) {
                 const p = playerDoc.data();
                 const uid = playerDoc.id;
+                const opt = document.createElement('option'); opt.value = uid; opt.innerText = p.playerName; selector.appendChild(opt);
 
-                // Latest Maxes
                 const maxQ = query(collection(db, "players", uid, "maxes"), orderBy("timestamp", "desc"), limit(1));
                 const maxSnap = await getDocs(maxQ);
                 const latestMax = maxSnap.docs[0]?.data() || {};
                 const total = (Number(latestMax.bench)||0) + (Number(latestMax.squat)||0) + (Number(latestMax.clean)||0) + (Number(latestMax.deadlift)||0) + (Number(latestMax.pushpress)||0);
 
-                // Latest Meal
-                const mealQ = query(collection(db, "players", uid, "meals"), orderBy("timestamp", "desc"), limit(1));
-                const mealSnap = await getDocs(mealQ);
-                const latestMeal = mealSnap.docs[0]?.data() || {};
-
-                // Goal Comparison
-                const weightDiff = (latestMeal.bodyWeight && p.goalWeight) ? (latestMeal.bodyWeight - p.goalWeight) : 0;
-                const statusColor = Math.abs(weightDiff) > 5 ? 'text-red-500' : 'text-green-500';
-
-                // Rack Row
-                rackBody.innerHTML += `
-                    <tr class="hover:bg-gray-700/50">
-                        <td class="p-4 font-bold text-red-400 text-sm">${p.playerName}</td>
-                        <td class="p-4 text-center font-mono text-[11px]">${latestMax.bench||0}/${latestMax.squat||0}/${latestMax.clean||0}/${latestMax.deadlift||0}/${latestMax.pushpress||0}</td>
-                        <td class="p-4 text-center font-black">${total}</td>
-                        <td class="p-4 text-center text-[10px] text-gray-500">${latestMax.date || '---'}</td>
-                    </tr>
-                `;
-
-                // Kitchen Row
-                kitchenBody.innerHTML += `
-                    <tr class="hover:bg-gray-700/50">
-                        <td class="p-4 font-bold text-green-400 text-sm">
-                            ${p.playerName}
-                            <div class="text-[9px] text-gray-500">GOAL: ${p.goalWeight || '??'}</div>
-                        </td>
-                        <td class="p-4 text-center text-[10px] uppercase font-bold text-gray-400">
-                            ${latestMeal.meal || '---'}
-                            <div class="text-white text-xs">${latestMeal.calories || 0} CALS</div>
-                        </td>
-                        <td class="p-4 text-center text-[10px] text-gray-500">P:${latestMeal.protein||0}/C:${latestMeal.carbs||0}/F:${latestMeal.fat||0}</td>
-                        <td class="p-4 text-center ${statusColor} font-bold text-sm">
-                            ${latestMeal.bodyWeight || '--'} lbs
-                            <div class="text-[9px] font-normal uppercase">${weightDiff > 0 ? '+' : ''}${weightDiff.toFixed(1)} to goal</div>
-                        </td>
-                    </tr>
-                `;
-
-                exportData.push({ Player: p.playerName, Bench: latestMax.bench||0, Squat: latestMax.squat||0, Total: total });
+                rackBody.innerHTML += `<tr class="hover:bg-gray-700/50">
+                    <td class="p-4 font-bold text-red-400">${p.playerName}</td>
+                    <td class="p-4 text-center font-mono text-[11px]">${latestMax.bench||0}/${latestMax.squat||0}/${latestMax.clean||0}/${latestMax.deadlift||0}/${latestMax.pushpress||0}</td>
+                    <td class="p-4 text-center font-black">${total}</td>
+                    <td class="p-4 text-center text-[10px] text-gray-500">${latestMax.date || '---'}</td>
+                </tr>`;
+                exportData.push({ Player: p.playerName, Total: total });
             }
         }
 
-        window.exportMaxes = () => {
-            const csv = "Player,Bench,Squat,Total\n" + exportData.map(r => `${r.Player},${r.Bench},${r.Squat},${r.Total}`).join("\n");
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url; a.download = 'Panther_Maxes.csv'; a.click();
+        window.loadPlayerHistory = async (uid) => {
+            if(!uid) return;
+            const historyBody = document.getElementById('kitchen-history-body');
+            historyBody.innerHTML = '<tr><td colspan="3" class="p-10 text-center text-green-500 uppercase font-bold animate-pulse">Loading Logs...</td></tr>';
+
+            const playerSnap = await getDoc(doc(db, "players", uid));
+            const goalWeight = playerSnap.data().goalWeight || 0;
+            const mealQ = query(collection(db, "players", uid, "meals"), orderBy("timestamp", "desc"));
+            const mealSnap = await getDocs(mealQ);
+            
+            historyBody.innerHTML = '';
+            mealSnap.forEach((doc) => {
+                const m = doc.data();
+                const diff = (m.bodyWeight && goalWeight) ? (m.bodyWeight - goalWeight).toFixed(1) : '--';
+                const color = Math.abs(diff) > 5 ? 'text-red-500' : 'text-green-500';
+
+                historyBody.innerHTML += `
+                    <tr class="hover:bg-gray-700/30 border-b border-gray-800">
+                        <td class="p-4">
+                            <div class="text-[10px] text-gray-500 font-bold uppercase">${m.date}</div>
+                            <div class="font-black italic uppercase">${m.meal}</div>
+                            ${m.notes ? `<div class="text-[11px] text-gray-400 italic mt-1 bg-black/20 p-2 rounded">"${m.notes}"</div>` : ''}
+                        </td>
+                        <td class="p-4 text-center">
+                            <div class="font-bold text-green-400 text-sm">${m.calories || 0} Cal</div>
+                            <div class="text-[9px] text-gray-500">P:${m.protein||0} C:${m.carbs||0} F:${m.fat||0}</div>
+                        </td>
+                        <td class="p-4 text-center">
+                            <div class="font-bold">${m.bodyWeight || '--'} lbs</div>
+                            <div class="text-[9px] ${color} font-black uppercase">${diff > 0 ? '+' : ''}${diff} from goal</div>
+                        </td>
+                    </tr>`;
+            });
         };
 
-        loadData();
+        window.exportMaxes = () => {
+            const csv = "Player,Total\n" + exportData.map(r => `${r.Player},${r.Total}`).join("\n");
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a'); a.href = url; a.download = 'Team_Maxes.csv'; a.click();
+        };
+
+        loadInitialData();
     </script>
 </body>
 </html>
