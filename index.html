@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .club-card { background: linear-gradient(145deg, #1a1a1a, #262626); border-top: 3px solid #b91c1c; }
+        .btn-main { @apply w-full p-5 rounded-2xl text-xl font-black italic uppercase shadow-lg transition-all active:translate-y-1; }
     </style>
 </head>
 <body class="bg-gray-900 text-white font-sans pb-10">
@@ -19,13 +20,13 @@
     <div class="max-w-md mx-auto px-4 mt-6">
         
         <div id="auth-section" class="bg-gray-800 p-8 rounded-2xl border border-gray-700 shadow-2xl">
-            <h2 class="text-xl font-bold mb-4 text-center uppercase">Player Access</h2>
+            <h2 class="text-xl font-bold mb-4 text-center uppercase text-sm tracking-widest">Access Control</h2>
             <input id="player-name" type="text" placeholder="Full Name" class="w-full bg-gray-700 p-3 rounded mb-3 border border-gray-600 outline-none">
             <input id="email" type="email" placeholder="Email" class="w-full bg-gray-700 p-3 rounded mb-3 border border-gray-600">
             <input id="password" type="password" placeholder="Password" class="w-full bg-gray-700 p-3 rounded mb-4 border border-gray-600">
             <div class="flex gap-2">
-                <button onclick="handleAuth('login')" class="flex-1 bg-red-700 py-3 rounded font-bold uppercase">Login</button>
-                <button onclick="handleAuth('signup')" class="flex-1 border border-red-700 py-3 rounded font-bold uppercase">Sign Up</button>
+                <button onclick="handleAuth('login')" class="flex-1 bg-red-700 py-3 rounded font-bold uppercase text-xs">Login</button>
+                <button onclick="handleAuth('signup')" class="flex-1 border border-red-700 py-3 rounded font-bold uppercase text-xs">Sign Up</button>
             </div>
         </div>
 
@@ -34,16 +35,30 @@
                 <span id="user-display" class="text-sm font-bold text-red-500 uppercase tracking-tighter"></span>
                 <button onclick="logout()" class="text-xs text-gray-400 font-bold underline uppercase">Logout</button>
             </div>
+            
             <button onclick="showView('rack')" class="w-full bg-gray-800 border-2 border-red-700 p-5 rounded-2xl text-xl font-black italic uppercase">🏋️ The Rack</button>
             <button onclick="showView('kitchen')" class="w-full bg-gray-800 border-2 border-green-700 p-5 rounded-2xl text-xl font-black italic uppercase">🍳 The Kitchen</button>
-            <button onclick="showView('goals')" class="w-full bg-gray-800 border-2 border-yellow-600 p-5 rounded-2xl text-xl font-black italic uppercase">🎯 My Goals</button>
-            <button onclick="loadLeaderboard(); showView('leaderboard')" class="w-full bg-gray-800 border-2 border-blue-600 p-5 rounded-2xl text-xl font-black italic uppercase">🏆 The Board</button>
-            <button onclick="loadMyHistory(); showView('history')" class="w-full bg-gray-800 border-2 border-gray-600 p-5 rounded-2xl text-xl font-black italic uppercase">📊 My History</button>
+            
+            <div class="grid grid-cols-2 gap-3">
+                <button onclick="showView('goals')" class="bg-gray-800 border border-yellow-600 py-4 rounded-xl text-sm font-black uppercase">🎯 Goals</button>
+                <button onclick="loadLeaderboard(); showView('leaderboard')" class="bg-gray-800 border border-blue-600 py-4 rounded-xl text-sm font-black uppercase">🏆 Board</button>
+            </div>
+
+            <div class="space-y-3">
+                <a href="Panthers Football Culture Playbook.pdf" target="_blank" class="block w-full bg-white text-black text-center p-4 rounded-2xl text-lg font-black italic uppercase shadow-lg border-b-4 border-gray-400 active:translate-y-1 transition-all">
+                    📖 Culture Playbook
+                </a>
+                <a href="Varsity Football Coaches Guidelines.pdf" target="_blank" class="block w-full bg-red-800 text-white text-center p-4 rounded-2xl text-lg font-black italic uppercase shadow-lg border-b-4 border-red-950 active:translate-y-1 transition-all">
+                    📋 Coaches Guidelines
+                </a>
+            </div>
+
+            <button onclick="loadMyHistory(); showView('history')" class="w-full bg-gray-800 border border-gray-600 p-4 rounded-2xl text-xs font-bold uppercase text-gray-400 tracking-widest">📊 View My History</button>
         </div>
 
         <div id="rack-view" class="hidden space-y-6">
             <button onclick="showView('lobby')" class="text-red-500 font-bold text-xs uppercase">← Back</button>
-            <section class="bg-gray-800 p-6 rounded-2xl border border-gray-700 shadow-2xl">
+            <section class="bg-gray-800 p-6 rounded-2xl border border-gray-700">
                 <h2 class="text-xl font-bold mb-4 text-red-600 uppercase italic font-black">Record Maxes</h2>
                 <div class="grid grid-cols-2 gap-4">
                     <input id="bench" type="number" placeholder="Bench" class="bg-gray-700 rounded p-2 text-center font-bold">
@@ -58,11 +73,11 @@
 
         <div id="kitchen-view" class="hidden space-y-6">
             <button onclick="showView('lobby')" class="text-green-500 font-bold text-xs uppercase">← Back</button>
-            <section class="bg-gray-800 p-6 rounded-2xl border border-gray-700 shadow-2xl">
-                <h2 class="text-xl font-bold mb-4 text-green-600 uppercase italic font-black">Log Nutrition</h2>
+            <section class="bg-gray-800 p-6 rounded-2xl border border-gray-700">
+                <h2 class="text-xl font-bold mb-4 text-green-600 uppercase italic font-black text-center">Log Nutrition</h2>
                 <div class="space-y-4">
                     <select id="meal-type" class="w-full bg-gray-700 p-3 rounded font-bold">
-                        <option value="Breakfast">Breakfast</option><option value="Lunch">Lunch</option><option value="Dinner">Dinner</option><option value="Snack">Snack</option>
+                        <option>Breakfast</option><option>Lunch</option><option>Dinner</option><option>Snack</option>
                     </select>
                     <div class="grid grid-cols-2 gap-3">
                         <input id="protein" type="number" placeholder="Protein" class="bg-gray-700 rounded p-2 text-center font-bold">
@@ -71,7 +86,7 @@
                         <input id="calories" type="number" placeholder="Calories" class="bg-gray-700 rounded p-2 text-center font-bold text-green-400">
                     </div>
                     <input id="weight" type="number" placeholder="Body Weight (lbs)" class="w-full bg-gray-700 rounded p-3 text-center font-bold">
-                    <textarea id="meal-notes" placeholder="Notes (e.g. Chicken, rice, protein shake...)" class="w-full bg-gray-700 rounded p-3 text-sm h-20 outline-none border border-gray-600"></textarea>
+                    <textarea id="meal-notes" placeholder="Notes..." class="w-full bg-gray-700 rounded p-3 text-sm h-20 outline-none border border-gray-600"></textarea>
                 </div>
                 <button onclick="saveKitchen()" class="w-full bg-green-700 mt-6 py-4 rounded-xl font-black uppercase">Save Entry</button>
             </section>
@@ -79,53 +94,33 @@
 
         <div id="goals-view" class="hidden space-y-6">
             <button onclick="showView('lobby')" class="text-yellow-500 font-bold text-xs uppercase">← Back</button>
-            <section class="bg-gray-800 p-6 rounded-2xl border border-gray-700 shadow-2xl">
-                <h2 class="text-xl font-bold mb-4 text-yellow-600 uppercase italic font-black text-center">Set Target Goals</h2>
+            <section class="bg-gray-800 p-6 rounded-2xl border border-gray-700">
+                <h2 class="text-xl font-bold mb-4 text-yellow-600 uppercase italic font-black text-center">Target Goals</h2>
                 <div class="space-y-4">
-                    <div>
-                        <label class="text-[10px] text-gray-400 font-bold uppercase ml-1">Target Body Weight (lbs)</label>
-                        <input id="goal-weight" type="number" placeholder="e.g. 185" class="w-full bg-gray-700 rounded p-3 text-center font-bold border border-yellow-900 outline-none">
-                    </div>
-
+                    <input id="goal-weight" type="number" placeholder="Goal Body Weight" class="w-full bg-gray-700 rounded p-3 text-center font-bold border border-yellow-900">
                     <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="text-[10px] text-gray-400 font-bold uppercase ml-1">Bench Goal</label>
-                            <input id="goal-bench" type="number" placeholder="0" class="w-full bg-gray-700 rounded p-2 text-center font-bold border border-gray-600">
-                        </div>
-                        <div>
-                            <label class="text-[10px] text-gray-400 font-bold uppercase ml-1">Squat Goal</label>
-                            <input id="goal-squat" type="number" placeholder="0" class="w-full bg-gray-700 rounded p-2 text-center font-bold border border-gray-600">
-                        </div>
-                        <div>
-                            <label class="text-[10px] text-gray-400 font-bold uppercase ml-1">Clean Goal</label>
-                            <input id="goal-clean" type="number" placeholder="0" class="w-full bg-gray-700 rounded p-2 text-center font-bold border border-gray-600">
-                        </div>
-                        <div>
-                            <label class="text-[10px] text-gray-400 font-bold uppercase ml-1">Deadlift Goal</label>
-                            <input id="goal-deadlift" type="number" placeholder="0" class="w-full bg-gray-700 rounded p-2 text-center font-bold border border-gray-600">
-                        </div>
-                        <div class="col-span-2">
-                            <label class="text-[10px] text-gray-400 font-bold uppercase ml-1 block text-center">Push Press Goal</label>
-                            <input id="goal-pushpress" type="number" placeholder="0" class="w-full bg-gray-700 rounded p-2 text-center font-bold border border-gray-600">
-                        </div>
+                        <input id="goal-bench" type="number" placeholder="Bench Goal" class="bg-gray-700 rounded p-2 text-center font-bold border border-gray-600">
+                        <input id="goal-squat" type="number" placeholder="Squat Goal" class="bg-gray-700 rounded p-2 text-center font-bold border border-gray-600">
+                        <input id="goal-clean" type="number" placeholder="Clean Goal" class="bg-gray-700 rounded p-2 text-center font-bold border border-gray-600">
+                        <input id="goal-deadlift" type="number" placeholder="Deadlift Goal" class="bg-gray-700 rounded p-2 text-center font-bold border border-gray-600">
+                        <input id="goal-pushpress" type="number" placeholder="Push Press Goal" class="col-span-2 bg-gray-700 rounded p-2 text-center font-bold border border-gray-600">
                     </div>
                 </div>
-                <button onclick="saveGoals()" class="w-full bg-yellow-600 mt-6 py-4 rounded-xl font-black uppercase text-black hover:bg-yellow-500 transition">Update Goals</button>
+                <button onclick="saveGoals()" class="w-full bg-yellow-600 mt-6 py-4 rounded-xl font-black uppercase text-black">Update Goals</button>
             </section>
         </div>
 
         <div id="leaderboard-view" class="hidden space-y-6">
             <button onclick="showView('lobby')" class="text-blue-500 font-bold text-xs uppercase">← Back</button>
             <h2 class="text-2xl font-black italic text-center text-red-600 uppercase">The Weight Club</h2>
-            <div id="player-club-grid" class="space-y-4">
-                </div>
+            <div id="player-club-grid" class="space-y-4"></div>
         </div>
 
         <div id="history-view" class="hidden space-y-4">
-            <button onclick="showView('lobby')" class="text-blue-500 font-bold text-xs uppercase">← Back</button>
+            <button onclick="showView('lobby')" class="text-gray-500 font-bold text-xs uppercase">← Back</button>
             <div class="flex gap-2">
-                <button onclick="toggleHist('rack')" id="btn-hist-rack" class="flex-1 bg-blue-700 py-2 rounded text-[10px] font-black uppercase">Lifts</button>
-                <button onclick="toggleHist('kitchen')" id="btn-hist-kitchen" class="flex-1 bg-gray-800 py-2 rounded text-[10px] font-black uppercase">Kitchen</button>
+                <button onclick="toggleHist('rack')" class="flex-1 bg-blue-700 py-2 rounded text-[10px] font-black uppercase">Lifts</button>
+                <button onclick="toggleHist('kitchen')" class="flex-1 bg-gray-800 py-2 rounded text-[10px] font-black uppercase">Kitchen</button>
             </div>
             <div id="hist-rack-list" class="space-y-3"></div>
             <div id="hist-kitchen-list" class="hidden space-y-3"></div>
@@ -150,146 +145,92 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        let myGoals = {};
-        let latestBW = 0;
+        let myGoals = {}; let latestBW = 0;
 
-        window.showView = (view) => {
+        window.showView = (v) => {
             ['auth-section', 'lobby-section', 'rack-view', 'kitchen-view', 'goals-view', 'history-view', 'leaderboard-view'].forEach(s => document.getElementById(s).classList.add('hidden'));
-            const target = (view === 'lobby' || view === 'auth') ? view + '-section' : view + '-view';
-            document.getElementById(target).classList.remove('hidden');
+            document.getElementById(v.includes('-') ? v : (v === 'lobby' || v === 'auth' ? v + '-section' : v + '-view')).classList.remove('hidden');
         };
 
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                const docSnap = await getDoc(doc(db, "players", user.uid));
-                if(docSnap.exists()){
-                    myGoals = docSnap.data();
+        onAuthStateChanged(auth, async (u) => {
+            if (u) {
+                const snap = await getDoc(doc(db, "players", u.uid));
+                if(snap.exists()){
+                    myGoals = snap.data();
                     document.getElementById('user-display').innerText = myGoals.playerName;
-                    document.getElementById('goal-weight').value = myGoals.goalWeight || '';
-                    document.getElementById('goal-bench').value = myGoals.goalBench || '';
-                    document.getElementById('goal-squat').value = myGoals.goalSquat || '';
-                    document.getElementById('goal-clean').value = myGoals.goalClean || '';
-                    document.getElementById('goal-deadlift').value = myGoals.goalDeadlift || '';
-                    document.getElementById('goal-pushpress').value = myGoals.goalPushPress || '';
+                    ['weight', 'bench', 'squat', 'clean', 'deadlift', 'pushpress'].forEach(f => document.getElementById('goal-'+f).value = myGoals['goal'+f.charAt(0).toUpperCase()+f.slice(1)] || '');
                 }
-                const weightQ = query(collection(db, "players", user.uid, "meals"), orderBy("timestamp", "desc"), limit(1));
-                const weightSnap = await getDocs(weightQ);
-                latestBW = weightSnap.docs[0]?.data()?.bodyWeight || 0;
+                const wQ = query(collection(db, "players", u.uid, "meals"), orderBy("timestamp", "desc"), limit(1));
+                const wS = await getDocs(wQ);
+                latestBW = wS.docs[0]?.data()?.bodyWeight || 0;
                 showView('lobby');
             } else { showView('auth'); }
         });
 
-        window.handleAuth = async (type) => {
-            const email = document.getElementById('email').value;
-            const pass = document.getElementById('password').value;
-            const name = document.getElementById('player-name').value;
+        window.handleAuth = async (t) => {
+            const e = document.getElementById('email').value, p = document.getElementById('password').value, n = document.getElementById('player-name').value;
             try {
-                if (type === 'signup') {
-                    const res = await createUserWithEmailAndPassword(auth, email, pass);
-                    await setDoc(doc(db, "players", res.user.uid), { playerName: name, email: email });
-                } else { await signInWithEmailAndPassword(auth, email, pass); }
-            } catch (e) { alert(e.message); }
+                if (t === 'signup') {
+                    const r = await createUserWithEmailAndPassword(auth, e, p);
+                    await setDoc(doc(db, "players", r.user.uid), { playerName: n, email: e });
+                } else { await signInWithEmailAndPassword(auth, e, p); }
+            } catch (err) { alert(err.message); }
         };
 
         window.logout = () => signOut(auth);
 
         window.saveRack = async () => {
             await addDoc(collection(db, "players", auth.currentUser.uid, "maxes"), {
-                bench: Number(document.getElementById('bench').value), 
-                squat: Number(document.getElementById('squat').value),
-                clean: Number(document.getElementById('clean').value), 
-                deadlift: Number(document.getElementById('deadlift').value),
-                pushpress: Number(document.getElementById('pushpress').value), 
-                date: new Date().toLocaleDateString(), 
-                timestamp: serverTimestamp()
+                bench: Number(document.getElementById('bench').value), squat: Number(document.getElementById('squat').value),
+                clean: Number(document.getElementById('clean').value), deadlift: Number(document.getElementById('deadlift').value),
+                pushpress: Number(document.getElementById('pushpress').value), date: new Date().toLocaleDateString(), timestamp: serverTimestamp()
             });
-            alert("Maxes Updated!"); showView('lobby');
+            alert("Updated!"); showView('lobby');
         };
 
         window.saveKitchen = async () => {
             await addDoc(collection(db, "players", auth.currentUser.uid, "meals"), {
-                meal: document.getElementById('meal-type').value, 
-                protein: document.getElementById('protein').value,
-                carbs: document.getElementById('carbs').value, 
-                fat: document.getElementById('fat').value,
-                calories: document.getElementById('calories').value, 
-                bodyWeight: Number(document.getElementById('weight').value),
-                notes: document.getElementById('meal-notes').value, 
-                date: new Date().toLocaleDateString(), 
-                timestamp: serverTimestamp()
+                meal: document.getElementById('meal-type').value, bodyWeight: Number(document.getElementById('weight').value),
+                notes: document.getElementById('meal-notes').value, date: new Date().toLocaleDateString(), timestamp: serverTimestamp()
             });
             latestBW = Number(document.getElementById('weight').value);
-            document.getElementById('meal-notes').value = "";
-            alert("Nutrition Logged!"); showView('lobby');
+            alert("Logged!"); showView('lobby');
         };
 
         window.saveGoals = async () => {
-            await updateDoc(doc(db, "players", auth.currentUser.uid), {
-                goalWeight: document.getElementById('goal-weight').value,
-                goalBench: document.getElementById('goal-bench').value,
-                goalSquat: document.getElementById('goal-squat').value,
-                goalClean: document.getElementById('goal-clean').value,
-                goalDeadlift: document.getElementById('goal-deadlift').value,
-                goalPushPress: document.getElementById('goal-pushpress').value
-            });
-            alert("Target Goals Updated!"); showView('lobby');
+            const g = { goalWeight: document.getElementById('goal-weight').value, goalBench: document.getElementById('goal-bench').value, goalSquat: document.getElementById('goal-squat').value, goalClean: document.getElementById('goal-clean').value, goalDeadlift: document.getElementById('goal-deadlift').value, goalPushPress: document.getElementById('goal-pushpress').value };
+            await updateDoc(doc(db, "players", auth.currentUser.uid), g);
+            alert("Goals Saved!"); showView('lobby');
         };
 
         window.loadLeaderboard = async () => {
-            const clubGrid = document.getElementById('player-club-grid');
-            clubGrid.innerHTML = '<p class="text-center italic text-xs">Fetching Rankings...</p>';
-            const playersSnapshot = await getDocs(collection(db, "players"));
-            let scores = [];
-            const tiers = [700, 650, 600, 550, 500, 450, 400, 350];
-
-            for (const pDoc of playersSnapshot.docs) {
-                const p = pDoc.data();
-                const mQ = query(collection(db, "players", pDoc.id, "maxes"), orderBy("timestamp", "desc"), limit(1));
-                const wQ = query(collection(db, "players", pDoc.id, "meals"), orderBy("timestamp", "desc"), limit(1));
+            const grid = document.getElementById('player-club-grid'); grid.innerHTML = '...';
+            const pSnap = await getDocs(collection(db, "players"));
+            let s = [];
+            for (const d of pSnap.docs) {
+                const mQ = query(collection(db, "players", d.id, "maxes"), orderBy("timestamp", "desc"), limit(1));
+                const wQ = query(collection(db, "players", d.id, "meals"), orderBy("timestamp", "desc"), limit(1));
                 const [mS, wS] = await Promise.all([getDocs(mQ), getDocs(wQ)]);
-                
-                const m = mS.docs[0]?.data() || {};
-                const bw = wS.docs[0]?.data()?.bodyWeight || 0;
-                const total = (Number(m.bench)||0)+(Number(m.squat)||0)+(Number(m.clean)||0)+(Number(m.deadlift)||0);
-                const score = bw > 0 ? (total - ((bw > 200 ? 200 : bw) * 4)) : 0;
-                if(score > 0) scores.push({ name: p.playerName, score: score });
+                const m = mS.docs[0]?.data() || {}, bw = wS.docs[0]?.data()?.bodyWeight || 0;
+                const tot = (Number(m.bench)||0)+(Number(m.squat)||0)+(Number(m.clean)||0)+(Number(m.deadlift)||0);
+                const score = bw > 0 ? (tot - ((bw > 200 ? 200 : bw) * 4)) : 0;
+                if(score > 0) s.push({ name: d.data().playerName, score: score });
             }
-
-            clubGrid.innerHTML = '';
-            tiers.forEach(t => {
-                const members = scores.filter(s => s.score >= t && s.score < (t + 50 || 1000));
-                clubGrid.innerHTML += `
-                    <div class="club-card p-4 rounded-xl">
-                        <div class="text-red-500 font-black italic text-lg mb-2">${t} LB CLUB</div>
-                        <div class="space-y-1">
-                            ${members.length > 0 ? members.map(m => `<div class="flex justify-between text-xs font-bold uppercase"><span>${m.name}</span><span class="text-blue-400">${m.score}</span></div>`).join('') : '<span class="text-gray-600 italic text-[10px]">VACANT</span>'}
-                        </div>
-                    </div>`;
+            grid.innerHTML = ''; [700, 650, 600, 550, 500, 450, 400, 350].forEach(t => {
+                const mem = s.filter(x => x.score >= t && x.score < t+50);
+                grid.innerHTML += `<div class="club-card p-4 rounded-xl"><div class="text-red-500 font-black italic text-lg">${t} LB CLUB</div>${mem.map(m => `<div class="flex justify-between text-xs font-bold uppercase"><span>${m.name}</span><span class="text-blue-400">${m.score}</span></div>`).join('') || '<span class="text-gray-600 italic text-[10px]">VACANT</span>'}</div>`;
             });
-        };
-
-        window.toggleHist = (type) => {
-            document.getElementById('hist-rack-list').classList.toggle('hidden', type !== 'rack');
-            document.getElementById('hist-kitchen-list').classList.toggle('hidden', type !== 'kitchen');
         };
 
         window.loadMyHistory = async () => {
-            const uid = auth.currentUser.uid;
-            const rackList = document.getElementById('hist-rack-list');
-            const kitList = document.getElementById('hist-kitchen-list');
-            const qMax = query(collection(db, "players", uid, "maxes"), orderBy("timestamp", "desc"));
-            const qMeal = query(collection(db, "players", uid, "meals"), orderBy("timestamp", "desc"));
-            const [snapMax, snapMeal] = await Promise.all([getDocs(qMax), getDocs(qMeal)]);
-            
-            rackList.innerHTML = ''; snapMax.forEach(d => {
-                const m = d.data();
-                rackList.innerHTML += `<div class="bg-gray-800 p-4 rounded-xl border-l-4 border-blue-600 mb-2"><div class="flex justify-between text-[10px] text-gray-500 font-bold"><span>${m.date}</span></div><div class="grid grid-cols-4 text-center text-xs font-black mt-1"><div>B:${m.bench||0}</div><div>S:${m.squat||0}</div><div>C:${m.clean||0}</div><div>D:${m.deadlift||0}</div></div></div>`;
-            });
-            kitList.innerHTML = ''; snapMeal.forEach(d => {
-                const m = d.data();
-                kitList.innerHTML += `<div class="bg-gray-800 p-4 rounded-xl border-l-4 border-green-600 mb-2 text-xs"><div class="flex justify-between"><span>${m.date} - ${m.meal}</span><span class="text-green-400 font-bold">${m.bodyWeight} lbs</span></div></div>`;
-            });
+            const uid = auth.currentUser.uid, rL = document.getElementById('hist-rack-list'), kL = document.getElementById('hist-kitchen-list');
+            const qM = query(collection(db, "players", uid, "maxes"), orderBy("timestamp", "desc")), qK = query(collection(db, "players", uid, "meals"), orderBy("timestamp", "desc"));
+            const [sM, sK] = await Promise.all([getDocs(qM), getDocs(qK)]);
+            rL.innerHTML = ''; sM.forEach(d => { const m = d.data(); rL.innerHTML += `<div class="bg-gray-800 p-4 rounded-xl border-l-4 border-blue-600 mb-2"><div class="flex justify-between text-[10px] font-bold text-gray-500"><span>${m.date}</span></div><div class="grid grid-cols-4 text-center text-xs font-black mt-1"><div>B:${m.bench}</div><div>S:${m.squat}</div><div>C:${m.clean}</div><div>D:${m.deadlift}</div></div></div>`; });
+            kL.innerHTML = ''; sK.forEach(d => { const k = d.data(); kL.innerHTML += `<div class="bg-gray-800 p-4 rounded-xl border-l-4 border-green-600 mb-2 text-xs"><div class="flex justify-between"><span>${k.date} - ${k.meal}</span><span class="text-green-400">${k.bodyWeight} lbs</span></div></div>`; });
         };
+
+        window.toggleHist = (t) => { document.getElementById('hist-rack-list').classList.toggle('hidden', t !== 'rack'); document.getElementById('hist-kitchen-list').classList.toggle('hidden', t !== 'kitchen'); };
     </script>
 </body>
 </html>
