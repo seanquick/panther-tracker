@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panther Performance v4.9</title>
+    <title>Panther Performance v5.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { background-color: #0f172a; color: white; }
@@ -15,7 +15,6 @@
             margin-bottom: 0.75rem !important; display: block !important; font-weight: 600 !important;
         }
         input:focus { border-color: #dc2626 !important; background-color: #111827 !important; }
-        ::placeholder { color: #9ca3af !important; opacity: 1; }
         .hidden { display: none !important; }
         .admin-box { border: 2px dashed #dc2626; padding: 1rem; border-radius: 1rem; margin-bottom: 1.5rem; background: rgba(220, 38, 38, 0.05); }
         .guide-text p { margin-bottom: 1rem; line-height: 1.6; }
@@ -56,7 +55,10 @@
             <button onclick="showView('rack')" class="w-full bg-gray-800 border-2 border-red-700 p-5 rounded-2xl text-xl font-black italic uppercase shadow-xl">🏋️ The Rack</button>
             <button onclick="showView('kitchen')" class="w-full bg-gray-800 border-2 border-green-700 p-5 rounded-2xl text-xl font-black italic uppercase shadow-xl">🍳 The Kitchen</button>
             
-            <button onclick="showView('bulk')" class="w-full bg-gradient-to-r from-orange-600 to-red-700 p-4 rounded-2xl text-lg font-black italic uppercase shadow-xl border-b-4 border-red-900">📈 Bulk Up (Guide)</button>
+            <div class="grid grid-cols-2 gap-3">
+                <button onclick="showView('bulk')" class="bg-gradient-to-br from-orange-600 to-red-700 p-4 rounded-xl text-[11px] font-black italic uppercase shadow-lg border-b-4 border-red-900">📈 Bulk Up</button>
+                <button onclick="showView('lean')" class="bg-gradient-to-br from-blue-600 to-cyan-700 p-4 rounded-xl text-[11px] font-black italic uppercase shadow-lg border-b-4 border-blue-900">📉 Lean Out</button>
+            </div>
 
             <div class="grid grid-cols-2 gap-3">
                 <button onclick="showView('goals')" class="bg-gray-800 border border-yellow-600 py-4 rounded-xl text-sm font-black uppercase">🎯 Goals</button>
@@ -73,65 +75,47 @@
 
         <div id="bulk-view" class="hidden space-y-6">
             <button onclick="showView('lobby')" class="text-orange-500 font-bold text-xs uppercase">← Back to Lobby</button>
-            <div class="bg-gray-800 p-6 rounded-3xl border border-orange-600/50 shadow-2xl guide-text">
-                <h2 class="text-2xl font-black italic text-orange-500 uppercase mb-4 tracking-tighter">Teen Muscle Growth</h2>
-                
-                <p class="text-sm font-bold border-b border-gray-700 pb-4">To gain muscle as a teenager, focus on a consistent caloric surplus (eating more than you burn) with a diet high in protein and complex carbohydrates.</p>
-
+            <div class="bg-gray-800 p-6 rounded-3xl border border-orange-600/50 shadow-2xl guide-text text-left">
+                <h2 class="text-2xl font-black italic text-orange-500 uppercase mb-4">Teen Muscle Growth</h2>
+                <p class="text-sm font-bold border-b border-gray-700 pb-4">Focus on a consistent caloric surplus with a diet high in protein and complex carbohydrates.</p>
                 <h3>Nutritional Strategies</h3>
-                <ul class="space-y-4 text-sm">
-                    <li><b class="text-red-400 uppercase">Protein (The Builder):</b> Essential for muscle development. Aim for 30–35% of daily calories (roughly 0.8–1g per lb of body weight). Sources: Chicken, fish, eggs, dairy, beans, lean meat.</li>
-                    <li><b class="text-blue-400 uppercase">Carbohydrates (The Fuel):</b> Crucial for fueling workouts. Aim for 40–50% of calories. Sources: Whole-grain pasta, rice, oats, fruits, starchy vegetables.</li>
-                    <li><b class="text-green-400 uppercase">Fats (The Support):</b> Necessary for hormone production. Aim for 20–30% of calories. Sources: Nuts, seeds, avocados, olive oil.</li>
+                <ul class="space-y-3 text-sm">
+                    <li><b class="text-red-400">PROTEIN:</b> 30-35% of calories. Chicken, fish, eggs, dairy, beans.</li>
+                    <li><b class="text-blue-400">CARBS:</b> 40-50% of calories. Pasta, rice, oats, fruits.</li>
+                    <li><b class="text-green-400">FATS:</b> 20-30% of calories. Nuts, seeds, avocados.</li>
+                </ul>
+                <div class="mt-8 p-4 bg-red-900/20 rounded-xl border border-red-900/50 text-[10px] text-red-300 uppercase font-bold text-center">Consult a professional before making significant diet changes.</div>
+            </div>
+        </div>
+
+        <div id="lean-view" class="hidden space-y-6">
+            <button onclick="showView('lobby')" class="text-cyan-500 font-bold text-xs uppercase">← Back to Lobby</button>
+            <div class="bg-gray-800 p-6 rounded-3xl border border-cyan-600/50 shadow-2xl guide-text text-left">
+                <h2 class="text-2xl font-black italic text-cyan-500 uppercase mb-4">Healthy Weight Loss</h2>
+                <p class="text-sm font-bold border-b border-gray-700 pb-4">Focus on sustainable habits. Prioritize whole foods, hydration, and at least 60 mins of daily activity.</p>
+                
+                <h3>Eating Habits</h3>
+                <ul class="space-y-2 text-sm list-disc pl-4">
+                    <li><b>Balance Your Plate:</b> Lean proteins, whole grains, and colorful veggies.</li>
+                    <li><b>Reduce Sugar:</b> Limit soda and highly processed snacks.</li>
+                    <li><b>Eat Regular Meals:</b> Don't skip breakfast.</li>
+                    <li><b>Drink Water:</b> Choose water over sugary beverages.</li>
                 </ul>
 
-                <h3>Execution</h3>
-                <ul class="space-y-2 text-sm list-disc pl-4 text-gray-300">
-                    <li><b>Caloric Surplus:</b> Increase daily intake by 200–300 calories if not gaining weight.</li>
-                    <li><b>Hydration:</b> Drink water throughout the day and around workouts.</li>
-                    <li><b>Consistency:</b> Muscle growth happens over months, not days.</li>
-                    <li><b>Prioritize Sleep:</b> Muscle grows while you rest.</li>
+                <h3>Lifestyle</h3>
+                <ul class="space-y-2 text-sm list-disc pl-4">
+                    <li><b>Cardio & Strength:</b> Combine jogging/soccer with push-ups/planks.</li>
+                    <li><b>Limit Screens:</b> Max 2 hours of non-school screen time.</li>
+                    <li><b>Prioritize Sleep:</b> Aim for 8–10 hours for metabolism support.</li>
                 </ul>
 
-                <div class="mt-8 p-4 bg-red-900/20 rounded-xl border border-red-900/50">
-                    <p class="text-[10px] text-red-300 uppercase font-bold text-center leading-tight"><b>Disclaimer:</b> Consult with a doctor or registered dietitian before making significant diet changes during growth phases.</p>
-                </div>
+                <div class="mt-8 p-4 bg-red-900/20 rounded-xl border border-red-900/50 text-[10px] text-red-300 uppercase font-bold text-center">Focus on feeling strong and energetic, not just the number on the scale.</div>
             </div>
         </div>
 
-        <div id="rack-view" class="hidden space-y-6">
-            <button onclick="showView('lobby')" class="text-red-500 font-bold text-xs uppercase">← Back</button>
-            <div id="rack-admin" class="hidden admin-box">
-                <button onclick="exportRackCSV()" class="w-full bg-white text-black py-4 rounded-xl font-black text-xs uppercase">📥 Export All Lifts to Excel</button>
-            </div>
-            <section class="bg-gray-800 p-6 rounded-2xl border border-gray-700 shadow-2xl">
-                <h2 class="text-xl font-bold mb-4 text-red-600 uppercase italic font-black">Record Maxes</h2>
-                <div class="grid grid-cols-2 gap-4">
-                    <input id="bench" type="number" placeholder="Bench"><input id="squat" type="number" placeholder="Squat">
-                    <input id="clean" type="number" placeholder="Clean"><input id="deadlift" type="number" placeholder="Deadlift">
-                    <input id="pushpress" type="number" placeholder="Push Press" class="col-span-2">
-                </div>
-                <button onclick="saveRack()" class="w-full bg-red-700 py-4 rounded-xl font-black uppercase text-white shadow-xl">Update Lifts</button>
-            </section>
-        </div>
-
-        <div id="kitchen-view" class="hidden space-y-6">
-            <button onclick="showView('lobby')" class="text-green-500 font-bold text-xs uppercase">← Back</button>
-            <div id="kitchen-admin" class="hidden admin-box">
-                <select id="player-select-kitchen" onchange="loadPlayerKitchen()"><option value="">Select a Player...</option></select>
-                <div id="admin-kitchen-list" class="mt-4 space-y-2 max-h-64 overflow-y-auto"></div>
-            </div>
-            <section class="bg-gray-800 p-6 rounded-2xl border border-gray-700 shadow-2xl">
-                <h2 class="text-xl font-bold mb-4 text-green-600 uppercase italic font-black text-center">Log Nutrition</h2>
-                <select id="meal-type"><option>Breakfast</option><option>Lunch</option><option>Dinner</option><option>Snack</option></select>
-                <div class="grid grid-cols-2 gap-3"><input id="protein" type="number" placeholder="Prot"><input id="carbs" type="number" placeholder="Carbs"><input id="fat" type="number" placeholder="Fat"><input id="calories" type="number" placeholder="Cals"></div>
-                <input id="weight" type="number" placeholder="Body Weight (lbs)">
-                <textarea id="meal-notes" placeholder="Notes..."></textarea>
-                <button onclick="saveKitchen()" class="w-full bg-green-700 py-4 rounded-xl font-black uppercase text-white shadow-xl">Save Log</button>
-            </section>
-        </div>
-
-        <div id="roster-view" class="hidden space-y-4"><button onclick="showView('lobby')" class="text-red-500 font-bold text-xs">← BACK</button><div id="roster-list" class="space-y-4"></div></div>
+        <div id="rack-view" class="hidden space-y-6"><button onclick="showView('lobby')" class="text-red-500 font-bold text-xs uppercase">← Back</button><div id="rack-admin" class="hidden admin-box"><button onclick="exportRackCSV()" class="w-full bg-white text-black py-4 rounded-xl font-black text-xs uppercase">📥 Export All Lifts to Excel</button></div><section class="bg-gray-800 p-6 rounded-2xl border border-gray-700"><h2 class="text-xl font-bold mb-4 text-red-600 uppercase italic font-black">Record Maxes</h2><div class="grid grid-cols-2 gap-4"><input id="bench" type="number" placeholder="Bench"><input id="squat" type="number" placeholder="Squat"><input id="clean" type="number" placeholder="Clean"><input id="deadlift" type="number" placeholder="Deadlift"><input id="pushpress" type="number" placeholder="Push Press" class="col-span-2"></div><button onclick="saveRack()" class="w-full bg-red-700 py-4 rounded-xl font-black uppercase text-white shadow-xl">Update Lifts</button></section></div>
+        <div id="kitchen-view" class="hidden space-y-6"><button onclick="showView('lobby')" class="text-green-500 font-bold text-xs uppercase">← Back</button><div id="kitchen-admin" class="hidden admin-box"><select id="player-select-kitchen" onchange="loadPlayerKitchen()"><option value="">Select a Player...</option></select><div id="admin-kitchen-list" class="mt-4 space-y-2 max-h-64 overflow-y-auto"></div></div><section class="bg-gray-800 p-6 rounded-2xl border border-gray-700"><h2 class="text-xl font-bold mb-4 text-green-600 uppercase italic font-black text-center">Log Nutrition</h2><select id="meal-type"><option>Breakfast</option><option>Lunch</option><option>Dinner</option><option>Snack</option></select><div class="grid grid-cols-2 gap-3"><input id="protein" type="number" placeholder="Prot"><input id="carbs" type="number" placeholder="Carbs"><input id="fat" type="number" placeholder="Fat"><input id="calories" type="number" placeholder="Cals"></div><input id="weight" type="number" placeholder="Body Weight (lbs)"><textarea id="meal-notes" placeholder="Notes..."></textarea><button onclick="saveKitchen()" class="w-full bg-green-700 py-4 rounded-xl font-black uppercase text-white shadow-xl">Save Log</button></section></div>
+        <div id="roster-view" class="hidden space-y-4"><button onclick="showView('lobby')" class="text-red-500 font-bold text-xs uppercase">← BACK</button><div id="roster-list" class="space-y-4"></div></div>
         <div id="goals-view" class="hidden space-y-6"><button onclick="showView('lobby')" class="text-yellow-500 font-bold text-xs uppercase">← Back</button><section class="bg-gray-800 p-6 rounded-2xl border border-gray-700"><input id="goal-weight" type="number" placeholder="Goal Weight"><div class="grid grid-cols-2 gap-4"><input id="goal-bench" type="number" placeholder="Bench Goal"><input id="goal-squat" type="number" placeholder="Squat Goal"><input id="goal-clean" type="number" placeholder="Clean Goal"><input id="goal-deadlift" type="number" placeholder="Deadlift Goal"></div><button onclick="saveGoals()" class="w-full bg-yellow-600 py-4 rounded-xl font-black uppercase text-black">Save Goals</button></section></div>
         <div id="leaderboard-view" class="hidden space-y-6"><button onclick="showView('lobby')" class="text-blue-500 font-bold text-xs uppercase">← Back</button><div id="player-club-grid" class="space-y-4"></div></div>
         <div id="history-view" class="hidden space-y-4"><button onclick="showView('lobby')" class="text-gray-500 font-bold text-xs uppercase">← Back</button><div class="flex gap-2"><button onclick="toggleHist('rack')" class="flex-1 bg-blue-700 py-3 rounded-lg text-xs font-black uppercase">Lifts</button><button onclick="toggleHist('kitchen')" class="flex-1 bg-gray-800 py-3 rounded-lg text-xs font-black uppercase">Kitchen</button></div><div id="hist-rack-list" class="space-y-3"></div><div id="hist-kitchen-list" class="hidden space-y-3"></div></div>
@@ -174,7 +158,7 @@
 
         // NAVIGATION
         window.showView = (v) => {
-            const ids = ['auth-section', 'lobby-section', 'rack-view', 'kitchen-view', 'goals-view', 'history-view', 'leaderboard-view', 'roster-view', 'bulk-view'];
+            const ids = ['auth-section', 'lobby-section', 'rack-view', 'kitchen-view', 'goals-view', 'history-view', 'leaderboard-view', 'roster-view', 'bulk-view', 'lean-view'];
             ids.forEach(id => document.getElementById(id)?.classList.add('hidden'));
             let tid = v.includes('-') ? v : (v === 'lobby' || v === 'auth' ? v + '-section' : v + '-view');
             document.getElementById(tid)?.classList.remove('hidden');
