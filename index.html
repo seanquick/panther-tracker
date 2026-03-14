@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panther Performance</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .club-card { background: linear-gradient(145deg, #1a1a1a, #262626); border-top: 3px solid #b91c1c; }
+    </style>
 </head>
 <body class="bg-gray-900 text-white font-sans pb-10">
 
@@ -34,7 +37,8 @@
             <button onclick="showView('rack')" class="w-full bg-gray-800 border-2 border-red-700 p-5 rounded-2xl text-xl font-black italic uppercase">🏋️ The Rack</button>
             <button onclick="showView('kitchen')" class="w-full bg-gray-800 border-2 border-green-700 p-5 rounded-2xl text-xl font-black italic uppercase">🍳 The Kitchen</button>
             <button onclick="showView('goals')" class="w-full bg-gray-800 border-2 border-yellow-600 p-5 rounded-2xl text-xl font-black italic uppercase">🎯 My Goals</button>
-            <button onclick="loadMyHistory(); showView('history')" class="w-full bg-gray-800 border-2 border-blue-600 p-5 rounded-2xl text-xl font-black italic uppercase">📊 My History</button>
+            <button onclick="loadLeaderboard(); showView('leaderboard')" class="w-full bg-gray-800 border-2 border-blue-600 p-5 rounded-2xl text-xl font-black italic uppercase">🏆 The Board</button>
+            <button onclick="loadMyHistory(); showView('history')" class="w-full bg-gray-800 border-2 border-gray-600 p-5 rounded-2xl text-xl font-black italic uppercase">📊 My History</button>
         </div>
 
         <div id="rack-view" class="hidden space-y-6">
@@ -67,7 +71,7 @@
                         <input id="calories" type="number" placeholder="Calories" class="bg-gray-700 rounded p-2 text-center font-bold text-green-400">
                     </div>
                     <input id="weight" type="number" placeholder="Body Weight (lbs)" class="w-full bg-gray-700 rounded p-3 text-center font-bold">
-                    <textarea id="meal-notes" placeholder="Notes..." class="w-full bg-gray-700 rounded p-3 text-sm h-20 border border-gray-600"></textarea>
+                    <textarea id="meal-notes" placeholder="Notes (e.g. Chicken, rice, protein shake...)" class="w-full bg-gray-700 rounded p-3 text-sm h-20 outline-none border border-gray-600"></textarea>
                 </div>
                 <button onclick="saveKitchen()" class="w-full bg-green-700 mt-6 py-4 rounded-xl font-black uppercase">Save Entry</button>
             </section>
@@ -76,18 +80,45 @@
         <div id="goals-view" class="hidden space-y-6">
             <button onclick="showView('lobby')" class="text-yellow-500 font-bold text-xs uppercase">← Back</button>
             <section class="bg-gray-800 p-6 rounded-2xl border border-gray-700 shadow-2xl">
-                <h2 class="text-xl font-bold mb-4 text-yellow-600 uppercase italic font-black">Target Goals</h2>
+                <h2 class="text-xl font-bold mb-4 text-yellow-600 uppercase italic font-black text-center">Set Target Goals</h2>
                 <div class="space-y-4">
-                    <input id="goal-weight" type="number" placeholder="Goal Body Weight" class="w-full bg-gray-700 rounded p-3 text-center font-bold border border-yellow-900">
+                    <div>
+                        <label class="text-[10px] text-gray-400 font-bold uppercase ml-1">Target Body Weight (lbs)</label>
+                        <input id="goal-weight" type="number" placeholder="e.g. 185" class="w-full bg-gray-700 rounded p-3 text-center font-bold border border-yellow-900 outline-none">
+                    </div>
+
                     <div class="grid grid-cols-2 gap-4">
-                        <input id="goal-bench" type="number" placeholder="Bench Goal" class="bg-gray-700 rounded p-2 text-center">
-                        <input id="goal-squat" type="number" placeholder="Squat Goal" class="bg-gray-700 rounded p-2 text-center">
-                        <input id="goal-clean" type="number" placeholder="Clean Goal" class="bg-gray-700 rounded p-2 text-center">
-                        <input id="goal-deadlift" type="number" placeholder="Deadlift Goal" class="bg-gray-700 rounded p-2 text-center">
+                        <div>
+                            <label class="text-[10px] text-gray-400 font-bold uppercase ml-1">Bench Goal</label>
+                            <input id="goal-bench" type="number" placeholder="0" class="w-full bg-gray-700 rounded p-2 text-center font-bold border border-gray-600">
+                        </div>
+                        <div>
+                            <label class="text-[10px] text-gray-400 font-bold uppercase ml-1">Squat Goal</label>
+                            <input id="goal-squat" type="number" placeholder="0" class="w-full bg-gray-700 rounded p-2 text-center font-bold border border-gray-600">
+                        </div>
+                        <div>
+                            <label class="text-[10px] text-gray-400 font-bold uppercase ml-1">Clean Goal</label>
+                            <input id="goal-clean" type="number" placeholder="0" class="w-full bg-gray-700 rounded p-2 text-center font-bold border border-gray-600">
+                        </div>
+                        <div>
+                            <label class="text-[10px] text-gray-400 font-bold uppercase ml-1">Deadlift Goal</label>
+                            <input id="goal-deadlift" type="number" placeholder="0" class="w-full bg-gray-700 rounded p-2 text-center font-bold border border-gray-600">
+                        </div>
+                        <div class="col-span-2">
+                            <label class="text-[10px] text-gray-400 font-bold uppercase ml-1 block text-center">Push Press Goal</label>
+                            <input id="goal-pushpress" type="number" placeholder="0" class="w-full bg-gray-700 rounded p-2 text-center font-bold border border-gray-600">
+                        </div>
                     </div>
                 </div>
-                <button onclick="saveGoals()" class="w-full bg-yellow-600 mt-6 py-4 rounded-xl font-black uppercase text-black">Update Goals</button>
+                <button onclick="saveGoals()" class="w-full bg-yellow-600 mt-6 py-4 rounded-xl font-black uppercase text-black hover:bg-yellow-500 transition">Update Goals</button>
             </section>
+        </div>
+
+        <div id="leaderboard-view" class="hidden space-y-6">
+            <button onclick="showView('lobby')" class="text-blue-500 font-bold text-xs uppercase">← Back</button>
+            <h2 class="text-2xl font-black italic text-center text-red-600 uppercase">The Weight Club</h2>
+            <div id="player-club-grid" class="space-y-4">
+                </div>
         </div>
 
         <div id="history-view" class="hidden space-y-4">
@@ -123,7 +154,7 @@
         let latestBW = 0;
 
         window.showView = (view) => {
-            ['auth-section', 'lobby-section', 'rack-view', 'kitchen-view', 'goals-view', 'history-view'].forEach(s => document.getElementById(s).classList.add('hidden'));
+            ['auth-section', 'lobby-section', 'rack-view', 'kitchen-view', 'goals-view', 'history-view', 'leaderboard-view'].forEach(s => document.getElementById(s).classList.add('hidden'));
             const target = (view === 'lobby' || view === 'auth') ? view + '-section' : view + '-view';
             document.getElementById(target).classList.remove('hidden');
         };
@@ -134,11 +165,16 @@
                 if(docSnap.exists()){
                     myGoals = docSnap.data();
                     document.getElementById('user-display').innerText = myGoals.playerName;
+                    document.getElementById('goal-weight').value = myGoals.goalWeight || '';
+                    document.getElementById('goal-bench').value = myGoals.goalBench || '';
+                    document.getElementById('goal-squat').value = myGoals.goalSquat || '';
+                    document.getElementById('goal-clean').value = myGoals.goalClean || '';
+                    document.getElementById('goal-deadlift').value = myGoals.goalDeadlift || '';
+                    document.getElementById('goal-pushpress').value = myGoals.goalPushPress || '';
                 }
-                // Get latest body weight for calculations
                 const weightQ = query(collection(db, "players", user.uid, "meals"), orderBy("timestamp", "desc"), limit(1));
                 const weightSnap = await getDocs(weightQ);
-                latestBW = weightSnap.docs[0]?.data().bodyWeight || 0;
+                latestBW = weightSnap.docs[0]?.data()?.bodyWeight || 0;
                 showView('lobby');
             } else { showView('auth'); }
         });
@@ -159,23 +195,32 @@
 
         window.saveRack = async () => {
             await addDoc(collection(db, "players", auth.currentUser.uid, "maxes"), {
-                bench: Number(document.getElementById('bench').value), squat: Number(document.getElementById('squat').value),
-                clean: Number(document.getElementById('clean').value), deadlift: Number(document.getElementById('deadlift').value),
-                pushpress: Number(document.getElementById('pushpress').value), date: new Date().toLocaleDateString(), timestamp: serverTimestamp()
+                bench: Number(document.getElementById('bench').value), 
+                squat: Number(document.getElementById('squat').value),
+                clean: Number(document.getElementById('clean').value), 
+                deadlift: Number(document.getElementById('deadlift').value),
+                pushpress: Number(document.getElementById('pushpress').value), 
+                date: new Date().toLocaleDateString(), 
+                timestamp: serverTimestamp()
             });
-            alert("Success!"); showView('lobby');
+            alert("Maxes Updated!"); showView('lobby');
         };
 
         window.saveKitchen = async () => {
             await addDoc(collection(db, "players", auth.currentUser.uid, "meals"), {
-                meal: document.getElementById('meal-type').value, protein: document.getElementById('protein').value,
-                carbs: document.getElementById('carbs').value, fat: document.getElementById('fat').value,
-                calories: document.getElementById('calories').value, bodyWeight: Number(document.getElementById('weight').value),
-                notes: document.getElementById('meal-notes').value, date: new Date().toLocaleDateString(), timestamp: serverTimestamp()
+                meal: document.getElementById('meal-type').value, 
+                protein: document.getElementById('protein').value,
+                carbs: document.getElementById('carbs').value, 
+                fat: document.getElementById('fat').value,
+                calories: document.getElementById('calories').value, 
+                bodyWeight: Number(document.getElementById('weight').value),
+                notes: document.getElementById('meal-notes').value, 
+                date: new Date().toLocaleDateString(), 
+                timestamp: serverTimestamp()
             });
             latestBW = Number(document.getElementById('weight').value);
             document.getElementById('meal-notes').value = "";
-            alert("Logged!"); showView('lobby');
+            alert("Nutrition Logged!"); showView('lobby');
         };
 
         window.saveGoals = async () => {
@@ -184,9 +229,43 @@
                 goalBench: document.getElementById('goal-bench').value,
                 goalSquat: document.getElementById('goal-squat').value,
                 goalClean: document.getElementById('goal-clean').value,
-                goalDeadlift: document.getElementById('goal-deadlift').value
+                goalDeadlift: document.getElementById('goal-deadlift').value,
+                goalPushPress: document.getElementById('goal-pushpress').value
             });
-            alert("Goals Updated!"); showView('lobby');
+            alert("Target Goals Updated!"); showView('lobby');
+        };
+
+        window.loadLeaderboard = async () => {
+            const clubGrid = document.getElementById('player-club-grid');
+            clubGrid.innerHTML = '<p class="text-center italic text-xs">Fetching Rankings...</p>';
+            const playersSnapshot = await getDocs(collection(db, "players"));
+            let scores = [];
+            const tiers = [700, 650, 600, 550, 500, 450, 400, 350];
+
+            for (const pDoc of playersSnapshot.docs) {
+                const p = pDoc.data();
+                const mQ = query(collection(db, "players", pDoc.id, "maxes"), orderBy("timestamp", "desc"), limit(1));
+                const wQ = query(collection(db, "players", pDoc.id, "meals"), orderBy("timestamp", "desc"), limit(1));
+                const [mS, wS] = await Promise.all([getDocs(mQ), getDocs(wQ)]);
+                
+                const m = mS.docs[0]?.data() || {};
+                const bw = wS.docs[0]?.data()?.bodyWeight || 0;
+                const total = (Number(m.bench)||0)+(Number(m.squat)||0)+(Number(m.clean)||0)+(Number(m.deadlift)||0);
+                const score = bw > 0 ? (total - ((bw > 200 ? 200 : bw) * 4)) : 0;
+                if(score > 0) scores.push({ name: p.playerName, score: score });
+            }
+
+            clubGrid.innerHTML = '';
+            tiers.forEach(t => {
+                const members = scores.filter(s => s.score >= t && s.score < (t + 50 || 1000));
+                clubGrid.innerHTML += `
+                    <div class="club-card p-4 rounded-xl">
+                        <div class="text-red-500 font-black italic text-lg mb-2">${t} LB CLUB</div>
+                        <div class="space-y-1">
+                            ${members.length > 0 ? members.map(m => `<div class="flex justify-between text-xs font-bold uppercase"><span>${m.name}</span><span class="text-blue-400">${m.score}</span></div>`).join('') : '<span class="text-gray-600 italic text-[10px]">VACANT</span>'}
+                        </div>
+                    </div>`;
+            });
         };
 
         window.toggleHist = (type) => {
@@ -198,38 +277,17 @@
             const uid = auth.currentUser.uid;
             const rackList = document.getElementById('hist-rack-list');
             const kitList = document.getElementById('hist-kitchen-list');
-            rackList.innerHTML = ''; kitList.innerHTML = '';
-
             const qMax = query(collection(db, "players", uid, "maxes"), orderBy("timestamp", "desc"));
-            const snapMax = await getDocs(qMax);
-            snapMax.forEach(d => {
-                const m = d.data();
-                const totalLifts = (m.bench||0) + (m.squat||0) + (m.clean||0) + (m.deadlift||0);
-                const calcBW = latestBW > 200 ? 200 : latestBW;
-                const weightClub = latestBW > 0 ? (totalLifts - (calcBW * 4)) : '--';
-                
-                rackList.innerHTML += `<div class="bg-gray-800 p-4 rounded-xl border-l-4 border-blue-600 mb-2">
-                    <div class="flex justify-between items-center mb-2">
-                        <span class="text-[10px] text-gray-500 uppercase font-bold">${m.date}</span>
-                        <span class="text-blue-500 font-black italic">CLUB: ${weightClub}</span>
-                    </div>
-                    <div class="grid grid-cols-4 text-center text-xs font-black">
-                        <div>B:${m.bench||0}</div><div>S:${m.squat||0}</div><div>C:${m.clean||0}</div><div>D:${m.deadlift||0}</div>
-                    </div>
-                </div>`;
-            });
-
             const qMeal = query(collection(db, "players", uid, "meals"), orderBy("timestamp", "desc"));
-            const snapMeal = await getDocs(qMeal);
-            snapMeal.forEach(d => {
+            const [snapMax, snapMeal] = await Promise.all([getDocs(qMax), getDocs(qMeal)]);
+            
+            rackList.innerHTML = ''; snapMax.forEach(d => {
                 const m = d.data();
-                kitList.innerHTML += `<div class="bg-gray-800 p-4 rounded-xl border-l-4 border-green-600 mb-2 text-xs">
-                    <div class="flex justify-between">
-                        <span><b>${m.date}</b> - ${m.meal}</span>
-                        <span class="text-green-400 font-bold">${m.bodyWeight||'--'} lbs</span>
-                    </div>
-                    ${m.notes ? `<div class="mt-2 text-gray-400 italic bg-black/20 p-2 rounded">"${m.notes}"</div>` : ''}
-                </div>`;
+                rackList.innerHTML += `<div class="bg-gray-800 p-4 rounded-xl border-l-4 border-blue-600 mb-2"><div class="flex justify-between text-[10px] text-gray-500 font-bold"><span>${m.date}</span></div><div class="grid grid-cols-4 text-center text-xs font-black mt-1"><div>B:${m.bench||0}</div><div>S:${m.squat||0}</div><div>C:${m.clean||0}</div><div>D:${m.deadlift||0}</div></div></div>`;
+            });
+            kitList.innerHTML = ''; snapMeal.forEach(d => {
+                const m = d.data();
+                kitList.innerHTML += `<div class="bg-gray-800 p-4 rounded-xl border-l-4 border-green-600 mb-2 text-xs"><div class="flex justify-between"><span>${m.date} - ${m.meal}</span><span class="text-green-400 font-bold">${m.bodyWeight} lbs</span></div></div>`;
             });
         };
     </script>

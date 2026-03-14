@@ -5,28 +5,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Coach Dashboard - Panther Power</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .club-card { background: linear-gradient(145deg, #1a1a1a, #262626); border-top: 4px solid #b91c1c; }
+        .club-title { text-shadow: 2px 2px 0px #000; }
+    </style>
 </head>
-<body class="bg-gray-900 text-white font-sans p-6 text-sm">
+<body class="bg-gray-900 text-white font-sans p-2 sm:p-6 text-sm">
 
-    <div class="max-w-6xl mx-auto">
-        <header class="flex justify-between items-center mb-8 border-b-2 border-red-700 pb-4">
-            <h1 class="text-2xl font-black italic uppercase italic">Coach Dashboard</h1>
+    <div class="max-w-7xl mx-auto">
+        <header class="flex flex-col sm:flex-row items-center justify-between mb-8 border-b-2 border-red-700 pb-4 gap-4">
+            <div class="flex items-center gap-4">
+                <img src="Panthers2.png" class="h-16">
+                <h1 class="text-2xl font-black italic uppercase tracking-tighter">Coach Dashboard</h1>
+            </div>
             <div class="flex gap-2">
-                <button onclick="showSection('rack')" class="bg-red-700 px-4 py-2 rounded font-bold uppercase text-xs">The Rack</button>
-                <button onclick="showSection('kitchen')" class="bg-green-700 px-4 py-2 rounded font-bold uppercase text-xs">The Kitchen</button>
+                <button onclick="showSection('board')" class="bg-blue-700 px-4 py-2 rounded font-bold text-xs uppercase shadow-lg">The Board</button>
+                <button onclick="showSection('rack')" class="bg-red-700 px-4 py-2 rounded font-bold text-xs uppercase shadow-lg">Lifts</button>
+                <button onclick="showSection('kitchen')" class="bg-green-700 px-4 py-2 rounded font-bold text-xs uppercase shadow-lg">Kitchen</button>
             </div>
         </header>
 
-        <div id="section-rack" class="space-y-4">
-            <h2 class="text-xl font-black italic text-red-500 uppercase">Weight Club Rankings</h2>
+        <div id="section-board" class="space-y-6">
+            <h2 class="text-3xl font-black italic text-center text-red-600 uppercase mb-8">Weight Club Leaderboard</h2>
+            <div id="club-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                </div>
+        </div>
+
+        <div id="section-rack" class="hidden space-y-4">
+            <h2 class="text-xl font-black italic text-red-500 uppercase">Weight Room Analytics</h2>
             <div class="bg-gray-800 rounded-xl overflow-hidden border border-gray-700">
                 <table class="w-full text-left">
                     <thead class="bg-black text-red-500 uppercase text-[10px]">
                         <tr>
                             <th class="p-4">Player</th>
                             <th class="p-4 text-center">B/S/C/D</th>
-                            <th class="p-4 text-center">Body Wt</th>
-                            <th class="p-4 text-center bg-red-950">Weight Club Score</th>
+                            <th class="p-4 text-center">Score</th>
                         </tr>
                     </thead>
                     <tbody id="rack-body" class="divide-y divide-gray-700"></tbody>
@@ -35,11 +48,11 @@
         </div>
 
         <div id="section-kitchen" class="hidden space-y-4">
-            <h2 class="text-xl font-black italic text-green-500 uppercase">Nutrition History</h2>
-            <select id="player-selector" onchange="loadPlayerHistory(this.value)" class="w-64 bg-gray-700 border border-green-700 p-2 rounded font-bold text-green-400">
-                <option value="">-- Choose a Player --</option>
+            <h2 class="text-xl font-black italic text-green-500 uppercase">Nutrition Logs</h2>
+            <select id="player-selector" onchange="loadPlayerHistory(this.value)" class="w-full sm:w-64 bg-gray-700 border border-green-700 p-2 rounded font-bold text-green-400 outline-none">
+                <option value="">-- Select Player --</option>
             </select>
-            <div class="bg-gray-800 rounded-xl overflow-hidden border border-gray-700">
+            <div class="bg-gray-800 rounded-xl overflow-hidden border border-gray-700 mt-4">
                 <table class="w-full text-left">
                     <tbody id="kitchen-history-body" class="divide-y divide-gray-700"></tbody>
                 </table>
@@ -64,45 +77,68 @@
         const db = getFirestore(app);
 
         window.showSection = (section) => {
-            document.getElementById('section-rack').classList.toggle('hidden', section !== 'rack');
-            document.getElementById('section-kitchen').classList.toggle('hidden', section !== 'kitchen');
+            ['section-board', 'section-rack', 'section-kitchen'].forEach(id => document.getElementById(id).classList.add('hidden'));
+            document.getElementById('section-' + section).classList.remove('hidden');
         };
 
-        async function loadInitialData() {
+        const tiers = [700, 650, 600, 550, 500, 450, 400, 350];
+        
+        async function loadDashboard() {
             const playersSnapshot = await getDocs(collection(db, "players"));
+            const clubGrid = document.getElementById('club-grid');
             const rackBody = document.getElementById('rack-body');
             const selector = document.getElementById('player-selector');
-            rackBody.innerHTML = ''; selector.innerHTML = '<option value="">-- Choose a Player --</option>';
+
+            clubGrid.innerHTML = ''; rackBody.innerHTML = '';
+            let playerScores = [];
 
             for (const playerDoc of playersSnapshot.docs) {
                 const p = playerDoc.data();
                 const uid = playerDoc.id;
-                
-                // Dropdown
+
+                // Add to dropdown
                 const opt = document.createElement('option'); opt.value = uid; opt.innerText = p.playerName; selector.appendChild(opt);
 
-                // Latest Weight
+                // Get Latest BW
                 const mealQ = query(collection(db, "players", uid, "meals"), orderBy("timestamp", "desc"), limit(1));
                 const mealSnap = await getDocs(mealQ);
                 const latestBW = mealSnap.docs[0]?.data().bodyWeight || 0;
 
-                // Latest Maxes
+                // Get Latest Lifts
                 const maxQ = query(collection(db, "players", uid, "maxes"), orderBy("timestamp", "desc"), limit(1));
                 const maxSnap = await getDocs(maxQ);
                 const m = maxSnap.docs[0]?.data() || {};
                 
-                // MATH: (B+S+C+D) - (cappedBW * 4)
-                const totalLifts = (Number(m.bench)||0) + (Number(m.squat)||0) + (Number(m.clean)||0) + (Number(m.deadlift)||0);
+                const liftSum = (Number(m.bench)||0) + (Number(m.squat)||0) + (Number(m.clean)||0) + (Number(m.deadlift)||0);
                 const cappedBW = latestBW > 200 ? 200 : latestBW;
-                const clubScore = latestBW > 0 ? (totalLifts - (cappedBW * 4)) : 'TBD';
+                const score = latestBW > 0 ? (liftSum - (cappedBW * 4)) : 0;
+
+                playerScores.push({ name: p.playerName, score: score, details: `${m.bench||0}/${m.squat||0}/${m.clean||0}/${m.deadlift||0}` });
 
                 rackBody.innerHTML += `<tr>
                     <td class="p-4 font-bold text-red-400">${p.playerName}</td>
-                    <td class="p-4 text-center font-mono text-xs">${m.bench||0}/${m.squat||0}/${m.clean||0}/${m.deadlift||0}</td>
-                    <td class="p-4 text-center text-gray-400">${latestBW} lbs</td>
-                    <td class="p-4 text-center font-black text-lg ${clubScore >= 0 ? 'text-green-400' : 'text-white'}">${clubScore}</td>
+                    <td class="p-4 text-center text-[10px] text-gray-500">${playerScores[playerScores.length-1].details}</td>
+                    <td class="p-4 text-center font-black text-lg text-white">${score}</td>
                 </tr>`;
             }
+
+            // Render Tiers
+            tiers.forEach(threshold => {
+                const members = playerScores.filter(ps => ps.score >= threshold && ps.score < (threshold + 50 || 1000));
+                clubGrid.innerHTML += `
+                    <div class="club-card p-4 rounded-xl shadow-2xl">
+                        <div class="club-title text-xl font-black italic text-red-600 mb-3">${threshold} LB CLUB</div>
+                        <div class="space-y-2">
+                            ${members.length > 0 ? members.map(m => `
+                                <div class="flex justify-between items-center border-b border-gray-700 pb-1">
+                                    <span class="font-bold text-xs uppercase">${m.name}</span>
+                                    <span class="text-blue-400 font-mono font-bold">${m.score}</span>
+                                </div>
+                            `).join('') : '<span class="text-gray-600 italic text-xs uppercase">Vacant</span>'}
+                        </div>
+                    </div>
+                `;
+            });
         }
 
         window.loadPlayerHistory = async (uid) => {
@@ -114,14 +150,14 @@
             mealSnap.forEach(doc => {
                 const m = doc.data();
                 historyBody.innerHTML += `<tr class="p-4">
-                    <td class="p-4 font-bold uppercase italic text-xs">${m.date} - ${m.meal}</td>
+                    <td class="p-4 font-bold uppercase text-xs">${m.date} - ${m.meal}</td>
                     <td class="p-4 text-gray-400 italic">"${m.notes || ''}"</td>
                     <td class="p-4 text-right font-black text-green-500">${m.bodyWeight} lbs</td>
                 </tr>`;
             });
         };
 
-        loadInitialData();
+        loadDashboard();
     </script>
 </body>
 </html>
