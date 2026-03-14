@@ -6,11 +6,9 @@
     <title>Panther Performance</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Global High-Contrast Styles */
         body { background-color: #0f172a; color: white; }
         .club-card { background: linear-gradient(145deg, #1a1a1a, #262626); border-top: 3px solid #b91c1c; }
         
-        /* Forced Visibility for Inputs */
         input, select, textarea { 
             background-color: #1f2937 !important; 
             color: #ffffff !important; 
@@ -34,7 +32,7 @@
     <header class="bg-black p-6 shadow-xl border-b-4 border-red-700 flex flex-col items-center text-center">
         <img src="Panthers2.png" alt="Panthers" class="h-20 mb-2">
         <h1 class="text-2xl font-black italic uppercase tracking-tighter">Panther Power</h1>
-        <span id="role-tag" class="text-red-600 text-[10px] block tracking-widest mt-1 font-bold"></span>
+        <span id="role-tag" class="text-red-600 text-[10px] block tracking-widest mt-1 font-bold uppercase"></span>
     </header>
 
     <div class="max-w-md mx-auto px-4 mt-6">
@@ -56,7 +54,7 @@
 
             <div class="flex gap-3">
                 <button onclick="handleAuth('login')" class="flex-1 bg-gray-700 py-4 rounded-xl font-black uppercase text-xs tracking-widest border border-gray-600">Login</button>
-                <button onclick="handleAuth('signup')" class="flex-1 bg-red-700 py-4 rounded-xl font-black uppercase text-xs tracking-widest">Sign Up</button>
+                <button onclick="handleAuth('signup')" class="flex-1 bg-red-700 py-4 rounded-xl font-black uppercase text-xs tracking-widest text-white">Sign Up</button>
             </div>
         </div>
 
@@ -66,16 +64,16 @@
                 <button onclick="logout()" class="text-xs text-gray-400 font-bold underline uppercase">Logout</button>
             </div>
             
-            <div id="coach-tools" class="hidden bg-red-900/10 border border-red-900/40 p-4 rounded-2xl">
-                <button onclick="loadRoster(); showView('roster')" class="w-full bg-red-700 p-3 rounded-xl font-black uppercase text-sm italic shadow-lg">📋 Manage Roster</button>
+            <div id="coach-tools" class="hidden bg-red-900/20 border border-red-900/40 p-4 rounded-2xl">
+                <button onclick="loadRoster(); showView('roster')" class="w-full bg-red-700 p-3 rounded-xl font-black uppercase text-sm italic shadow-lg text-white">📋 Manage Roster</button>
             </div>
 
-            <button onclick="showView('rack')" class="w-full bg-gray-800 border-2 border-red-700 p-5 rounded-2xl text-xl font-black italic uppercase shadow-xl">🏋️ The Rack</button>
-            <button onclick="showView('kitchen')" class="w-full bg-gray-800 border-2 border-green-700 p-5 rounded-2xl text-xl font-black italic uppercase shadow-xl">🍳 The Kitchen</button>
+            <button onclick="showView('rack')" class="w-full bg-gray-800 border-2 border-red-700 p-5 rounded-2xl text-xl font-black italic uppercase shadow-xl text-white">🏋️ The Rack</button>
+            <button onclick="showView('kitchen')" class="w-full bg-gray-800 border-2 border-green-700 p-5 rounded-2xl text-xl font-black italic uppercase shadow-xl text-white">🍳 The Kitchen</button>
             
             <div class="grid grid-cols-2 gap-3">
-                <button onclick="showView('goals')" class="bg-gray-800 border border-yellow-600 py-4 rounded-xl text-sm font-black uppercase">🎯 Goals</button>
-                <button onclick="loadLeaderboard(); showView('leaderboard')" class="bg-gray-800 border border-blue-600 py-4 rounded-xl text-sm font-black uppercase">🏆 Board</button>
+                <button onclick="showView('goals')" class="bg-gray-800 border border-yellow-600 py-4 rounded-xl text-sm font-black uppercase text-white">🎯 Goals</button>
+                <button onclick="loadLeaderboard(); showView('leaderboard')" class="bg-gray-800 border border-blue-600 py-4 rounded-xl text-sm font-black uppercase text-white">🏆 Board</button>
             </div>
 
             <div class="space-y-3">
@@ -108,7 +106,7 @@
                     <input id="deadlift" type="number" placeholder="Deadlift">
                     <input id="pushpress" type="number" placeholder="Push Press" class="col-span-2">
                 </div>
-                <button onclick="saveRack()" class="w-full bg-red-700 py-4 rounded-xl font-black uppercase tracking-widest">Update Lifts</button>
+                <button onclick="saveRack()" class="w-full bg-red-700 py-4 rounded-xl font-black uppercase tracking-widest text-white">Update Lifts</button>
             </section>
         </div>
 
@@ -125,7 +123,7 @@
                 </div>
                 <input id="weight" type="number" placeholder="Body Weight (lbs)">
                 <textarea id="meal-notes" placeholder="Notes..." class="h-20"></textarea>
-                <button onclick="saveKitchen()" class="w-full bg-green-700 py-4 rounded-xl font-black uppercase tracking-widest">Save Log</button>
+                <button onclick="saveKitchen()" class="w-full bg-green-700 py-4 rounded-xl font-black uppercase tracking-widest text-white">Save Log</button>
             </section>
         </div>
 
@@ -184,7 +182,7 @@
 
         // ADMIN FUNCTIONS
         window.resetPassword = async (email) => {
-            if(!email) return alert("No email on file for this user.");
+            if(!email) return alert("Email missing.");
             try {
                 await sendPasswordResetEmail(auth, email);
                 alert("Reset link sent to " + email);
@@ -193,27 +191,30 @@
 
         window.toggleRole = async (id, currentRole) => {
             const nextRole = currentRole === 'coach' ? 'player' : 'coach';
-            if(confirm(`Promote/Demote to ${nextRole.toUpperCase()}?`)) {
+            if(confirm(`Change user to ${nextRole.toUpperCase()}?`)) {
                 await updateDoc(doc(db, "players", id), { role: nextRole });
                 loadRoster();
             }
         };
 
         window.deletePlayer = async (id) => { 
-            if(confirm("Permanently delete this player's data? (NOTE: You must still manually delete their email from the Firebase 'Authentication' tab to fully remove them).")) { 
+            if(confirm("Delete this player's data? You must still delete their login from Firebase Auth manually.")) { 
                 await deleteDoc(doc(db, "players", id)); 
                 loadRoster(); 
             } 
         };
 
-        // UI NAVIGATION
+        // NAVIGATION LOGIC (FIXED)
         window.showView = (v) => {
-            ['auth-section', 'lobby-section', 'rack-view', 'kitchen-view', 'goals-view', 'history-view', 'leaderboard-view', 'roster-view'].forEach(s => {
+            const views = ['auth-section', 'lobby-section', 'rack-view', 'kitchen-view', 'goals-view', 'history-view', 'leaderboard-view', 'roster-view'];
+            views.forEach(s => {
                 const el = document.getElementById(s);
                 if(el) el.classList.add('hidden');
             });
-            const t = v.includes('-') ? v : (v === 'lobby' || v === 'auth' ? v + '-section' : v + '-view');
-            const target = document.getElementById(t);
+            
+            // Map keywords to IDs
+            let targetId = v.includes('-') ? v : (v === 'lobby' || v === 'auth' ? v + '-section' : v + '-view');
+            const target = document.getElementById(targetId);
             if(target) target.classList.remove('hidden');
         };
 
@@ -223,14 +224,14 @@
             cc.style.display = (role === 'coach') ? 'block' : 'none';
         };
 
-        // AUTH LOGIC
+        // AUTH
         onAuthStateChanged(auth, async (u) => {
             if (u) {
                 const snap = await getDoc(doc(db, "players", u.uid));
                 if(snap.exists()){
                     userData = snap.data();
                     document.getElementById('user-display').innerText = userData.playerName;
-                    document.getElementById('role-tag').innerText = "— " + userData.role.toUpperCase() + " ACCESS —";
+                    document.getElementById('role-tag').innerText = "— " + userData.role + " ACCESS —";
                     if(userData.role === 'coach') {
                         document.getElementById('coach-tools').classList.remove('hidden');
                         document.getElementById('coach-pdf').classList.remove('hidden');
@@ -242,11 +243,11 @@
 
         window.handleAuth = async (t) => {
             const e = document.getElementById('email').value, p = document.getElementById('password').value, n = document.getElementById('player-name').value, r = document.getElementById('reg-role').value, cc = document.getElementById('coach-code').value;
-            if(!e || !p) return alert("Credentials required");
+            if(!e || !p) return alert("Fill in credentials.");
             try {
                 if (t === 'signup') {
-                    if(!n) return alert("Name required");
-                    if(r === 'coach' && cc !== COACH_SECRET) return alert("Invalid Coach Access Code");
+                    if(!n) return alert("Name required.");
+                    if(r === 'coach' && cc !== COACH_SECRET) return alert("Invalid Code.");
                     const res = await createUserWithEmailAndPassword(auth, e, p);
                     await setDoc(doc(db, "players", res.user.uid), { playerName: n, email: e, role: r });
                 } else { await signInWithEmailAndPassword(auth, e, p); }
@@ -255,7 +256,7 @@
 
         window.logout = () => { signOut(auth); location.reload(); };
 
-        // DATA SAVING
+        // DATA METHODS
         window.saveRack = async () => {
             await addDoc(collection(db, "players", auth.currentUser.uid, "maxes"), {
                 bench: Number(document.getElementById('bench').value), squat: Number(document.getElementById('squat').value),
@@ -280,33 +281,29 @@
             alert("Goals Set!"); showView('lobby');
         };
 
-        // ROSTER & BOARD
         window.loadRoster = async () => {
             const list = document.getElementById('roster-list');
-            list.innerHTML = '<p class="text-center italic text-xs">Syncing Team...</p>';
+            list.innerHTML = 'Syncing...';
             const snap = await getDocs(collection(db, "players"));
             list.innerHTML = '';
             snap.forEach(d => {
                 const p = d.data();
                 list.innerHTML += `
-                <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow-md">
-                    <div class="flex justify-between items-start mb-3 text-left">
-                        <div>
-                            <p class="font-bold uppercase text-sm">${p.playerName}</p>
-                            <p class="text-[9px] text-gray-500 font-bold tracking-widest uppercase">${p.email || 'No Email'}</p>
-                        </div>
+                <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 text-left">
+                    <div class="flex justify-between items-start mb-2">
+                        <div><p class="font-bold uppercase text-sm">${p.playerName}</p><p class="text-[9px] text-gray-500 font-bold uppercase">${p.email}</p></div>
                         <button onclick="deletePlayer('${d.id}')" class="text-red-600 text-[10px] font-black underline">REMOVE</button>
                     </div>
                     <div class="flex gap-2">
-                        <button onclick="toggleRole('${d.id}', '${p.role}')" class="flex-1 bg-gray-700 py-2 rounded text-[10px] font-black uppercase border border-gray-600">Role: ${p.role}</button>
-                        <button onclick="resetPassword('${p.email}')" class="flex-1 bg-blue-900/30 text-blue-400 py-2 rounded text-[10px] font-black uppercase border border-blue-800/50">Reset PW</button>
+                        <button onclick="toggleRole('${d.id}', '${p.role}')" class="flex-1 bg-gray-700 py-2 rounded text-[10px] font-black uppercase">Role: ${p.role}</button>
+                        <button onclick="resetPassword('${p.email}')" class="flex-1 bg-blue-900/30 text-blue-400 py-2 rounded text-[10px] font-black uppercase">Reset PW</button>
                     </div>
                 </div>`;
             });
         };
 
         window.loadLeaderboard = async () => {
-            const grid = document.getElementById('player-club-grid'); grid.innerHTML = 'Syncing Lifts...';
+            const grid = document.getElementById('player-club-grid'); grid.innerHTML = 'Calculating...';
             const pSnap = await getDocs(collection(db, "players"));
             let s = [];
             for (const d of pSnap.docs) {
@@ -327,11 +324,11 @@
             const rL = document.getElementById('hist-rack-list'), kL = document.getElementById('hist-kitchen-list');
             const sM = await getDocs(query(collection(db, "players", auth.currentUser.uid, "maxes"), orderBy("timestamp", "desc")));
             const sK = await getDocs(query(collection(db, "players", auth.currentUser.uid, "meals"), orderBy("timestamp", "desc")));
-            rL.innerHTML = ''; sM.forEach(d => { const m = d.data(); rL.innerHTML += `<div class="bg-gray-800 p-4 rounded-xl border-l-4 border-blue-600 mb-2 shadow-xl"><div class="flex justify-between text-[9px] font-black text-gray-500 uppercase tracking-widest"><span>${m.date}</span><button onclick="deleteEntry('maxes','${d.id}')" class="text-red-600">DELETE</button></div><div class="grid grid-cols-4 text-center text-xs font-black mt-2"><div>B:${m.bench}</div><div>S:${m.squat}</div><div>C:${m.clean}</div><div>D:${m.deadlift}</div></div></div>`; });
-            kL.innerHTML = ''; sK.forEach(d => { const k = d.data(); kL.innerHTML += `<div class="bg-gray-800 p-4 rounded-xl border-l-4 border-green-600 mb-2 text-xs flex justify-between items-center shadow-xl"><div><p class="font-bold text-gray-400 text-[10px] uppercase">${k.date} — ${k.meal}</p><p class="text-green-400 font-black">${k.bodyWeight} LBS</p></div><button onclick="deleteEntry('meals','${d.id}')" class="text-red-600 font-bold text-[10px]">DELETE</button></div>`; });
+            rL.innerHTML = ''; sM.forEach(d => { const m = d.data(); rL.innerHTML += `<div class="bg-gray-800 p-4 rounded-xl border-l-4 border-blue-600 mb-2 shadow-xl text-left"><div class="flex justify-between text-[9px] font-black text-gray-500 uppercase"><span>${m.date}</span><button onclick="deleteEntry('maxes','${d.id}')" class="text-red-600">DELETE</button></div><div class="grid grid-cols-4 text-center text-xs font-black mt-2"><div>B:${m.bench}</div><div>S:${m.squat}</div><div>C:${m.clean}</div><div>D:${m.deadlift}</div></div></div>`; });
+            kL.innerHTML = ''; sK.forEach(d => { const k = d.data(); kL.innerHTML += `<div class="bg-gray-800 p-4 rounded-xl border-l-4 border-green-600 mb-2 text-xs flex justify-between items-center shadow-xl text-left"><div><p class="font-bold text-gray-400 text-[10px] uppercase">${k.date} — ${k.meal}</p><p class="text-green-400 font-black">${k.bodyWeight} LBS</p></div><button onclick="deleteEntry('meals','${d.id}')" class="text-red-600 font-bold text-[10px]">DELETE</button></div>`; });
         };
 
-        window.deleteEntry = async (col, id) => { if(confirm("Delete this entry?")) { await deleteDoc(doc(db, "players", auth.currentUser.uid, col, id)); loadMyHistory(); } };
+        window.deleteEntry = async (col, id) => { if(confirm("Delete entry?")) { await deleteDoc(doc(db, "players", auth.currentUser.uid, col, id)); loadMyHistory(); } };
         window.toggleHist = (t) => { document.getElementById('hist-rack-list').classList.toggle('hidden', t !== 'rack'); document.getElementById('hist-kitchen-list').classList.toggle('hidden', t !== 'kitchen'); };
     </script>
 </body>
