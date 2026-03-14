@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coach View - Panther Power</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white font-sans p-2 sm:p-6">
+
+    <div class="max-w-5xl mx-auto">
+        <div class="flex items-center justify-between mb-8 border-b-2 border-red-700 pb-4">
+            <img src="Panthers2.png" class="h-16">
+            <h1 class="text-2xl font-black italic uppercase">Team Roster</h1>
+            <a href="index.html" class="bg-gray-800 text-xs px-3 py-1 rounded">App Home</a>
+        </div>
+
+        <div class="bg-gray-800 rounded-xl overflow-hidden shadow-2xl border border-gray-700">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-black text-red-500 uppercase text-[10px] tracking-widest">
+                        <tr>
+                            <th class="p-4">Player</th>
+                            <th class="p-4 text-center">Lifts (B/S/C/D/PP)</th>
+                            <th class="p-4 text-center">Body Wt</th>
+                            <th class="p-4 text-center">Calories</th>
+                            <th class="p-4 text-center text-gray-400">Macros (P/C/F)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboard-body" class="divide-y divide-gray-700">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBdY26nH0CAn05IpjzoFvG5E1H-bv8fPwA",
+            authDomain: "panthertracker-b8ff6.firebaseapp.com",
+            projectId: "panthertracker-b8ff6",
+            storageBucket: "panthertracker-b8ff6.firebasestorage.app",
+            messagingSenderId: "647881105335",
+            appId: "1:647881105335:web:bbb79bb3fe9740de1e1232"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        async function loadLeaderboard() {
+            const querySnapshot = await getDocs(collection(db, "players"));
+            const tbody = document.getElementById('leaderboard-body');
+            tbody.innerHTML = '';
+
+            querySnapshot.forEach((doc) => {
+                const p = doc.data();
+                const row = `
+                    <tr class="hover:bg-gray-700/50 transition">
+                        <td class="p-4">
+                            <div class="font-bold text-red-400 text-sm">${p.playerName || 'Unknown'}</div>
+                            <div class="text-[9px] text-gray-500 uppercase">Last: ${p.lastUpdated || '-'}</div>
+                        </td>
+                        <td class="p-4 text-center font-mono text-[11px]">
+                            ${p.bench || '0'}/${p.squat || '0'}/${p.clean || '0'}/${p.deadlift || '0'}/<span class="text-red-500 font-bold">${p.pushpress || '0'}</span>
+                        </td>
+                        <td class="p-4 text-center text-xs font-bold">${p.weight || '-'} lbs</td>
+                        <td class="p-4 text-center text-sm font-black text-green-500">${p.calories || '-'}</td>
+                        <td class="p-4 text-center text-[10px] text-gray-400 font-bold uppercase">
+                            P:${p.protein || '-'}/C:${p.carbs || '-'}/F:${p.fat || '-'}
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+        loadLeaderboard();
+    </script>
+</body>
+</html>
