@@ -8,11 +8,14 @@
 </head>
 <body class="bg-gray-900 text-white font-sans p-2 sm:p-6">
 
-    <div class="max-w-5xl mx-auto">
+    <div class="max-w-6xl mx-auto">
         <div class="flex items-center justify-between mb-8 border-b-2 border-red-700 pb-4">
             <img src="Panthers2.png" class="h-16">
-            <h1 class="text-2xl font-black italic uppercase">Team Roster</h1>
-            <a href="index.html" class="bg-gray-800 text-xs px-3 py-1 rounded">App Home</a>
+            <div>
+                <h1 class="text-2xl font-black italic uppercase">Team Roster</h1>
+                <p class="text-[10px] text-gray-400 uppercase tracking-widest">Showing Latest Entry for Each Player</p>
+            </div>
+            <a href="index.html" class="bg-gray-800 text-xs px-3 py-1 rounded border border-gray-600">App Home</a>
         </div>
 
         <div class="bg-gray-800 rounded-xl overflow-hidden shadow-2xl border border-gray-700">
@@ -21,10 +24,10 @@
                     <thead class="bg-black text-red-500 uppercase text-[10px] tracking-widest">
                         <tr>
                             <th class="p-4">Player</th>
-                            <th class="p-4 text-center">Lifts (B/S/C/D/PP)</th>
+                            <th class="p-4 text-center">Latest Maxes (B/S/C/D/PP)</th>
+                            <th class="p-4 text-center">Last Meal Logged</th>
+                            <th class="p-4 text-center">Latest Macros (P/C/F)</th>
                             <th class="p-4 text-center">Body Wt</th>
-                            <th class="p-4 text-center">Calories</th>
-                            <th class="p-4 text-center text-gray-400">Macros (P/C/F)</th>
                         </tr>
                     </thead>
                     <tbody id="leaderboard-body" class="divide-y divide-gray-700">
@@ -36,7 +39,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBdY26nH0CAn05IpjzoFvG5E1H-bv8fPwA",
@@ -51,30 +54,49 @@
         const db = getFirestore(app);
 
         async function loadLeaderboard() {
-            const querySnapshot = await getDocs(collection(db, "players"));
+            const playersSnapshot = await getDocs(collection(db, "players"));
             const tbody = document.getElementById('leaderboard-body');
             tbody.innerHTML = '';
 
-            querySnapshot.forEach((doc) => {
-                const p = doc.data();
+            for (const playerDoc of playersSnapshot.docs) {
+                const p = playerDoc.data();
+                const uid = playerDoc.id;
+
+                // 1. Get Latest Maxes
+                const maxQuery = query(collection(db, "players", uid, "maxes"), orderBy("timestamp", "desc"), limit(1));
+                const maxSnap = await getDocs(maxQuery);
+                const latestMax = maxSnap.docs[0]?.data() || {};
+
+                // 2. Get Latest Meal
+                const mealQuery = query(collection(db, "players", uid, "meals"), orderBy("timestamp", "desc"), limit(1));
+                const mealSnap = await getDocs(mealQuery);
+                const latestMeal = mealSnap.docs[0]?.data() || {};
+
                 const row = `
                     <tr class="hover:bg-gray-700/50 transition">
                         <td class="p-4">
                             <div class="font-bold text-red-400 text-sm">${p.playerName || 'Unknown'}</div>
-                            <div class="text-[9px] text-gray-500 uppercase">Last: ${p.lastUpdated || '-'}</div>
+                            <div class="text-[9px] text-gray-500 uppercase tracking-tighter">${p.email || ''}</div>
                         </td>
                         <td class="p-4 text-center font-mono text-[11px]">
-                            ${p.bench || '0'}/${p.squat || '0'}/${p.clean || '0'}/${p.deadlift || '0'}/<span class="text-red-500 font-bold">${p.pushpress || '0'}</span>
+                            ${latestMax.bench || '-'}/${latestMax.squat || '-'}/${latestMax.clean || '-'}/${latestMax.deadlift || '-'}/<span class="text-red-500 font-bold">${latestMax.pushpress || '-'}</span>
+                            <div class="text-[8px] text-gray-500 mt-1">${latestMax.date || 'No Data'}</div>
                         </td>
-                        <td class="p-4 text-center text-xs font-bold">${p.weight || '-'} lbs</td>
-                        <td class="p-4 text-center text-sm font-black text-green-500">${p.calories || '-'}</td>
-                        <td class="p-4 text-center text-[10px] text-gray-400 font-bold uppercase">
-                            P:${p.protein || '-'}/C:${p.carbs || '-'}/F:${p.fat || '-'}
+                        <td class="p-4 text-center">
+                            <span class="text-xs font-bold text-green-500 uppercase">${latestMeal.meal || '---'}</span>
+                            <div class="text-[10px] text-white font-black">${latestMeal.calories || '0'} <span class="text-[8px] font-normal text-gray-400">CALS</span></div>
+                        </td>
+                        <td class="p-4 text-center text-[10px] text-gray-300 font-bold uppercase">
+                            P:${latestMeal.protein || '-'}/C:${latestMeal.carbs || '-'}/F:${latestMeal.fat || '-'}
+                            <div class="text-[8px] text-gray-500 mt-1 uppercase">${latestMeal.date || ''}</div>
+                        </td>
+                        <td class="p-4 text-center text-xs font-bold">
+                            ${latestMeal.bodyWeight || '-'} <span class="text-[9px] text-gray-500">lbs</span>
                         </td>
                     </tr>
                 `;
                 tbody.innerHTML += row;
-            });
+            }
         }
         loadLeaderboard();
     </script>
