@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panther Performance v5.3</title>
+    <title>Panther Performance v5.4</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { background-color: #0f172a; color: white; }
@@ -18,20 +18,20 @@
         .admin-box { border: 2px dashed #dc2626; padding: 1rem; border-radius: 1rem; margin-bottom: 1.5rem; background: rgba(220, 38, 38, 0.05); }
         .social-icon { height: 40px; width: 40px; border-radius: 8px; transition: transform 0.2s; cursor: pointer; }
         .social-icon:hover { transform: scale(1.1); }
-        .coach-nav-btn { font-size: 9px; font-weight: 900; text-transform: uppercase; padding: 8px; border-radius: 6px; flex: 1; text-align: center; }
+        .coach-nav-btn { font-size: 9px; font-weight: 900; text-transform: uppercase; padding: 8px; border-radius: 6px; flex: 1; text-align: center; cursor: pointer; }
     </style>
 </head>
 <body class="font-sans pb-10">
 
     <header class="bg-black p-6 border-b-4 border-red-700 flex flex-col items-center text-center shadow-2xl">
         <img src="Panthers2.png" alt="Panthers" class="h-20 mb-2">
-        <h1 class="text-2xl font-black italic uppercase tracking-tighter text-white">Panther Power</h1>
+        <h1 class="text-2xl font-black italic uppercase tracking-tighter">Panther Power</h1>
         <span id="role-tag" class="text-red-600 text-[10px] block tracking-widest mt-1 font-bold uppercase"></span>
     </header>
 
     <div class="max-w-md mx-auto px-4 mt-6">
         
-        <div id="auth-section" class="bg-[#1e293b] p-6 rounded-2xl border border-gray-700 shadow-2xl">
+        <div id="auth-section" class="bg-[#1e293b] p-6 rounded-2xl border border-gray-700">
             <h2 class="text-xl font-bold mb-6 text-center uppercase text-red-500 italic">Secure Access</h2>
             <input id="player-name" type="text" placeholder="Full Name (Signup Only)">
             <input id="email" type="email" placeholder="Email Address">
@@ -54,7 +54,7 @@
                 
                 <div class="flex gap-2">
                     <button onclick="loadLeaderboard(); showView('leaderboard')" class="coach-nav-btn bg-blue-700">The Board</button>
-                    <button onclick="showView('rack')" class="coach-nav-btn bg-red-700">Lifts</button>
+                    <button onclick="showView('lift-audit')" class="coach-nav-btn bg-red-700">Lifts</button>
                     <button onclick="showView('kitchen')" class="coach-nav-btn bg-green-700">Kitchen</button>
                 </div>
 
@@ -62,30 +62,25 @@
                     <button onclick="loadRoster(); showView('roster')" class="bg-gray-800 p-3 rounded-lg font-black uppercase text-[10px] border border-gray-700 text-gray-300">Manage Roster</button>
                     <button onclick="exportRackCSV()" class="bg-white text-black p-3 rounded-lg font-black uppercase text-[10px]">Export CSV</button>
                 </div>
-
-                <a href="Varsity Football Coaches Guidelines.pdf" target="_blank" class="block w-full bg-red-900/40 text-red-400 text-center py-3 rounded-xl text-[10px] font-black uppercase border border-red-900/50">📋 Coaches Guidelines PDF</a>
+                <a href="Varsity Football Coaches Guidelines.pdf" target="_blank" class="block w-full bg-red-900/40 text-red-400 text-center py-2 rounded-lg text-[9px] font-black uppercase border border-red-900/50">Coaches Guidelines PDF</a>
             </div>
 
             <div id="player-dash" class="flex justify-between items-center bg-gray-800 p-4 rounded-xl border border-gray-700">
-                <span id="user-display" class="text-sm font-bold text-red-500 uppercase italic text-white"></span>
+                <span id="user-display" class="text-sm font-bold text-red-500 uppercase italic"></span>
                 <button onclick="logout()" class="text-xs text-gray-400 font-bold underline uppercase">Logout</button>
             </div>
 
-            <button onclick="showView('rack')" class="w-full bg-gray-800 border-2 border-red-700 p-5 rounded-2xl text-xl font-black italic uppercase shadow-xl">🏋️ The Rack</button>
-            <button onclick="showView('kitchen')" class="w-full bg-gray-800 border-2 border-green-700 p-5 rounded-2xl text-xl font-black italic uppercase shadow-xl">🍳 The Kitchen</button>
+            <button onclick="showView('rack')" class="w-full bg-gray-800 border-2 border-red-700 p-5 rounded-2xl text-xl font-black italic uppercase">🏋️ The Rack</button>
+            <button onclick="showView('kitchen')" class="w-full bg-gray-800 border-2 border-green-700 p-5 rounded-2xl text-xl font-black italic uppercase">🍳 The Kitchen</button>
             
             <div class="grid grid-cols-2 gap-3">
-                <button onclick="showView('bulk')" class="bg-gradient-to-br from-orange-600 to-red-700 p-4 rounded-xl text-[11px] font-black italic uppercase shadow-lg border-b-4 border-red-900">📈 Bulk Up</button>
-                <button onclick="showView('lean')" class="bg-gradient-to-br from-blue-600 to-cyan-700 p-4 rounded-xl text-[11px] font-black italic uppercase shadow-lg border-b-4 border-blue-900">📉 Lean Out</button>
+                <button onclick="showView('bulk')" class="bg-gradient-to-br from-orange-600 to-red-700 p-4 rounded-xl text-[11px] font-black italic uppercase">📈 Bulk Up</button>
+                <button onclick="showView('lean')" class="bg-gradient-to-br from-blue-600 to-cyan-700 p-4 rounded-xl text-[11px] font-black italic uppercase">📉 Lean Out</button>
             </div>
 
             <div class="grid grid-cols-2 gap-3">
                 <button onclick="showView('goals')" class="bg-gray-800 border border-yellow-600 py-4 rounded-xl text-sm font-black uppercase">🎯 Goals</button>
                 <button onclick="loadLeaderboard(); showView('leaderboard')" class="bg-gray-800 border border-blue-600 py-4 rounded-xl text-sm font-black uppercase">🏆 Board</button>
-            </div>
-
-            <div class="space-y-3">
-                <a href="Panthers Football Culture Playbook.pdf" target="_blank" class="block w-full bg-white text-black text-center p-4 rounded-2xl text-lg font-black italic uppercase shadow-lg border-b-4 border-gray-400">📖 Culture Playbook</a>
             </div>
 
             <div class="flex justify-center gap-6 py-4 bg-gray-900/50 rounded-2xl border border-gray-800">
@@ -97,6 +92,15 @@
             <button onclick="loadMyHistory(); showView('history')" class="w-full bg-gray-800 border border-gray-600 p-4 rounded-2xl text-xs font-bold uppercase text-gray-400">📊 My History</button>
         </div>
 
+        <div id="lift-audit-view" class="hidden space-y-6">
+            <button onclick="showView('lobby')" class="text-red-500 font-bold text-xs uppercase">← Back</button>
+            <div class="admin-box">
+                <h3 class="text-red-500 font-black text-[10px] mb-2 uppercase italic tracking-widest">Team Lift Entries</h3>
+                <select id="player-select-lifts" onchange="loadPlayerLiftAudit()"><option value="">Select Player...</option></select>
+                <div id="admin-lift-display" class="mt-4 space-y-3"></div>
+            </div>
+        </div>
+
         <div id="rack-view" class="hidden space-y-6">
             <button onclick="showView('lobby')" class="text-red-500 font-bold text-xs uppercase">← Back</button>
             <section class="bg-gray-800 p-6 rounded-2xl border border-gray-700 shadow-2xl">
@@ -106,16 +110,16 @@
                     <input id="clean" type="number" placeholder="Clean"><input id="deadlift" type="number" placeholder="Deadlift">
                     <input id="pushpress" type="number" placeholder="Push Press" class="col-span-2">
                 </div>
-                <button onclick="saveRack()" class="w-full bg-red-700 py-4 rounded-xl font-black uppercase text-white shadow-xl">Update Lifts</button>
+                <button onclick="saveRack()" class="w-full bg-red-700 py-4 rounded-xl font-black uppercase text-white">Update Lifts</button>
             </section>
         </div>
 
         <div id="kitchen-view" class="hidden space-y-6">
             <button onclick="showView('lobby')" class="text-green-500 font-bold text-xs uppercase">← Back</button>
             <div id="kitchen-admin" class="hidden admin-box">
-                <h3 class="text-green-500 font-black text-[10px] mb-2 uppercase italic tracking-widest">Master Player Audit</h3>
-                <select id="player-select-kitchen" onchange="loadMasterAudit()"><option value="">Select Player...</option></select>
-                <div id="master-audit-display" class="mt-4 space-y-4"></div>
+                <h3 class="text-green-500 font-black text-[10px] mb-2 uppercase italic tracking-widest">Player Nutrition Audit</h3>
+                <select id="player-select-kitchen" onchange="loadPlayerKitchen()"><option value="">Select Player...</option></select>
+                <div id="admin-kitchen-list" class="mt-4 space-y-2 max-h-64 overflow-y-auto"></div>
             </div>
             <section class="bg-gray-800 p-6 rounded-2xl border border-gray-700 shadow-2xl">
                 <h2 class="text-xl font-bold mb-4 text-green-600 uppercase italic font-black text-center">Log Nutrition</h2>
@@ -123,79 +127,80 @@
                 <div class="grid grid-cols-2 gap-3"><input id="protein" type="number" placeholder="Prot"><input id="carbs" type="number" placeholder="Carbs"><input id="fat" type="number" placeholder="Fat"><input id="calories" type="number" placeholder="Cals"></div>
                 <input id="weight" type="number" placeholder="Body Weight (lbs)">
                 <textarea id="meal-notes" placeholder="Notes..."></textarea>
-                <button onclick="saveKitchen()" class="w-full bg-green-700 py-4 rounded-xl font-black uppercase text-white shadow-xl">Save Log</button>
+                <button onclick="saveKitchen()" class="w-full bg-green-700 py-4 rounded-xl font-black uppercase text-white">Save Log</button>
             </section>
         </div>
 
         <div id="roster-view" class="hidden space-y-4"><button onclick="showView('lobby')" class="text-red-500 font-bold text-xs uppercase">← BACK</button><div id="roster-list" class="space-y-4"></div></div>
         <div id="leaderboard-view" class="hidden space-y-6"><button onclick="showView('lobby')" class="text-blue-500 font-bold text-xs uppercase">← Back</button><div id="player-club-grid" class="space-y-4"></div></div>
-        <div id="history-view" class="hidden space-y-4"><button onclick="showView('lobby')" class="text-gray-500 font-bold text-xs uppercase">← Back</button><div class="flex gap-2"><button onclick="toggleHist('rack')" class="flex-1 bg-blue-700 py-3 rounded-lg text-xs font-black uppercase">Lifts</button><button onclick="toggleHist('kitchen')" class="flex-1 bg-gray-800 py-3 rounded-lg text-xs font-black uppercase">Kitchen</button></div><div id="hist-rack-list" class="space-y-3 text-white"></div><div id="hist-kitchen-list" class="hidden space-y-3 text-white"></div></div>
-        <div id="bulk-view" class="hidden space-y-4 text-left"><button onclick="showView('lobby')" class="text-orange-500 font-bold text-xs uppercase">← Back</button><div class="bg-gray-800 p-6 rounded-2xl border border-orange-500"><h2 class="text-orange-500 font-black italic uppercase text-lg mb-2">Bulk Up Guide</h2><p class="text-xs">Focus on protein (0.8-1g/lb) and caloric surplus (200-300 extra daily).</p></div></div>
-        <div id="lean-view" class="hidden space-y-4 text-left"><button onclick="showView('lobby')" class="text-blue-500 font-bold text-xs uppercase">← Back</button><div class="bg-gray-800 p-6 rounded-2xl border border-blue-500"><h2 class="text-blue-500 font-black italic uppercase text-lg mb-2">Lean Out Guide</h2><p class="text-xs">Prioritize whole foods, 60 mins activity, and hydration.</p></div></div>
+        <div id="history-view" class="hidden space-y-4"><button onclick="showView('lobby')" class="text-gray-500 font-bold text-xs uppercase">← Back</button><div id="hist-rack-list" class="space-y-3"></div><div id="hist-kitchen-list" class="hidden space-y-3"></div></div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, collection, addDoc, serverTimestamp, updateDoc, query, orderBy, getDocs, limit, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = { apiKey: "AIzaSyBdY26nH0CAn05IpjzoFvG5E1H-bv8fPwA", authDomain: "panthertracker-b8ff6.firebaseapp.com", projectId: "panthertracker-b8ff6", storageBucket: "panthertracker-b8ff6.firebasestorage.app", messagingSenderId: "647881105335", appId: "1:647881105335:web:bbb79bb3fe9740de1e1232" };
         const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app);
         let userData = {};
 
-        // MASTER AUDIT LOGIC
-        window.loadMasterAudit = async () => {
-            const pid = document.getElementById('player-select-kitchen').value;
-            const container = document.getElementById('master-audit-display');
-            if(!pid) { container.innerHTML = ""; return; }
-            
-            // Fetch Lifts
-            const liftSnap = await getDocs(query(collection(db, "players", pid, "maxes"), orderBy("timestamp", "desc"), limit(1)));
-            // Fetch Meals
-            const mealSnap = await getDocs(query(collection(db, "players", pid, "meals"), orderBy("timestamp", "desc"), limit(5)));
-            
-            let html = `<div class="bg-red-900/20 border border-red-900 p-3 rounded-xl">
-                <p class="text-[10px] font-black uppercase text-red-500 mb-2">Current Maxes</p>`;
-            if(!liftSnap.empty) {
-                const l = liftSnap.docs[0].data();
-                html += `<div class="grid grid-cols-4 gap-1 text-[10px] font-bold text-center">
-                    <div class="bg-black/40 p-1 rounded">B: ${l.bench}</div>
-                    <div class="bg-black/40 p-1 rounded">S: ${l.squat}</div>
-                    <div class="bg-black/40 p-1 rounded">C: ${l.clean}</div>
-                    <div class="bg-black/40 p-1 rounded">D: ${l.deadlift}</div>
-                </div><p class="text-[8px] mt-2 text-gray-500">Updated: ${l.date}</p>`;
-            } else { html += `<p class="text-xs text-gray-600 italic">No lifts recorded.</p>`; }
-            html += `</div><div class="space-y-2"><p class="text-[10px] font-black uppercase text-green-500 px-1">Recent Nutrition</p>`;
-            
-            mealSnap.forEach(d => {
-                const k = d.data();
-                const dStr = k.timestamp ? k.timestamp.toDate().toLocaleString() : k.date;
-                html += `<div class="bg-gray-800 p-3 rounded-xl text-[10px] border-l-2 border-green-500">
-                    <div class="flex justify-between border-b border-gray-700 mb-1 pb-1"><b>${k.meal}</b><span class="text-gray-400">${dStr}</span></div>
-                    ${k.calories} Cal | ${k.bodyWeight} lbs
+        // COACH AUDIT TOOLS
+        window.loadPlayerLiftAudit = async () => {
+            const pid = document.getElementById('player-select-lifts').value;
+            const container = document.getElementById('admin-lift-display');
+            if(!pid) return container.innerHTML = "";
+            const snap = await getDocs(query(collection(db, "players", pid, "maxes"), orderBy("timestamp", "desc"), limit(10)));
+            container.innerHTML = snap.empty ? "No data found." : "";
+            snap.forEach(d => {
+                const m = d.data();
+                container.innerHTML += `<div class="bg-gray-800 p-3 rounded-xl text-[10px] border-l-4 border-red-700">
+                    <div class="flex justify-between mb-1"><b>${m.date}</b></div>
+                    <div class="grid grid-cols-4 gap-1">
+                        <span>B: ${m.bench}</span><span>S: ${m.squat}</span><span>C: ${m.clean}</span><span>D: ${m.deadlift}</span>
+                    </div>
                 </div>`;
             });
-            container.innerHTML = html + `</div>`;
         };
 
-        window.exportRackCSV = async () => {
-            const players = await getDocs(collection(db, "players"));
-            let csv = "Player,Email,Date,Bench,Squat,Clean,Deadlift,PushPress\n";
-            for (const p of players.docs) {
-                const pd = p.data();
-                const mS = await getDocs(query(collection(db, "players", p.id, "maxes"), orderBy("timestamp", "desc")));
-                mS.forEach(m => { const md = m.data(); csv += `${pd.playerName},${pd.email},${md.date},${md.bench},${md.squat},${md.clean},${md.deadlift},${md.pushpress}\n`; });
+        window.loadPlayerKitchen = async () => {
+            const pid = document.getElementById('player-select-kitchen').value;
+            const container = document.getElementById('admin-kitchen-list');
+            const snap = await getDocs(query(collection(db, "players", pid, "meals"), orderBy("timestamp", "desc"), limit(15)));
+            container.innerHTML = "";
+            snap.forEach(d => { 
+                const k = d.data(); 
+                container.innerHTML += `<div class="bg-gray-700 p-3 rounded-xl text-[10px] mb-2"><b>${k.date}</b> - ${k.meal}: ${k.calories} Cal</div>`; 
+            });
+        };
+
+        window.loadLeaderboard = async () => {
+            const grid = document.getElementById('player-club-grid'); grid.innerHTML = 'Crunching numbers...';
+            const pSnap = await getDocs(collection(db, "players")); let s = [];
+            for (const d of pSnap.docs) {
+                const mS = await getDocs(query(collection(db, "players", d.id, "maxes"), orderBy("timestamp", "desc"), limit(1)));
+                const wS = await getDocs(query(collection(db, "players", d.id, "meals"), orderBy("timestamp", "desc"), limit(1)));
+                const m = mS.docs[0]?.data() || {}, bw = wS.docs[0]?.data()?.bodyWeight || 0;
+                const tot = (Number(m.bench)||0)+(Number(m.squat)||0)+(Number(m.clean)||0)+(Number(m.deadlift)||0);
+                const score = bw > 0 ? (tot - ((bw > 200 ? 200 : bw) * 4)) : 0;
+                if(score > 0) s.push({ name: d.data().playerName, score: score });
             }
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const a = document.createElement('a'); a.href = window.URL.createObjectURL(blob); a.download = "Panther_Lifts.csv"; a.click();
+            grid.innerHTML = ''; 
+            // V5.4: Expanded range for all categories
+            for(let t = 700; t >= 400; t -= 50) {
+                const mem = s.filter(x => x.score >= t && x.score < t+100);
+                if(mem.length > 0) {
+                    grid.innerHTML += `<div class="club-card p-4 rounded-xl mb-4"><div class="text-red-500 font-black italic uppercase">${t} LB CLUB</div>${mem.map(m => `<div class="flex justify-between text-xs font-bold py-1"><span>${m.name}</span><span class="text-blue-400">${m.score}</span></div>`).join('')}</div>`;
+                }
+            }
         };
 
+        // NAV & AUTH
         window.showView = (v) => {
-            const ids = ['auth-section', 'lobby-section', 'rack-view', 'kitchen-view', 'goals-view', 'history-view', 'leaderboard-view', 'roster-view', 'bulk-view', 'lean-view'];
+            const ids = ['auth-section', 'lobby-section', 'rack-view', 'kitchen-view', 'history-view', 'leaderboard-view', 'roster-view', 'lift-audit-view'];
             ids.forEach(id => document.getElementById(id)?.classList.add('hidden'));
             let tid = v.includes('-') ? v : (v === 'lobby' || v === 'auth' ? v + '-section' : v + '-view');
             document.getElementById(tid)?.classList.remove('hidden');
-            window.scrollTo(0,0);
         };
 
         onAuthStateChanged(auth, async (u) => {
@@ -210,9 +215,11 @@
                         document.getElementById('player-dash').classList.add('hidden');
                         document.getElementById('kitchen-admin').classList.remove('hidden');
                         const pSnap = await getDocs(collection(db, "players"));
-                        const sel = document.getElementById('player-select-kitchen');
-                        sel.innerHTML = '<option value="">Select Player...</option>';
-                        pSnap.forEach(p => { if(p.data().role === 'player') sel.innerHTML += `<option value="${p.id}">${p.data().playerName}</option>`; });
+                        ['player-select-kitchen', 'player-select-lifts'].forEach(id => {
+                            const sel = document.getElementById(id);
+                            sel.innerHTML = '<option value="">Select Player...</option>';
+                            pSnap.forEach(p => { if(p.data().role === 'player') sel.innerHTML += `<option value="${p.id}">${p.data().playerName}</option>`; });
+                        });
                     }
                 }
                 showView('lobby');
@@ -238,39 +245,26 @@
 
         window.saveKitchen = async () => {
             await addDoc(collection(db, "players", auth.currentUser.uid, "meals"), {
-                meal: document.getElementById('meal-type').value, protein: Number(document.getElementById('protein').value), carbs: Number(document.getElementById('carbs').value), fat: Number(document.getElementById('fat').value), calories: Number(document.getElementById('calories').value), bodyWeight: Number(document.getElementById('weight').value), notes: document.getElementById('meal-notes').value, date: new Date().toLocaleDateString(), timestamp: serverTimestamp()
+                meal: document.getElementById('meal-type').value, calories: Number(document.getElementById('calories').value), bodyWeight: Number(document.getElementById('weight').value), date: new Date().toLocaleDateString(), timestamp: serverTimestamp()
             }); alert("Saved!"); showView('lobby');
+        };
+
+        window.exportRackCSV = async () => {
+            const players = await getDocs(collection(db, "players"));
+            let csv = "Player,Email,Date,Bench,Squat,Clean,Deadlift\n";
+            for (const p of players.docs) {
+                const pd = p.data();
+                const mS = await getDocs(query(collection(db, "players", p.id, "maxes"), orderBy("timestamp", "desc")));
+                mS.forEach(m => { csv += `${pd.playerName},${pd.email},${m.data().date},${m.data().bench},${m.data().squat},${m.data().clean},${m.data().deadlift}\n`; });
+            }
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const a = document.createElement('a'); a.href = window.URL.createObjectURL(blob); a.download = "Panther_Lifts.csv"; a.click();
         };
 
         window.loadRoster = async () => {
             const list = document.getElementById('roster-list'); list.innerHTML = '';
             const snap = await getDocs(collection(db, "players"));
-            snap.forEach(d => { const p = d.data(); list.innerHTML += `<div class="bg-gray-800 p-4 rounded-xl text-left"><p class="font-bold uppercase text-sm">${p.playerName}</p><p class="text-[9px] text-gray-500">${p.email}</p><button onclick="deletePlayer('${d.id}')" class="text-red-600 text-[10px] underline font-black mt-2">REMOVE</button></div>`; });
-        };
-
-        window.loadLeaderboard = async () => {
-            const grid = document.getElementById('player-club-grid'); grid.innerHTML = 'Syncing...';
-            const pSnap = await getDocs(collection(db, "players")); let s = [];
-            for (const d of pSnap.docs) {
-                const mS = await getDocs(query(collection(db, "players", d.id, "maxes"), orderBy("timestamp", "desc"), limit(1)));
-                const wS = await getDocs(query(collection(db, "players", d.id, "meals"), orderBy("timestamp", "desc"), limit(1)));
-                const m = mS.docs[0]?.data() || {}, bw = wS.docs[0]?.data()?.bodyWeight || 0;
-                const tot = (Number(m.bench)||0)+(Number(m.squat)||0)+(Number(m.clean)||0)+(Number(m.deadlift)||0);
-                const score = bw > 0 ? (tot - ((bw > 200 ? 200 : bw) * 4)) : 0;
-                if(score > 0) s.push({ name: d.data().playerName, score: score });
-            }
-            grid.innerHTML = ''; [700, 600, 500, 400].forEach(t => {
-                const mem = s.filter(x => x.score >= t && x.score < t+100);
-                grid.innerHTML += `<div class="club-card p-4 rounded-xl mb-4"><div class="text-red-500 font-black italic uppercase">${t} LB CLUB</div>${mem.map(m => `<div class="flex justify-between text-xs font-bold uppercase py-1"><span>${m.name}</span><span class="text-blue-400">${m.score}</span></div>`).join('') || '<span class="text-gray-600 italic text-[10px]">VACANT</span>'}</div>`;
-            });
-        };
-
-        window.loadMyHistory = async () => {
-            const rL = document.getElementById('hist-rack-list'), kL = document.getElementById('hist-kitchen-list');
-            const sM = await getDocs(query(collection(db, "players", auth.currentUser.uid, "maxes"), orderBy("timestamp", "desc")));
-            const sK = await getDocs(query(collection(db, "players", auth.currentUser.uid, "meals"), orderBy("timestamp", "desc")));
-            rL.innerHTML = ''; sM.forEach(d => { const m = d.data(); rL.innerHTML += `<div class="bg-gray-800 p-4 rounded-xl text-left text-[10px] mb-2"><b>${m.date}</b><div class="flex gap-2 font-black"><span>B:${m.bench}</span><span>S:${m.squat}</span><span>C:${m.clean}</span><span>D:${m.deadlift}</span></div></div>`; });
-            kL.innerHTML = ''; sK.forEach(d => { const k = d.data(); kL.innerHTML += `<div class="bg-gray-800 p-4 rounded-xl text-left text-[10px] mb-2"><b>${k.date}</b> - ${k.bodyWeight} LBS</div>`; });
+            snap.forEach(d => { const p = d.data(); list.innerHTML += `<div class="bg-gray-800 p-4 rounded-xl text-left"><p class="font-bold uppercase text-sm">${p.playerName}</p><button onclick="deletePlayer('${d.id}')" class="text-red-600 text-[10px] underline mt-2">REMOVE</button></div>`; });
         };
 
         window.deletePlayer = async (id) => { if(confirm("Delete?")) { await deleteDoc(doc(db, "players", id)); loadRoster(); } };
