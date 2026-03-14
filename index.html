@@ -3,50 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panther Performance Admin</title>
+    <title>Panther Performance</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .club-card { background: linear-gradient(145deg, #1a1a1a, #262626); border-top: 3px solid #b91c1c; }
-        input, select, textarea { @apply bg-gray-700 rounded p-3 outline-none border border-gray-600 focus:border-red-500; }
+        /* FIX: High contrast inputs */
+        input, select, textarea { 
+            @apply bg-gray-800 text-white rounded p-4 outline-none border-2 border-gray-700 w-full mb-3 block;
+            appearance: none;
+        }
+        input:focus { @apply border-red-600 bg-gray-900; }
+        ::placeholder { color: #9ca3af; }
+        .social-btn { @apply flex items-center justify-center gap-2 p-3 rounded-xl font-bold uppercase text-xs transition-transform active:scale-95; }
     </style>
 </head>
 <body class="bg-gray-900 text-white font-sans pb-10">
 
     <header class="bg-black p-6 shadow-xl border-b-4 border-red-700 flex flex-col items-center text-center">
         <img src="Panthers2.png" alt="Panthers" class="h-20 mb-2">
-        <h1 class="text-2xl font-black italic uppercase tracking-tighter">Panther Power <span id="role-tag" class="text-red-600 text-xs block"></span></h1>
+        <h1 class="text-2xl font-black italic uppercase tracking-tighter">Panther Power <span id="role-tag" class="text-red-600 text-[10px] block tracking-widest mt-1"></span></h1>
     </header>
 
     <div class="max-w-md mx-auto px-4 mt-6">
         
-        <div id="auth-section" class="bg-gray-800 p-8 rounded-2xl border border-gray-700 shadow-2xl">
-            <h2 class="text-xl font-bold mb-4 text-center uppercase text-sm tracking-widest">Access Control</h2>
-            <input id="player-name" type="text" placeholder="Full Name" class="w-full mb-3">
-            <input id="email" type="email" placeholder="Email" class="w-full mb-3">
-            <input id="password" type="password" placeholder="Password" class="w-full mb-3">
-            <select id="reg-role" class="w-full mb-4 font-bold text-red-500">
-                <option value="player">ROLE: PLAYER</option>
-                <option value="coach">ROLE: COACH (ADMIN)</option>
-            </select>
-            <div class="flex gap-2">
-                <button onclick="handleAuth('login')" class="flex-1 bg-red-700 py-3 rounded font-bold uppercase text-xs">Login</button>
-                <button onclick="handleAuth('signup')" class="flex-1 border border-red-700 py-3 rounded font-bold uppercase text-xs">Sign Up</button>
+        <div id="auth-section" class="bg-gray-800 p-6 rounded-2xl border border-gray-700 shadow-2xl">
+            <h2 class="text-xl font-bold mb-4 text-center uppercase text-sm tracking-widest text-red-500">Secure Access</h2>
+            
+            <div id="auth-fields">
+                <input id="player-name" type="text" placeholder="Full Name (Signup Only)">
+                <input id="email" type="email" placeholder="Email Address">
+                <input id="password" type="password" placeholder="Password">
+                
+                <div class="border-t border-gray-700 my-4 pt-4">
+                    <p class="text-[10px] font-bold text-gray-500 mb-2 uppercase">Account Type</p>
+                    <select id="reg-role" onchange="toggleCoachCode()">
+                        <option value="player">PLAYER</option>
+                        <option value="coach">COACH (ADMIN)</option>
+                    </select>
+                    <input id="coach-code" type="password" placeholder="Coach Access Code" class="hidden border-red-900">
+                </div>
+
+                <div class="flex gap-2">
+                    <button onclick="handleAuth('login')" class="flex-1 bg-gray-700 hover:bg-gray-600 py-4 rounded-xl font-black uppercase text-xs tracking-widest transition-all">Login</button>
+                    <button onclick="handleAuth('signup')" class="flex-1 bg-red-700 hover:bg-red-600 py-4 rounded-xl font-black uppercase text-xs tracking-widest shadow-lg transition-all">Sign Up</button>
+                </div>
             </div>
         </div>
 
         <div id="lobby-section" class="hidden space-y-4">
             <div class="flex justify-between items-center bg-gray-800 p-4 rounded-xl border border-gray-700">
-                <span id="user-display" class="text-sm font-bold text-red-500 uppercase"></span>
+                <span id="user-display" class="text-sm font-bold text-red-500 uppercase italic"></span>
                 <button onclick="logout()" class="text-xs text-gray-400 font-bold underline uppercase">Logout</button>
             </div>
             
-            <div id="coach-tools" class="hidden bg-red-900/20 border border-red-700 p-4 rounded-2xl mb-4">
-                <p class="text-[10px] font-bold uppercase text-red-500 mb-2">Coach Command Center</p>
-                <button onclick="loadRoster(); showView('roster')" class="w-full bg-red-700 p-3 rounded-xl font-black uppercase text-sm italic">📋 Manage Roster</button>
+            <div id="coach-tools" class="hidden bg-red-900/10 border border-red-900/40 p-4 rounded-2xl">
+                <button onclick="loadRoster(); showView('roster')" class="w-full bg-red-700 p-3 rounded-xl font-black uppercase text-sm italic shadow-lg">📋 Manage Roster</button>
             </div>
 
-            <button onclick="showView('rack')" class="w-full bg-gray-800 border-2 border-red-700 p-5 rounded-2xl text-xl font-black italic uppercase">🏋️ The Rack</button>
-            <button onclick="showView('kitchen')" class="w-full bg-gray-800 border-2 border-green-700 p-5 rounded-2xl text-xl font-black italic uppercase">🍳 The Kitchen</button>
+            <button onclick="showView('rack')" class="w-full bg-gray-800 border-2 border-red-700 p-5 rounded-2xl text-xl font-black italic uppercase shadow-xl">🏋️ The Rack</button>
+            <button onclick="showView('kitchen')" class="w-full bg-gray-800 border-2 border-green-700 p-5 rounded-2xl text-xl font-black italic uppercase shadow-xl">🍳 The Kitchen</button>
             
             <div class="grid grid-cols-2 gap-3">
                 <button onclick="showView('goals')" class="bg-gray-800 border border-yellow-600 py-4 rounded-xl text-sm font-black uppercase">🎯 Goals</button>
@@ -56,6 +71,11 @@
             <div class="space-y-3">
                 <a href="Panthers Football Culture Playbook.pdf" target="_blank" class="block w-full bg-white text-black text-center p-4 rounded-2xl text-lg font-black italic uppercase shadow-lg border-b-4 border-gray-400">📖 Culture Playbook</a>
                 <a id="coach-pdf" href="Varsity Football Coaches Guidelines.pdf" target="_blank" class="hidden block w-full bg-red-800 text-white text-center p-4 rounded-2xl text-lg font-black italic uppercase shadow-lg border-b-4 border-red-950">📋 Coaches Guidelines</a>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 pt-2">
+                <a href="https://www.facebook.com/profile.php?id=61573011830957" target="_blank" class="social-btn bg-[#1877F2] text-white">FB</a>
+                <a href="https://www.instagram.com/hsfairbanksfb/" target="_blank" class="social-btn bg-gradient-to-tr from-[#f9ce34] via-[#ee2a7b] to-[#6228d7] text-white">IG</a>
             </div>
 
             <button onclick="loadMyHistory(); showView('history')" class="w-full bg-gray-800 border border-gray-600 p-4 rounded-2xl text-xs font-bold uppercase text-gray-400 tracking-widest">📊 View My History</button>
@@ -78,7 +98,7 @@
                     <input id="deadlift" type="number" placeholder="Deadlift">
                     <input id="pushpress" type="number" placeholder="Push Press" class="col-span-2">
                 </div>
-                <button onclick="saveRack()" class="w-full bg-red-700 mt-6 py-4 rounded-xl font-black uppercase">Record Maxes</button>
+                <button onclick="saveRack()" class="w-full bg-red-700 mt-6 py-4 rounded-xl font-black uppercase tracking-widest">Update Lifts</button>
             </section>
         </div>
 
@@ -86,18 +106,16 @@
             <button onclick="showView('lobby')" class="text-green-500 font-bold text-xs uppercase">← Back</button>
             <section class="bg-gray-800 p-6 rounded-2xl border border-gray-700">
                 <h2 class="text-xl font-bold mb-4 text-green-600 uppercase italic font-black text-center">Log Nutrition</h2>
-                <div class="space-y-4 flex flex-col">
-                    <select id="meal-type"><option>Breakfast</option><option>Lunch</option><option>Dinner</option><option>Snack</option></select>
-                    <div class="grid grid-cols-2 gap-3">
-                        <input id="protein" type="number" placeholder="Protein">
-                        <input id="carbs" type="number" placeholder="Carbs">
-                        <input id="fat" type="number" placeholder="Fat">
-                        <input id="calories" type="number" placeholder="Calories">
-                    </div>
-                    <input id="weight" type="number" placeholder="Body Weight (lbs)">
-                    <textarea id="meal-notes" placeholder="Notes..." class="h-20"></textarea>
+                <select id="meal-type"><option>Breakfast</option><option>Lunch</option><option>Dinner</option><option>Snack</option></select>
+                <div class="grid grid-cols-2 gap-3">
+                    <input id="protein" type="number" placeholder="Protein">
+                    <input id="carbs" type="number" placeholder="Carbs">
+                    <input id="fat" type="number" placeholder="Fat">
+                    <input id="calories" type="number" placeholder="Calories">
                 </div>
-                <button onclick="saveKitchen()" class="w-full bg-green-700 mt-6 py-4 rounded-xl font-black uppercase">Save Entry</button>
+                <input id="weight" type="number" placeholder="Body Weight (lbs)">
+                <textarea id="meal-notes" placeholder="Notes..." class="h-20"></textarea>
+                <button onclick="saveKitchen()" class="w-full bg-green-700 mt-6 py-4 rounded-xl font-black uppercase tracking-widest">Save Log</button>
             </section>
         </div>
 
@@ -105,15 +123,13 @@
             <button onclick="showView('lobby')" class="text-yellow-500 font-bold text-xs uppercase">← Back</button>
             <section class="bg-gray-800 p-6 rounded-2xl border border-gray-700">
                 <h2 class="text-xl font-bold mb-4 text-yellow-600 uppercase italic font-black text-center">Target Goals</h2>
-                <div class="space-y-4 flex flex-col">
-                    <input id="goal-weight" type="number" placeholder="Goal Body Weight">
-                    <div class="grid grid-cols-2 gap-4">
-                        <input id="goal-bench" type="number" placeholder="Bench Goal">
-                        <input id="goal-squat" type="number" placeholder="Squat Goal">
-                        <input id="goal-clean" type="number" placeholder="Clean Goal">
-                        <input id="goal-deadlift" type="number" placeholder="Deadlift Goal">
-                        <input id="goal-pushpress" type="number" placeholder="Push Press Goal" class="col-span-2">
-                    </div>
+                <input id="goal-weight" type="number" placeholder="Goal Body Weight">
+                <div class="grid grid-cols-2 gap-4">
+                    <input id="goal-bench" type="number" placeholder="Bench Goal">
+                    <input id="goal-squat" type="number" placeholder="Squat Goal">
+                    <input id="goal-clean" type="number" placeholder="Clean Goal">
+                    <input id="goal-deadlift" type="number" placeholder="Deadlift Goal">
+                    <input id="goal-pushpress" type="number" placeholder="Push Press Goal" class="col-span-2">
                 </div>
                 <button onclick="saveGoals()" class="w-full bg-yellow-600 mt-6 py-4 rounded-xl font-black uppercase text-black">Update Goals</button>
             </section>
@@ -121,15 +137,15 @@
 
         <div id="leaderboard-view" class="hidden space-y-6">
             <button onclick="showView('lobby')" class="text-blue-500 font-bold text-xs uppercase">← Back</button>
-            <h2 class="text-2xl font-black italic text-center text-red-600 uppercase">The Weight Club</h2>
+            <h2 class="text-2xl font-black italic text-center text-red-600 uppercase tracking-tighter">The Weight Club</h2>
             <div id="player-club-grid" class="space-y-4"></div>
         </div>
 
         <div id="history-view" class="hidden space-y-4">
             <button onclick="showView('lobby')" class="text-gray-500 font-bold text-xs uppercase">← Back</button>
-            <div class="flex gap-2">
-                <button onclick="toggleHist('rack')" class="flex-1 bg-blue-700 py-2 rounded text-[10px] font-black uppercase">Lifts</button>
-                <button onclick="toggleHist('kitchen')" class="flex-1 bg-gray-800 py-2 rounded text-[10px] font-black uppercase">Kitchen</button>
+            <div class="flex gap-2 mb-4">
+                <button onclick="toggleHist('rack')" class="flex-1 bg-blue-700 py-3 rounded-lg text-xs font-black uppercase tracking-widest">Lifts</button>
+                <button onclick="toggleHist('kitchen')" class="flex-1 bg-gray-800 py-3 rounded-lg text-xs font-black uppercase tracking-widest">Kitchen</button>
             </div>
             <div id="hist-rack-list" class="space-y-3"></div>
             <div id="hist-kitchen-list" class="hidden space-y-3"></div>
@@ -154,7 +170,13 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
+        const COACH_SECRET = "PANTHERS2026"; // Change this to whatever code you want
         let userData = {}; let latestBW = 0;
+
+        window.toggleCoachCode = () => {
+            const role = document.getElementById('reg-role').value;
+            document.getElementById('coach-code').classList.toggle('hidden', role !== 'coach');
+        };
 
         window.showView = (v) => {
             ['auth-section', 'lobby-section', 'rack-view', 'kitchen-view', 'goals-view', 'history-view', 'leaderboard-view', 'roster-view'].forEach(s => document.getElementById(s).classList.add('hidden'));
@@ -168,7 +190,7 @@
                 if(snap.exists()){
                     userData = snap.data();
                     document.getElementById('user-display').innerText = userData.playerName;
-                    document.getElementById('role-tag').innerText = userData.role.toUpperCase();
+                    document.getElementById('role-tag').innerText = "— " + userData.role.toUpperCase() + " ACCESS —";
                     if(userData.role === 'coach') {
                         document.getElementById('coach-tools').classList.remove('hidden');
                         document.getElementById('coach-pdf').classList.remove('hidden');
@@ -185,9 +207,12 @@
         });
 
         window.handleAuth = async (t) => {
-            const e = document.getElementById('email').value, p = document.getElementById('password').value, n = document.getElementById('player-name').value, r = document.getElementById('reg-role').value;
+            const e = document.getElementById('email').value, p = document.getElementById('password').value, n = document.getElementById('player-name').value, r = document.getElementById('reg-role').value, cc = document.getElementById('coach-code').value;
+            if(!e || !p) return alert("Missing login credentials");
             try {
                 if (t === 'signup') {
+                    if(!n) return alert("Name required");
+                    if(r === 'coach' && cc !== COACH_SECRET) return alert("Invalid Coach Access Code");
                     const res = await createUserWithEmailAndPassword(auth, e, p);
                     await setDoc(doc(db, "players", res.user.uid), { playerName: n, email: e, role: r });
                 } else { await signInWithEmailAndPassword(auth, e, p); }
@@ -202,7 +227,7 @@
                 clean: Number(document.getElementById('clean').value), deadlift: Number(document.getElementById('deadlift').value),
                 pushpress: Number(document.getElementById('pushpress').value), date: new Date().toLocaleDateString(), timestamp: serverTimestamp()
             });
-            alert("Lifts Saved!"); showView('lobby');
+            alert("Lifts Updated!"); showView('lobby');
         };
 
         window.saveKitchen = async () => {
@@ -210,7 +235,7 @@
                 meal: document.getElementById('meal-type').value, protein: Number(document.getElementById('protein').value), carbs: Number(document.getElementById('carbs').value), fat: Number(document.getElementById('fat').value), calories: Number(document.getElementById('calories').value),
                 bodyWeight: Number(document.getElementById('weight').value), notes: document.getElementById('meal-notes').value, date: new Date().toLocaleDateString(), timestamp: serverTimestamp()
             });
-            alert("Logged!"); showView('lobby');
+            alert("Nutrition Logged!"); showView('lobby');
         };
 
         window.saveGoals = async () => {
@@ -221,7 +246,7 @@
         };
 
         window.loadLeaderboard = async () => {
-            const grid = document.getElementById('player-club-grid'); grid.innerHTML = 'Loading...';
+            const grid = document.getElementById('player-club-grid'); grid.innerHTML = '<p class="text-center text-xs italic">Syncing Lifts...</p>';
             const pSnap = await getDocs(collection(db, "players"));
             let s = [];
             for (const d of pSnap.docs) {
@@ -234,28 +259,28 @@
             }
             grid.innerHTML = ''; [700, 650, 600, 550, 500, 450, 400, 350].forEach(t => {
                 const mem = s.filter(x => x.score >= t && x.score < t+50);
-                grid.innerHTML += `<div class="club-card p-4 rounded-xl"><div class="text-red-500 font-black italic text-lg uppercase">${t} LB CLUB</div>${mem.map(m => `<div class="flex justify-between text-xs font-bold uppercase"><span>${m.name}</span><span class="text-blue-400">${m.score}</span></div>`).join('') || '<span class="text-gray-600 italic text-[10px]">EMPTY</span>'}</div>`;
+                grid.innerHTML += `<div class="club-card p-4 rounded-xl shadow-lg"><div class="text-red-500 font-black italic text-lg uppercase">${t} LB CLUB</div>${mem.map(m => `<div class="flex justify-between text-xs font-bold uppercase py-1 border-b border-gray-800 last:border-0"><span>${m.name}</span><span class="text-blue-400">${m.score}</span></div>`).join('') || '<span class="text-gray-600 italic text-[10px]">VACANT</span>'}</div>`;
             });
         };
 
         window.loadRoster = async () => {
-            const list = document.getElementById('roster-list'); list.innerHTML = 'Fetching Team...';
+            const list = document.getElementById('roster-list'); list.innerHTML = 'Syncing...';
             const snap = await getDocs(collection(db, "players"));
             list.innerHTML = '';
             snap.forEach(d => {
                 const p = d.data();
-                list.innerHTML += `<div class="bg-gray-800 p-4 rounded-xl flex justify-between items-center border border-gray-700"><div><p class="font-bold uppercase">${p.playerName}</p><p class="text-[10px] text-gray-500">${p.role}</p></div><button onclick="deletePlayer('${d.id}')" class="bg-red-900 text-[10px] px-3 py-1 rounded">REMOVE</button></div>`;
+                list.innerHTML += `<div class="bg-gray-800 p-4 rounded-xl flex justify-between items-center border border-gray-700 shadow-md"><div class="text-left"><p class="font-bold uppercase text-sm">${p.playerName}</p><p class="text-[9px] text-gray-500 font-bold tracking-widest uppercase">${p.role}</p></div><button onclick="deletePlayer('${d.id}')" class="bg-red-900/50 text-red-500 text-[10px] px-3 py-2 rounded-lg font-black border border-red-800/50">REMOVE</button></div>`;
             });
         };
 
-        window.deletePlayer = async (id) => { if(confirm("Remove this player permanently?")) { await deleteDoc(doc(db, "players", id)); loadRoster(); } };
+        window.deletePlayer = async (id) => { if(confirm("Permanently remove this user?")) { await deleteDoc(doc(db, "players", id)); loadRoster(); } };
 
         window.loadMyHistory = async () => {
             const rL = document.getElementById('hist-rack-list'), kL = document.getElementById('hist-kitchen-list');
             const sM = await getDocs(query(collection(db, "players", auth.currentUser.uid, "maxes"), orderBy("timestamp", "desc")));
             const sK = await getDocs(query(collection(db, "players", auth.currentUser.uid, "meals"), orderBy("timestamp", "desc")));
-            rL.innerHTML = ''; sM.forEach(d => { const m = d.data(); rL.innerHTML += `<div class="bg-gray-800 p-4 rounded-xl border-l-4 border-blue-600 mb-2"><div class="flex justify-between text-[10px] font-bold text-gray-500"><span>${m.date}</span><button onclick="deleteEntry('maxes','${d.id}')" class="text-red-500">DEL</button></div><div class="grid grid-cols-4 text-center text-xs font-black mt-1"><div>B:${m.bench}</div><div>S:${m.squat}</div><div>C:${m.clean}</div><div>D:${m.deadlift}</div></div></div>`; });
-            kL.innerHTML = ''; sK.forEach(d => { const k = d.data(); kL.innerHTML += `<div class="bg-gray-800 p-4 rounded-xl border-l-4 border-green-600 mb-2 text-xs flex justify-between"><span>${k.date} - ${k.meal} (${k.bodyWeight} lbs)</span><button onclick="deleteEntry('meals','${d.id}')" class="text-red-500">DEL</button></div>`; });
+            rL.innerHTML = ''; sM.forEach(d => { const m = d.data(); rL.innerHTML += `<div class="bg-gray-800 p-4 rounded-xl border-l-4 border-blue-600 mb-2 shadow-xl"><div class="flex justify-between text-[9px] font-black text-gray-500 uppercase tracking-widest"><span>${m.date}</span><button onclick="deleteEntry('maxes','${d.id}')" class="text-red-600">DELETE</button></div><div class="grid grid-cols-4 text-center text-xs font-black mt-2"><div>B:${m.bench}</div><div>S:${m.squat}</div><div>C:${m.clean}</div><div>D:${m.deadlift}</div></div></div>`; });
+            kL.innerHTML = ''; sK.forEach(d => { const k = d.data(); kL.innerHTML += `<div class="bg-gray-800 p-4 rounded-xl border-l-4 border-green-600 mb-2 text-xs flex justify-between items-center shadow-xl"><div><p class="font-bold text-gray-400 text-[10px] uppercase">${k.date} — ${k.meal}</p><p class="text-green-400 font-black">${k.bodyWeight} LBS</p></div><button onclick="deleteEntry('meals','${d.id}')" class="text-red-600 font-bold text-[10px]">DELETE</button></div>`; });
         };
 
         window.deleteEntry = async (col, id) => { if(confirm("Delete this entry?")) { await deleteDoc(doc(db, "players", auth.currentUser.uid, col, id)); loadMyHistory(); } };
