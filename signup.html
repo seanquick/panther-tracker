@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panther Power | Sign Up</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #0f172a; color: white; }
+        input, select { 
+            background-color: #1f2937 !important; color: white !important; 
+            border: 2px solid #374151 !important; padding: 0.8rem !important; 
+            border-radius: 0.75rem !important; width: 100%; margin-bottom: 0.75rem; 
+        }
+        label { font-size: 10px; font-weight: 900; text-transform: uppercase; color: #64748b; margin-left: 0.5rem; margin-bottom: 0.2rem; display: block; }
+    </style>
+</head>
+<body class="font-sans pb-10">
+
+    <header class="bg-black p-6 border-b-4 border-red-700 text-center mb-6">
+        <h1 class="text-xl font-black italic uppercase tracking-tighter text-red-600">Join the Program</h1>
+    </header>
+
+    <div class="max-w-md mx-auto px-4">
+        <div class="bg-[#1e293b] p-6 rounded-2xl border border-gray-700 shadow-2xl">
+            
+            <div class="grid grid-cols-2 gap-2">
+                <div><label>First Name</label><input id="firstName" type="text" placeholder="e.g. John"></div>
+                <div><label>Last Name</label><input id="lastName" type="text" placeholder="e.g. Doe"></div>
+            </div>
+
+            <label>Grade Level</label>
+            <select id="grade">
+                <option value="">Select Grade...</option>
+                <option value="9">9th (Freshman)</option>
+                <option value="10">10th (Sophomore)</option>
+                <option value="11">11th (Junior)</option>
+                <option value="12">12th (Senior)</option>
+                <option value="Coach">Staff/Alumni</option>
+            </select>
+
+            <label>Email Address</label>
+            <input id="email" type="email" placeholder="panther@school.com">
+
+            <label>Phone Number</label>
+            <input id="phone" type="tel" placeholder="555-555-5555">
+
+            <label>Account Type</label>
+            <select id="role" onchange="checkCoachCode(this.value)">
+                <option value="player">Player</option>
+                <option value="coach">Coach</option>
+            </select>
+
+            <label>Create Password</label>
+            <input id="password" type="password" placeholder="••••••••">
+
+            <button onclick="handleSignUp()" class="w-full bg-red-700 py-4 rounded-xl font-black uppercase text-sm mt-4 shadow-lg active:scale-95 transition-all">Create Panther Profile</button>
+            
+            <button onclick="location.href='index.html'" class="w-full mt-4 text-[10px] font-bold text-gray-500 uppercase underline">Back to Login</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = { 
+            apiKey: "AIzaSyBdY26nH0CAn05IpjzoFvG5E1H-bv8fPwA", 
+            authDomain: "panthertracker-b8ff6.firebaseapp.com", 
+            projectId: "panthertracker-b8ff6", 
+            storageBucket: "panthertracker-b8ff6.firebasestorage.app", 
+            messagingSenderId: "647881105335", 
+            appId: "1:647881105335:web:bbb79bb3fe9740de1e1232" 
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        window.checkCoachCode = (role) => {
+            if (role === 'coach') {
+                const code = prompt("Enter Coach Authorization Code:");
+                if (code !== "PANTHERS2026") {
+                    alert("Unauthorized code. Setting role back to Player.");
+                    document.getElementById('role').value = 'player';
+                }
+            }
+        };
+
+        window.handleSignUp = async () => {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const fName = document.getElementById('firstName').value;
+            const lName = document.getElementById('lastName').value;
+            const grade = document.getElementById('grade').value;
+            const phone = document.getElementById('phone').value;
+            const role = document.getElementById('role').value;
+
+            if(!email || !password || !fName || !lName) {
+                alert("Please fill in all required fields.");
+                return;
+            }
+
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+
+                // Save extended profile to Firestore
+                await setDoc(doc(db, "players", user.uid), {
+                    playerName: `${fName} ${lName}`,
+                    firstName: fName,
+                    lastName: lName,
+                    grade: grade,
+                    phone: phone,
+                    email: email,
+                    role: role,
+                    dailyCalorieGoal: 0,
+                    createdAt: new Date().toISOString()
+                });
+
+                alert("Account Created Successfully!");
+                location.href = 'index.html';
+            } catch (error) {
+                alert("Error: " + error.message);
+            }
+        };
+    </script>
+</body>
+</html>
