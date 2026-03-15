@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panther Performance v5.9</title>
+    <title>Panther Performance v6.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { background-color: #0f172a; color: white; }
@@ -17,8 +17,8 @@
         .hidden { display: none !important; }
         .admin-box { border: 2px dashed #dc2626; padding: 1rem; border-radius: 1rem; margin-bottom: 1.5rem; background: rgba(220, 38, 38, 0.05); }
         .coach-nav-btn { font-size: 10px; font-weight: 900; text-transform: uppercase; padding: 10px; border-radius: 6px; flex: 1; text-align: center; cursor: pointer; color: white; }
-        .social-icon { height: 35px; width: 35px; border-radius: 6px; transition: transform 0.2s; }
-        .social-icon:hover { transform: scale(1.1); }
+        .social-icon { height: 35px; width: 35px; border-radius: 6px; transition: transform 0.2s; background: #334155; padding: 4px; }
+        .social-icon:hover { transform: scale(1.1); background: #475569; }
     </style>
 </head>
 <body class="font-sans pb-20">
@@ -84,9 +84,9 @@
             <button onclick="loadMyHistory(); showView('history')" class="w-full bg-gray-900/50 border border-gray-700 p-4 rounded-2xl text-xs font-bold uppercase text-gray-500">📊 My Progress History</button>
 
             <div class="flex justify-center gap-6 pt-4">
-                <a href="https://www.facebook.com/PantherFootball"><img src="facebook.png" class="social-icon"></a>
-                <a href="https://www.instagram.com/panther_fb"><img src="instagram.png" class="social-icon"></a>
-                <a href="https://www.hudl.com/team/v2/12345/Panthers"><img src="hudl.png" class="social-icon"></a>
+                <a href="https://www.facebook.com/profile.php?id=61573011830957" target="_blank"><img src="facebook.png" alt="FB" class="social-icon"></a>
+                <a href="https://www.instagram.com/hsfairbanksfb/" target="_blank"><img src="instagram.png" alt="IG" class="social-icon"></a>
+                <a href="https://www.hudl.com/team/v2/12345/Panthers" target="_blank"><img src="hudl.png" alt="Hudl" class="social-icon"></a>
             </div>
         </div>
 
@@ -149,15 +149,10 @@
 
         window.showView = (v) => {
             const views = ['auth-section', 'lobby-section', 'rack-view', 'kitchen-view', 'history-view', 'leaderboard-view', 'roster-view', 'lift-audit-view'];
-            views.forEach(id => {
-                const el = document.getElementById(id);
-                if(el) el.classList.add('hidden');
-            });
-            
+            views.forEach(id => document.getElementById(id)?.classList.add('hidden'));
             let tid = v.includes('-') ? v : (v === 'auth' || v === 'lobby' ? v + '-section' : v + '-view');
             const target = document.getElementById(tid);
             if(target) target.classList.remove('hidden');
-            else document.getElementById('lobby-section').classList.remove('hidden');
             window.scrollTo(0,0);
         };
 
