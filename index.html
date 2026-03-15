@@ -78,6 +78,18 @@
                 <span>🍳 The Kitchen</span><span class="text-green-700">→</span>
             </button>
 
+            <button onclick="showPlayerBoard()" class="menu-btn border-yellow-600">
+                <span>🏆 The Board</span><span class="text-yellow-600">→</span>
+            </button>
+
+            <div id="player-board-view" class="hidden fixed inset-0 bg-black/90 z-50 p-6 overflow-y-auto">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-black italic text-yellow-500">STRENGTH RANKINGS</h2>
+                    <button onclick="document.getElementById('player-board-view').classList.add('hidden')" class="text-white text-xs font-bold underline uppercase">Close</button>
+                </div>
+                <div id="player-club-grid"></div>
+            </div>
+
             <button onclick="location.href='guides.html'" class="menu-btn border-blue-700">
                 <span>📖 Guides & Playbook</span><span class="text-blue-700">→</span>
             </button>
@@ -117,6 +129,15 @@
                 document.getElementById('lobby-section').classList.add('hidden');
             }
         });
+  
+        window.showPlayerBoard = async () => {
+            document.getElementById('player-board-view').classList.remove('hidden');
+            const grid = document.getElementById('player-club-grid');
+            grid.innerHTML = '<p class="text-center text-xs animate-pulse">Loading Leaderboard...</p>';
+            
+            // Copy the logic from coach.html loadTheBoard() here to populate player-club-grid
+            // (Ensure you reference the correct grid ID: 'player-club-grid')
+        };
 
         window.handleLogin = () => {
             const e = document.getElementById('email').value;
