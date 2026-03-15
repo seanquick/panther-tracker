@@ -52,6 +52,23 @@
         </div>
 
         <div id="tab-audit" class="hidden max-w-md mx-auto space-y-4">
+            <div class="bg-blue-900/20 border border-blue-700/30 p-4 rounded-xl mb-6">
+                <h3 class="text-[10px] font-black uppercase text-blue-500 mb-3 tracking-widest">Manual Historical Entry</h3>
+                <div class="grid grid-cols-2 gap-2">
+                    <input id="manual-date" type="date">
+                    <input id="manual-bw" type="number" placeholder="Body Weight">
+                </div>
+                <div class="grid grid-cols-3 gap-2">
+                    <input id="manual-bench" type="number" placeholder="Bench">
+                    <input id="manual-squat" type="number" placeholder="Squat">
+                    <input id="manual-clean" type="number" placeholder="Clean">
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <input id="manual-dead" type="number" placeholder="Deadlift">
+                    <input id="manual-press" type="number" placeholder="Push Press">
+                </div>
+                <button onclick="saveManualEntry()" class="w-full bg-blue-700 hover:bg-blue-600 py-3 rounded-lg font-black uppercase text-[10px] mt-2 transition-all">Save to Player History</button>
+            </div>
             <div class="bg-gray-800 p-4 rounded-xl border border-gray-700">
                 <label class="text-[10px] font-bold uppercase text-gray-400 block mb-2">Select Athlete</label>
                 <select id="player-select" onchange="runIndividualAudit()">
@@ -141,19 +158,44 @@
             let scores = [];
 
             for (const d of pSnap.docs) {
+                // Get only the most recent entry for each player
                 const maxSnap = await getDocs(query(collection(db, "players", d.id, "maxes"), orderBy("timestamp", "desc"), limit(1)));
+                
                 if(!maxSnap.empty) {
                     const m = maxSnap.docs[0].data();
-                    const total = (Number(m.bench)||0) + (Number(m.squat)||0) + (Number(m.clean)||0) + (Number(m.deadlift)||0);
-                    if(total >= 300) scores.push({ name: d.data().playerName, total: total, placed: false });
+                    
+                    // Raw Lift Values
+                    const bench = Number(m.bench) || 0;
+                    const squat = Number(m.squat) || 0;
+                    const clean = Number(m.clean) || 0;
+                    const deadlift = Number(m.deadlift) || 0;
+                    const bw = Number(m.bodyWeight) || 0;
+
+                    // Relative Strength Formula
+                    // Subtracts 4x Body Weight (capped at 200lbs) from the raw total
+                    const cappedBW = Math.min(bw, 200);
+                    const relativeScore = (bench + squat + clean + deadlift) - (cappedBW * 4);
+
+                    // Only include players who meet the minimum 300lb adjusted score
+                    if(relativeScore >= 300) {
+                        scores.push({ 
+                            name: d.data().playerName, 
+                            total: Math.round(relativeScore), 
+                            placed: false 
+                        });
+                    }
                 }
             }
 
+            // Sort by adjusted score, highest to lowest
             scores.sort((a, b) => b.total - a.total);
             grid.innerHTML = '';
 
+            // Generate Club Cards from 700 down to 300
             for(let level = 700; level >= 300; level -= 50) {
+                // Filter players who belong in this club and haven't been placed in a higher one
                 const qualifiers = scores.filter(s => !s.placed && s.total >= level);
+                
                 if(qualifiers.length > 0 || level === 700) {
                     qualifiers.forEach(s => s.placed = true);
                     grid.innerHTML += `
@@ -162,7 +204,7 @@
                             ${qualifiers.length > 0 ? qualifiers.map(q => `
                                 <div class="flex justify-between items-center text-sm py-2 border-b border-white/5 last:border-0">
                                     <span class="font-bold uppercase tracking-tight">${q.name}</span>
-                                    <span class="text-blue-400 font-black">${q.total} <span class="text-[8px] text-gray-500 uppercase">Total</span></span>
+                                    <span class="text-blue-400 font-black">${q.total} <span class="text-[8px] text-gray-500 uppercase">Score</span></span>
                                 </div>`).join('') : '<p class="text-[10px] text-gray-600 font-bold uppercase italic">No qualifiers yet</p>'}
                         </div>`;
                 }
@@ -238,6 +280,52 @@
             a.setAttribute('download', `Panther_Master_Audit_${new Date().toLocaleDateString()}.csv`);
             a.click();
         };
+
+        import { addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+            window.saveManualEntry = async () => {
+                const pid = document.getElementById('player-select').value;
+                const dateInput = document.getElementById('manual-date').value;
+                
+                if(!pid) return alert("Please select a player first!");
+                if(!dateInput) return alert("Please select a date for this record.");
+
+                // Format the date properly for the UI
+                const dateObj = new Date(dateInput);
+                dateObj.setMinutes(dateObj.getMinutes() + dateObj.getTimezoneOffset());
+                const dateStr = dateObj.toLocaleDateString();
+
+                try {
+                    await addDoc(collection(db, "players", pid, "maxes"), {
+                        bench: Number(document.getElementById('manual-bench').value) || 0,
+                        squat: Number(document.getElementById('manual-squat').value) || 0,
+                        clean: Number(document.getElementById('manual-clean').value) || 0,
+                        deadlift: Number(document.getElementById('manual-dead').value) || 0,
+                        pushpress: Number(document.getElementById('manual-press').value) || 0,
+                        bodyWeight: Number(document.getElementById('manual-bw').value) || 0,
+                        date: dateStr,
+                        timestamp: serverTimestamp(), // Helps with ordering
+                        isManual: true // Flag to identify historical data
+                    });
+
+                    alert("Historical record added for " + dateStr);
+                    
+                    // Clear inputs
+                    ['manual-bench', 'manual-squat', 'manual-clean', 'manual-dead', 'manual-press', 'manual-bw'].forEach(id => {
+                        document.getElementById(id).value = '';
+                    });
+                    
+                    // Refresh the audit view
+                    runIndividualAudit();
+                    loadTheBoard();
+                } catch (e) {
+                    console.error("Error adding document: ", e);
+                    alert("Error saving record.");
+                }
+            };
+
+            // Add this line to your onAuthStateChanged or script init to default the date
+            document.getElementById('manual-date').valueAsDate = new Date();
     </script>
 </body>
 </html>
