@@ -40,6 +40,9 @@
         <section class="bg-gray-800 p-6 rounded-2xl border border-gray-700 shadow-2xl">
             <h2 class="text-center font-black uppercase italic text-red-600 mb-6 tracking-tight">Update Your Strength</h2>
             
+            <label class="text-[9px] uppercase font-bold text-gray-400 ml-1">Entry Date</label>
+            <input id="entry-date" type="date">
+
             <div class="grid grid-cols-2 gap-2">
                 <div><label class="text-[9px] uppercase font-bold text-gray-400 ml-1">Bench Press</label><input id="bench" type="number" placeholder="Lbs"></div>
                 <div><label class="text-[9px] uppercase font-bold text-gray-400 ml-1">Back Squat</label><input id="squat" type="number" placeholder="Lbs"></div>
@@ -50,13 +53,43 @@
                 <div><label class="text-[9px] uppercase font-bold text-gray-400 ml-1">Deadlift</label><input id="deadlift" type="number" placeholder="Lbs"></div>
             </div>
 
-            <div class="w-full">
-                <label class="text-[9px] uppercase font-bold text-gray-400 ml-1">Push Press</label>
-                <input id="pushpress" type="number" placeholder="Lbs">
+            <div class="grid grid-cols-2 gap-2">
+                <div><label class="text-[9px] uppercase font-bold text-gray-400 ml-1">Push Press</label><input id="pushpress" type="number" placeholder="Lbs"></div>
+                <div><label class="text-[9px] uppercase font-bold text-gray-400 ml-1">Body Weight</label><input id="weight" type="number" placeholder="Lbs"></div>
             </div>
 
             <button onclick="saveMaxes()" class="w-full bg-red-700 hover:bg-red-800 py-4 rounded-xl font-black uppercase shadow-lg transition-all active:scale-95 mt-2">Log New Maxes</button>
         </section>
+
+        <script type="module">
+            document.getElementById('entry-date').valueAsDate = new Date();
+
+            window.saveMaxes = async () => {
+                const selectedDate = document.getElementById('entry-date').value;
+                const dateObj = new Date(selectedDate);
+                dateObj.setMinutes(dateObj.getMinutes() + dateObj.getTimezoneOffset());
+                const dateStr = dateObj.toLocaleDateString();
+
+                // Check if at least something was entered
+                const inputs = ['bench', 'squat', 'clean', 'deadlift', 'pushpress', 'weight'];
+                const hasData = inputs.some(id => document.getElementById(id).value !== "");
+                if(!hasData) return alert("Enter data before saving.");
+
+                await addDoc(collection(db, "players", auth.currentUser.uid, "maxes"), {
+                    bench: Number(document.getElementById('bench').value),
+                    squat: Number(document.getElementById('squat').value),
+                    clean: Number(document.getElementById('clean').value),
+                    deadlift: Number(document.getElementById('deadlift').value),
+                    pushpress: Number(document.getElementById('pushpress').value),
+                    bodyWeight: Number(document.getElementById('weight').value), // Added BW here
+                    date: dateStr,
+                    timestamp: serverTimestamp()
+                });
+
+                alert("Stats Saved for " + dateStr);
+                location.reload();
+            };
+        </script>
 
     </div>
 
