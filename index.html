@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panther Performance v6.0</title>
+    <title>Panther Performance v6.5</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { background-color: #0f172a; color: white; }
@@ -19,12 +19,14 @@
         .coach-nav-btn { font-size: 10px; font-weight: 900; text-transform: uppercase; padding: 10px; border-radius: 6px; flex: 1; text-align: center; cursor: pointer; color: white; }
         .social-icon { height: 35px; width: 35px; border-radius: 6px; transition: transform 0.2s; background: #334155; padding: 4px; }
         .social-icon:hover { transform: scale(1.1); background: #475569; }
+        /* Guide Content Styling */
+        .guide-text h3 { color: #94a3b8; font-weight: 900; text-transform: uppercase; font-size: 0.8rem; margin-top: 1.5rem; margin-bottom: 0.5rem; letter-spacing: 0.05em; }
     </style>
 </head>
 <body class="font-sans pb-20">
 
     <header class="bg-black p-6 border-b-4 border-red-700 flex flex-col items-center text-center shadow-2xl">
-        <img src="Panthers2.png" alt="Panthers" class="h-20 mb-2">
+        <img src="Panthers2.png" alt="Panthers" class="h-20 mb-2" onerror="this.style.display='none'">
         <h1 class="text-2xl font-black italic uppercase tracking-tighter">Panther Power</h1>
         <span id="role-tag" class="text-red-600 text-[10px] block tracking-widest mt-1 font-bold uppercase"></span>
     </header>
@@ -75,8 +77,8 @@
             <button onclick="showView('kitchen')" class="w-full bg-gray-800 border-2 border-green-700 p-5 rounded-2xl text-xl font-black italic uppercase shadow-lg">🍳 The Kitchen</button>
             
             <div class="grid grid-cols-2 gap-3">
-                <a href="Bulk Up Guide.pdf" target="_blank" class="bg-gradient-to-br from-orange-600 to-red-700 p-4 rounded-xl text-[11px] font-black italic uppercase text-center">📈 Bulk Up Guide</a>
-                <a href="Lean Out Guide.pdf" target="_blank" class="bg-gradient-to-br from-blue-600 to-cyan-700 p-4 rounded-xl text-[11px] font-black italic uppercase text-center">📉 Lean Out Guide</a>
+                <button onclick="showView('bulk')" class="bg-gradient-to-br from-orange-600 to-red-700 p-4 rounded-xl text-[11px] font-black italic uppercase text-center shadow-lg shadow-orange-900/20">📈 Bulk Up Guide</button>
+                <button onclick="showView('lean')" class="bg-gradient-to-br from-blue-600 to-cyan-700 p-4 rounded-xl text-[11px] font-black italic uppercase text-center shadow-lg shadow-blue-900/20">📉 Lean Out Guide</button>
             </div>
 
             <a href="Panthers Football Culture Playbook.pdf" target="_blank" class="block w-full bg-gray-800 border border-yellow-600 p-4 rounded-xl text-center text-xs font-black uppercase text-yellow-500 italic">📖 Panthers Football Culture Playbook.pdf</a>
@@ -84,9 +86,49 @@
             <button onclick="loadMyHistory(); showView('history')" class="w-full bg-gray-900/50 border border-gray-700 p-4 rounded-2xl text-xs font-bold uppercase text-gray-500">📊 My Progress History</button>
 
             <div class="flex justify-center gap-6 pt-4">
-                <a href="https://www.facebook.com/profile.php?id=61573011830957" target="_blank"><img src="facebook.png" alt="FB" class="social-icon"></a>
-                <a href="https://www.instagram.com/hsfairbanksfb/" target="_blank"><img src="instagram.png" alt="IG" class="social-icon"></a>
-                <a href="https://www.hudl.com/team/v2/12345/Panthers" target="_blank"><img src="hudl.png" alt="Hudl" class="social-icon"></a>
+                <a href="https://www.facebook.com/profile.php?id=61573011830957" target="_blank"><img src="facebook.png" alt="FB" class="social-icon" onerror="this.src='https://cdn-icons-png.flaticon.com/512/733/733547.png'"></a>
+                <a href="https://www.instagram.com/hsfairbanksfb/" target="_blank"><img src="instagram.png" alt="IG" class="social-icon" onerror="this.src='https://cdn-icons-png.flaticon.com/512/2111/2111463.png'"></a>
+                <a href="https://www.hudl.com/team/v2/12345/Panthers" target="_blank"><img src="hudl.png" alt="Hudl" class="social-icon" onerror="this.style.background='#ff4500'"></a>
+            </div>
+        </div>
+
+        <div id="bulk-view" class="hidden space-y-6">
+            <button onclick="showView('lobby')" class="text-orange-500 font-bold text-xs uppercase">← Back to Lobby</button>
+            <div class="bg-gray-800 p-6 rounded-3xl border border-orange-600/50 shadow-2xl guide-text text-left">
+                <h2 class="text-2xl font-black italic text-orange-500 uppercase mb-4">Teen Muscle Growth</h2>
+                <p class="text-sm font-bold border-b border-gray-700 pb-4">Focus on a consistent caloric surplus with a diet high in protein and complex carbohydrates.</p>
+                <h3>Nutritional Strategies</h3>
+                <ul class="space-y-3 text-sm">
+                    <li><b class="text-red-400">PROTEIN:</b> 30-35% of calories. Chicken, fish, eggs, dairy, beans.</li>
+                    <li><b class="text-blue-400">CARBS:</b> 40-50% of calories. Pasta, rice, oats, fruits.</li>
+                    <li><b class="text-green-400">FATS:</b> 20-30% of calories. Nuts, seeds, avocados.</li>
+                </ul>
+                <div class="mt-8 p-4 bg-red-900/20 rounded-xl border border-red-900/50 text-[10px] text-red-300 uppercase font-bold text-center">Consult a professional before making significant diet changes.</div>
+            </div>
+        </div>
+
+        <div id="lean-view" class="hidden space-y-6">
+            <button onclick="showView('lobby')" class="text-cyan-500 font-bold text-xs uppercase">← Back to Lobby</button>
+            <div class="bg-gray-800 p-6 rounded-3xl border border-cyan-600/50 shadow-2xl guide-text text-left">
+                <h2 class="text-2xl font-black italic text-cyan-500 uppercase mb-4">Healthy Weight Loss</h2>
+                <p class="text-sm font-bold border-b border-gray-700 pb-4">Focus on sustainable habits. Prioritize whole foods, hydration, and at least 60 mins of daily activity.</p>
+                
+                <h3>Eating Habits</h3>
+                <ul class="space-y-2 text-sm list-disc pl-4">
+                    <li><b>Balance Your Plate:</b> Lean proteins, whole grains, and colorful veggies.</li>
+                    <li><b>Reduce Sugar:</b> Limit soda and highly processed snacks.</li>
+                    <li><b>Eat Regular Meals:</b> Don't skip breakfast.</li>
+                    <li><b>Drink Water:</b> Choose water over sugary beverages.</li>
+                </ul>
+
+                <h3>Lifestyle</h3>
+                <ul class="space-y-2 text-sm list-disc pl-4">
+                    <li><b>Cardio & Strength:</b> Combine jogging/soccer with push-ups/planks.</li>
+                    <li><b>Limit Screens:</b> Max 2 hours of non-school screen time.</li>
+                    <li><b>Prioritize Sleep:</b> Aim for 8–10 hours for metabolism support.</li>
+                </ul>
+
+                <div class="mt-8 p-4 bg-red-900/20 rounded-xl border border-red-900/50 text-[10px] text-red-300 uppercase font-bold text-center">Focus on feeling strong and energetic, not just the number on the scale.</div>
             </div>
         </div>
 
@@ -148,7 +190,7 @@
         let userData = {};
 
         window.showView = (v) => {
-            const views = ['auth-section', 'lobby-section', 'rack-view', 'kitchen-view', 'history-view', 'leaderboard-view', 'roster-view', 'lift-audit-view'];
+            const views = ['auth-section', 'lobby-section', 'rack-view', 'kitchen-view', 'history-view', 'leaderboard-view', 'roster-view', 'lift-audit-view', 'bulk-view', 'lean-view'];
             views.forEach(id => document.getElementById(id)?.classList.add('hidden'));
             let tid = v.includes('-') ? v : (v === 'auth' || v === 'lobby' ? v + '-section' : v + '-view');
             const target = document.getElementById(tid);
