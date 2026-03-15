@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panther Power | The Rack</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #0f172a; color: white; }
+        .max-card { background: #1e293b; border-radius: 1rem; padding: 1rem; text-align: center; border-bottom: 4px solid #b91c1c; }
+        input { 
+            background-color: #1f2937 !important; color: white !important; 
+            border: 2px solid #374151 !important; padding: 0.75rem !important; 
+            border-radius: 0.75rem !important; width: 100%; margin-bottom: 0.75rem; 
+        }
+        .nav-btn { background-color: #374151; padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 10px; font-weight: 900; text-transform: uppercase; color: white; }
+    </style>
+</head>
+<body class="font-sans pb-20">
+
+    <header class="bg-black p-4 border-b-2 border-red-700 flex justify-between items-center mb-6 shadow-xl">
+        <h1 class="text-lg font-black italic uppercase text-red-600 tracking-tighter">The Rack</h1>
+        <button onclick="location.href='index.html'" class="nav-btn">← Lobby</button>
+    </header>
+
+    <div class="max-w-md mx-auto px-4 space-y-6">
+        
+        <section>
+            <p class="text-[10px] font-black uppercase text-gray-500 mb-3 italic tracking-widest text-center">Your Current PRs</p>
+            <div class="grid grid-cols-3 gap-2" id="maxes-display">
+                <div class="max-card"><p class="text-[8px] uppercase text-gray-400">Bench</p><p id="view-bench" class="text-xl font-black">--</p></div>
+                <div class="max-card"><p class="text-[8px] uppercase text-gray-400">Squat</p><p id="view-squat" class="text-xl font-black">--</p></div>
+                <div class="max-card"><p class="text-[8px] uppercase text-gray-400">Clean</p><p id="view-clean" class="text-xl font-black">--</p></div>
+                <div class="max-card"><p class="text-[8px] uppercase text-gray-400">Deadlift</p><p id="view-dead" class="text-xl font-black">--</p></div>
+                <div class="max-card"><p class="text-[8px] uppercase text-gray-400">Press</p><p id="view-press" class="text-xl font-black">--</p></div>
+                <div class="max-card border-blue-600"><p class="text-[8px] uppercase text-blue-400">Total</p><p id="view-total" class="text-xl font-black text-blue-400">0</p></div>
+            </div>
+        </section>
+
+        <section class="bg-gray-800 p-6 rounded-2xl border border-gray-700 shadow-2xl">
+            <h2 class="text-center font-black uppercase italic text-red-600 mb-6 tracking-tight">Update Your Strength</h2>
+            
+            <div class="grid grid-cols-2 gap-2">
+                <div><label class="text-[9px] uppercase font-bold text-gray-400 ml-1">Bench Press</label><input id="bench" type="number" placeholder="Lbs"></div>
+                <div><label class="text-[9px] uppercase font-bold text-gray-400 ml-1">Back Squat</label><input id="squat" type="number" placeholder="Lbs"></div>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-2">
+                <div><label class="text-[9px] uppercase font-bold text-gray-400 ml-1">Power Clean</label><input id="clean" type="number" placeholder="Lbs"></div>
+                <div><label class="text-[9px] uppercase font-bold text-gray-400 ml-1">Deadlift</label><input id="deadlift" type="number" placeholder="Lbs"></div>
+            </div>
+
+            <div class="w-full">
+                <label class="text-[9px] uppercase font-bold text-gray-400 ml-1">Push Press</label>
+                <input id="pushpress" type="number" placeholder="Lbs">
+            </div>
+
+            <button onclick="saveMaxes()" class="w-full bg-red-700 hover:bg-red-800 py-4 rounded-xl font-black uppercase shadow-lg transition-all active:scale-95 mt-2">Log New Maxes</button>
+        </section>
+
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = { 
+            apiKey: "AIzaSyBdY26nH0CAn05IpjzoFvG5E1H-bv8fPwA", 
+            authDomain: "panthertracker-b8ff6.firebaseapp.com", 
+            projectId: "panthertracker-b8ff6", 
+            storageBucket: "panthertracker-b8ff6.firebasestorage.app", 
+            messagingSenderId: "647881105335", 
+            appId: "1:647881105335:web:bbb79bb3fe9740de1e1232" 
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                loadCurrentMaxes();
+            } else { location.href = 'index.html'; }
+        });
+
+        async function loadCurrentMaxes() {
+            const q = query(collection(db, "players", auth.currentUser.uid, "maxes"), orderBy("timestamp", "desc"), limit(1));
+            const snap = await getDocs(q);
+            
+            if(!snap.empty) {
+                const data = snap.docs[0].data();
+                document.getElementById('view-bench').innerText = data.bench || '--';
+                document.getElementById('view-squat').innerText = data.squat || '--';
+                document.getElementById('view-clean').innerText = data.clean || '--';
+                document.getElementById('view-dead').innerText = data.deadlift || '--';
+                document.getElementById('view-press').innerText = data.pushpress || '--';
+                
+                const total = (Number(data.bench)||0) + (Number(data.squat)||0) + (Number(data.clean)||0) + (Number(data.deadlift)||0);
+                document.getElementById('view-total').innerText = total;
+            }
+        }
+
+        window.saveMaxes = async () => {
+            const b = document.getElementById('bench').value;
+            const s = document.getElementById('squat').value;
+            const c = document.getElementById('clean').value;
+            const d = document.getElementById('deadlift').value;
+            const p = document.getElementById('pushpress').value;
+
+            if(!b && !s && !c && !d && !p) return alert("Enter at least one lift to update.");
+
+            await addDoc(collection(db, "players", auth.currentUser.uid, "maxes"), {
+                bench: Number(b),
+                squat: Number(s),
+                clean: Number(c),
+                deadlift: Number(d),
+                pushpress: Number(p),
+                date: new Date().toLocaleDateString(),
+                timestamp: serverTimestamp()
+            });
+
+            alert("Strength Updated!");
+            location.reload();
+        };
+    </script>
+</body>
+</html>

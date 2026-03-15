@@ -6,16 +6,44 @@
     <title>Panther Power | Lobby</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #0f172a; color: white; }
-        .menu-btn { background: #1e293b; border: 2px solid #374151; padding: 1.5rem; border-radius: 1rem; width: 100%; text-align: left; font-weight: 900; text-transform: uppercase; italic; display: flex; justify-content: space-between; align-items: center; transition: 0.2s; }
-        .menu-btn:active { transform: scale(0.98); background: #334155; }
-        .coach-card { border: 2px solid #b91c1c; background: rgba(185, 28, 28, 0.1); padding: 1rem; border-radius: 1rem; margin-bottom: 1.5rem; }
-        input { background-color: #1f2937; color: white; border: 2px solid #374151; padding: 1rem; border-radius: 0.75rem; width: 100%; margin-bottom: 0.75rem; }
+        body { 
+            background-color: #0f172a; 
+            color: white; 
+        }
+        .menu-btn { 
+            background-color: #1e293b; 
+            border: 2px solid #374151; 
+            padding: 1.5rem; 
+            border-radius: 1rem; 
+            width: 100%; 
+            text-align: left; 
+            font-weight: 900; 
+            text-transform: uppercase; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+        .coach-card { 
+            border: 2px solid #b91c1c; 
+            background-color: rgba(185, 28, 28, 0.1); 
+            padding: 1rem; 
+            border-radius: 1rem; 
+            margin-bottom: 1.5rem; 
+        }
+        input { 
+            background-color: #1f2937; 
+            color: white; 
+            border: 2px solid #374151; 
+            padding: 1rem; 
+            border-radius: 0.75rem; 
+            width: 100%; 
+            margin-bottom: 0.75rem; 
+        }
     </style>
 </head>
 <body class="font-sans pb-10">
 
-    <header class="bg-black p-6 border-b-4 border-red-700 text-center shadow-xl">
+    <header class="bg-black p-6 border-b-4 border-red-700 text-center">
         <img src="Panthers2.png" alt="Panthers" class="h-16 mx-auto mb-2" onerror="this.style.display='none'">
         <h1 class="text-xl font-black italic uppercase tracking-tighter">Panther Power</h1>
     </header>
@@ -26,39 +54,31 @@
             <h2 class="text-xl font-bold mb-6 text-center text-red-500 uppercase italic">Secure Access</h2>
             <input id="email" type="email" placeholder="Email Address">
             <input id="password" type="password" placeholder="Password">
-            <button onclick="handleLogin()" class="w-full bg-red-700 py-4 rounded-xl font-black uppercase text-sm shadow-lg">Login</button>
-            <p class="text-[10px] text-center mt-4 text-gray-500 uppercase tracking-widest font-bold">Registration is managed by coaching staff</p>
+            <button onclick="handleLogin()" class="w-full bg-red-700 py-4 rounded-xl font-black uppercase text-sm">Login</button>
         </div>
 
         <div id="lobby-section" class="hidden space-y-4">
-            
             <div id="coach-tools" class="hidden coach-card">
-                <p class="text-red-500 font-black text-[10px] mb-2 uppercase tracking-widest italic">Coach Command Center</p>
-                <button onclick="location.href='coach.html'" class="w-full bg-red-700 p-4 rounded-xl font-black uppercase text-xs shadow-md">Open The Board & Lifts Audit</button>
+                <p class="text-red-500 font-black text-[10px] mb-2 uppercase italic">Coach Command Center</p>
+                <button onclick="location.href='coach.html'" class="w-full bg-red-700 p-4 rounded-xl font-black uppercase text-xs">Open The Board & Lifts Audit</button>
             </div>
 
             <div class="flex justify-between items-center mb-4">
-                <span id="player-name-display" class="font-black italic text-red-500 uppercase tracking-tight"></span>
+                <span id="player-name-display" class="font-black italic text-red-500 uppercase"></span>
                 <button onclick="handleLogout()" class="text-[10px] underline text-gray-500 font-bold uppercase">Logout</button>
             </div>
 
-            <button onclick="location.href='rack.html'" class="menu-btn border-red-700 shadow-lg">
+            <button onclick="location.href='rack.html'" class="menu-btn border-red-700">
                 <span>🏋️ The Rack</span><span class="text-red-700">→</span>
             </button>
 
-            <button onclick="location.href='kitchen.html'" class="menu-btn border-green-700 shadow-lg">
+            <button onclick="location.href='kitchen.html'" class="menu-btn border-green-700">
                 <span>🍳 The Kitchen</span><span class="text-green-700">→</span>
             </button>
 
-            <button onclick="location.href='guides.html'" class="menu-btn border-blue-700 shadow-lg">
+            <button onclick="location.href='guides.html'" class="menu-btn border-blue-700">
                 <span>📖 Guides & Playbook</span><span class="text-blue-700">→</span>
             </button>
-
-            <div class="flex justify-center gap-8 pt-12 opacity-40">
-                <a href="https://www.facebook.com/profile.php?id=61573011830957" target="_blank"><img src="facebook.png" class="h-8"></a>
-                <a href="https://www.instagram.com/hsfairbanksfb/" target="_blank"><img src="instagram.jpg" class="h-8"></a>
-                <a href="#" target="_blank"><img src="hudl.png" class="h-8"></a>
-            </div>
         </div>
     </div>
 
@@ -86,9 +106,7 @@
                 if(snap.exists()){
                     const data = snap.data();
                     document.getElementById('player-name-display').innerText = data.playerName;
-                    if(data.role === 'coach') {
-                        document.getElementById('coach-tools').classList.remove('hidden');
-                    }
+                    if(data.role === 'coach') document.getElementById('coach-tools').classList.remove('hidden');
                 }
                 document.getElementById('auth-section').classList.add('hidden');
                 document.getElementById('lobby-section').classList.remove('hidden');
@@ -101,7 +119,7 @@
         window.handleLogin = () => {
             const e = document.getElementById('email').value;
             const p = document.getElementById('password').value;
-            signInWithEmailAndPassword(auth, e, p).catch(err => alert("Login Failed: " + err.message));
+            signInWithEmailAndPassword(auth, e, p).catch(err => alert(err.message));
         };
 
         window.handleLogout = () => signOut(auth).then(() => location.reload());

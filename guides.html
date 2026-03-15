@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panther Power | Guides</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #0f172a; color: white; }
+        .guide-card { background: #1e293b; border-radius: 1rem; padding: 1.5rem; border-left: 4px solid #3b82f6; transition: 0.2s; }
+        .guide-card:active { transform: scale(0.98); }
+        .pdf-link { background: #2563eb; color: white; padding: 0.75rem; border-radius: 0.5rem; display: block; text-align: center; font-weight: 900; text-transform: uppercase; font-size: 12px; margin-top: 1rem; }
+        .nav-btn { background-color: #374151; padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 10px; font-weight: 900; text-transform: uppercase; color: white; }
+    </style>
+</head>
+<body class="font-sans pb-20">
+
+    <header class="bg-black p-4 border-b-2 border-blue-700 flex justify-between items-center mb-6 shadow-xl">
+        <h1 class="text-lg font-black italic uppercase text-blue-500 tracking-tighter">Playbook & Guides</h1>
+        <button onclick="location.href='index.html'" class="nav-btn">← Lobby</button>
+    </header>
+
+    <div class="max-w-md mx-auto px-4 space-y-6">
+        
+        <section class="space-y-4">
+            <p class="text-[10px] font-black uppercase text-gray-500 italic tracking-widest ml-2">Official Resources</p>
+            
+            <div class="guide-card">
+                <h3 class="font-black italic uppercase text-blue-400">Team Playbook</h3>
+                <p class="text-xs text-gray-400 mt-1">Review the culture, expectations, and tactical standards of Panther Football.</p>
+                <a href="Panthers Football Culture Playbook.pdf" target="_blank" class="pdf-link">Open Playbook (PDF)</a>
+            </div>
+
+            <div id="coach-only-guide" class="hidden guide-card" style="border-left-color: #b91c1c;">
+                <h3 class="font-black italic uppercase text-red-500">Coaches Guidelines</h3>
+                <p class="text-xs text-gray-400 mt-1">Confidential standards and evaluation metrics for coaching staff.</p>
+                <a href="Varsity Football Coaches Guidelines.pdf" target="_blank" class="pdf-link" style="background: #b91c1c;">Open Guidelines (PDF)</a>
+            </div>
+        </section>
+
+        <section class="space-y-4">
+            <p class="text-[10px] font-black uppercase text-gray-500 italic tracking-widest ml-2">Nutrition Strategies</p>
+            
+            <div class="bg-orange-900/20 border border-orange-700/30 p-5 rounded-2xl">
+                <h3 class="font-black italic uppercase text-orange-500 mb-2">The Bulk Phase</h3>
+                <ul class="text-[11px] space-y-2 text-gray-300">
+                    <li>🔥 <span class="font-bold text-white">Surplus:</span> Eat 300-500 calories above maintenance.</li>
+                    <li>🥩 <span class="font-bold text-white">Protein:</span> Aim for 1g of protein per lb of bodyweight.</li>
+                    <li>🍚 <span class="font-bold text-white">Carbs:</span> Fuel your lifts with high-quality complex carbs.</li>
+                </ul>
+            </div>
+
+            <div class="bg-cyan-900/20 border border-cyan-700/30 p-5 rounded-2xl">
+                <h3 class="font-black italic uppercase text-cyan-500 mb-2">The Lean Phase</h3>
+                <ul class="text-[11px] space-y-2 text-gray-300">
+                    <li>📉 <span class="font-bold text-white">Deficit:</span> Drop 200-300 calories below maintenance.</li>
+                    <li>💧 <span class="font-bold text-white">Hydration:</span> Drink 1 gallon of water daily to maintain metabolic rate.</li>
+                    <li>🥗 <span class="font-bold text-white">Volume:</span> Use high-volume greens to feel full on lower calories.</li>
+                </ul>
+            </div>
+        </section>
+
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = { 
+            apiKey: "AIzaSyBdY26nH0CAn05IpjzoFvG5E1H-bv8fPwA", 
+            authDomain: "panthertracker-b8ff6.firebaseapp.com", 
+            projectId: "panthertracker-b8ff6", 
+            storageBucket: "panthertracker-b8ff6.firebasestorage.app", 
+            messagingSenderId: "647881105335", 
+            appId: "1:647881105335:web:bbb79bb3fe9740de1e1232" 
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                const snap = await getDoc(doc(db, "players", user.uid));
+                if(snap.exists() && snap.data().role === 'coach') {
+                    document.getElementById('coach-only-guide').classList.remove('hidden');
+                }
+            } else { location.href = 'index.html'; }
+        });
+    </script>
+</body>
+</html>
