@@ -6,104 +6,71 @@
     <title>Panther Power | Lobby</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #0f172a; color: white; display: flex; flex-direction: column; min-height: 100vh; }
+        body { background-color: #0f172a; color: white; display: flex; flex-direction: column; min-height: 100vh; font-family: sans-serif; }
         .menu-btn { 
-            background-color: #1e293b; border: 2px solid #374151; padding: 1.25rem; 
-            border-radius: 1rem; width: 100%; text-align: left; font-weight: 900; 
-            text-transform: uppercase; display: flex; justify-content: space-between; align-items: center;
-            transition: transform 0.1s;
+            background: #1e293b; 
+            border: 2px solid #374151; 
+            padding: 1.5rem; 
+            border-radius: 1rem; 
+            width: 100%; 
+            text-align: left; 
+            font-weight: 900; 
+            text-transform: uppercase; 
+            font-style: italic; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            transition: all 0.2s;
         }
-        .menu-btn:active { transform: scale(0.98); }
-        .history-card { background: #1e293b; border-left: 4px solid #b91c1c; padding: 1rem; border-radius: 0.5rem; margin-bottom: 0.75rem; position: relative; }
-        .pb-badge { background: #ef4444; color: white; font-size: 8px; padding: 2px 6px; border-radius: 4px; font-weight: 900; text-transform: uppercase; margin-left: 8px; }
-        .club-card { background: #111827; border: 1px solid #1f2937; padding: 1rem; border-radius: 0.75rem; margin-bottom: 1rem; }
-        input { background-color: #1f2937; color: white; border: 2px solid #374151; padding: 1rem; border-radius: 0.75rem; width: 100%; margin-bottom: 0.75rem; }
-        
-        /* Layout Helpers */
-        .content-wrapper { flex: 1; }
-               footer { 
-    background: black; 
-    border-top: 4px solid #b91c1c; 
-    padding: 3rem 1rem; 
-    text-align: center;
-    margin-top: auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Forces horizontal centering */
-}
+        .menu-btn:active { transform: scale(0.98); background: #334155; }
+        input { 
+            width: 100%; 
+            background: #0f172a; 
+            border: 1px solid #374151; 
+            padding: 1rem; 
+            border-radius: 0.75rem; 
+            margin-bottom: 1rem; 
+            color: white; 
+            font-weight: bold;
+        }
+        .content-wrapper { flex: 1; padding: 1.5rem; }
 
-/* This specifically targets the panther icon to remove any background box */
-.footer-logo {
-    height: 3rem; /* Adjust size as needed */
-    width: auto;
-    background: transparent !important; /* Forces background to be clear */
-    mix-blend-mode: screen; /* Makes black backgrounds on images disappear into the black footer */
-    opacity: 0.9;
-    margin-bottom: 1rem;
-}
-
-.tdl-branding {
-    display: block;
-    font-size: 5rem;
-    font-weight: 900;
-    font-style: italic;
-    text-transform: uppercase;
-    color: #b91c1c;
-    line-height: 1;
-    text-shadow: 
-        -2px -2px 0 #fff,  
-         2px -2px 0 #fff,
-        -2px  2px 0 #fff,
-         2px  2px 0 #fff;
-    letter-spacing: -2px;
-}
-    .social-container {
-                display: flex;
-                justify-content: center;
-                gap: 1.5rem;
-                margin-bottom: 1.5rem;
-            }
-
-            .social-icon {
-                height: 1.5rem; /* Small and clean */
-                width: auto;
-                transition: transform 0.2s, opacity 0.2s;
-                opacity: 0.7;
-                filter: brightness(0) invert(1); /* Makes icons white to match the aesthetic */
-            }
-
-            .social-icon:hover {
-                transform: scale(1.1);
-                opacity: 1;
-            }
-
-            /* Ensure the footer stays at the bottom */
-            body {
-                display: flex;
-                flex-direction: column;
-                min-height: 100vh;
-            }
-            .content-wrapper {
-                flex: 1;
-            }
+        /* Footer Branding */
+        footer { 
+            background: black; 
+            border-top: 4px solid #b91c1c; 
+            padding: 3rem 1rem; 
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .footer-logo { height: 3.5rem; width: auto; margin-bottom: 1.5rem; filter: drop-shadow(0 0 5px rgba(255,255,255,0.1)); }
+        .social-container { display: flex; justify-content: center; gap: 2rem; margin-bottom: 2rem; }
+        .social-icon { height: 1.8rem; width: auto; opacity: 0.8; filter: brightness(0) invert(1); transition: 0.2s; }
+        .social-icon:hover { transform: scale(1.2); opacity: 1; }
+        .tdl-branding {
+            display: block; font-size: 5rem; font-weight: 900; font-style: italic; text-transform: uppercase;
+            color: #b91c1c; line-height: 0.9; letter-spacing: -2px;
+            text-shadow: -2px -2px 0 #fff, 2px -2px 0 #fff, -2px 2px 0 #fff, 2px 2px 0 #fff;
+        }
     </style>
 </head>
-<body class="font-sans">
+<body>
 
     <header class="bg-black p-6 border-b-4 border-red-700 text-center">
-        <img src="Panthers2.png" alt="Panthers Football" class="h-20 mx-auto mb-2">
-        <h1 class="text-2xl font-black italic uppercase tracking-tighter text-white">Panther <span class="text-red-600">Power</span></h1>
+        <img src="Panthers2.png" alt="Panthers" class="h-16 mx-auto mb-2">
+        <h1 class="text-2xl font-black italic uppercase tracking-tighter">Panther <span class="text-red-600">Power</span></h1>
     </header>
 
-    <div class="content-wrapper">
-        <div class="max-w-md mx-auto px-4 mt-6 space-y-4">
-            
-            <div id="auth-section" class="hidden bg-[#1e293b] p-6 rounded-2xl border border-gray-700 shadow-2xl">
+    <div class="content-wrapper flex flex-col items-center justify-center">
+        
+        <div id="auth-section" class="w-full max-w-md bg-[#1e293b] p-6 rounded-2xl border border-gray-700 shadow-2xl">
             <div id="login-form">
                 <h2 class="text-xl font-black mb-6 text-center text-red-500 uppercase italic tracking-tighter">Athlete Login</h2>
                 <input id="email" type="email" placeholder="Email Address">
                 <input id="password" type="password" placeholder="Password">
-                <button onclick="handleLogin()" class="w-full bg-red-700 py-4 rounded-xl font-black uppercase text-sm mb-4 hover:bg-red-600">Login</button>
+                <button onclick="handleLogin()" class="w-full bg-red-700 py-4 rounded-xl font-black uppercase text-sm mb-4">Login</button>
                 <p class="text-center text-[10px] font-bold text-gray-500 uppercase">
                     New Athlete? <a href="#" onclick="toggleAuth(true)" class="text-red-500 underline">Create Account</a>
                 </p>
@@ -114,59 +81,50 @@
                 <input id="new-name" type="text" placeholder="Full Name (e.g. C. Phelps)">
                 <input id="new-email" type="email" placeholder="Email Address">
                 <input id="new-password" type="password" placeholder="Create Password">
-                <button onclick="handleSignup()" class="w-full bg-blue-600 py-4 rounded-xl font-black uppercase text-sm mb-4 hover:bg-blue-500">Register</button>
+                <button onclick="handleSignup()" class="w-full bg-blue-600 py-4 rounded-xl font-black uppercase text-sm mb-4">Register</button>
                 <p class="text-center text-[10px] font-bold text-gray-500 uppercase">
                     Already registered? <a href="#" onclick="toggleAuth(false)" class="text-blue-500 underline">Back to Login</a>
                 </p>
             </div>
         </div>
 
-            <div id="lobby-section" class="hidden space-y-4">
-                <div id="coach-tools" class="hidden bg-red-900/10 border-2 border-red-700 p-4 rounded-xl mb-4 text-center">
-                    <button onclick="location.href='coach.html'" class="w-full bg-red-700 p-3 rounded-lg font-black uppercase text-xs">Coach Command Center</button>
-                </div>
+        <div id="main-menu" class="hidden w-full max-w-md space-y-4">
+            <h2 id="welcome-msg" class="text-center font-black italic uppercase text-gray-400 mb-4 tracking-widest">Welcome, Athlete</h2>
+            
+            <button onclick="location.href='rack.html'" class="menu-btn border-red-600">
+                <span>🏋️ Enter Maxes</span><span class="text-red-600">→</span>
+            </button>
 
-                <div class="flex justify-between items-end mb-4 bg-gray-900/50 p-4 rounded-xl border border-white/5">
-                    <div>
-                        <p class="text-[8px] font-bold text-gray-500 uppercase tracking-widest">Athlete</p>
-                        <span id="player-name-display" class="font-black italic text-red-500 uppercase text-lg">---</span>
-                    </div>
-                    <div class="text-right">
-                        <p class="text-[8px] font-bold text-blue-400 uppercase tracking-widest">Board Score</p>
-                        <span id="player-score-preview" class="font-black text-xl text-white">--</span>
-                        <button onclick="handleLogout()" class="block text-[8px] underline text-gray-600 font-bold uppercase mt-1">Logout</button>
-                    </div>
-                </div>
+            <button onclick="location.href='board.html'" class="menu-btn border-yellow-600">
+                <span>🏆 The Board</span><span class="text-yellow-600">→</span>
+            </button>
 
-                <button onclick="location.href='rack.html'" class="menu-btn border-red-700"><span>🏋️ The Rack</span><span class="text-red-700">→</span></button>
-                <button onclick="location.href='kitchen.html'" class="menu-btn border-green-700"><span>🍳 The Kitchen</span><span class="text-green-700">→</span></button>
-                <button onclick="location.href='board.html'" class="menu-btn border-yellow-600"><span>🏆 The Board</span><span class="text-yellow-600">→</span></button>
-                <button onclick="location.href='records.html'" class="menu-btn border-blue-500"> <span>🏆 Records Board</span><span class="text-blue-500">→</span> </button>
-                <button onclick="location.href='history.html'" class="menu-btn border-blue-600"><span>📈 My History</span><span class="text-blue-600">→</span></button>
-                <button onclick="location.href='guides.html'" class="menu-btn border-gray-700"><span>📖 Guides</span><span class="text-gray-700">→</span></button>
-            </div>
+            <button onclick="location.href='records.html'" class="menu-btn border-green-600">
+                <span>🏅 Weight Class Records</span><span class="text-green-600">→</span>
+            </button>
+
+            <button onclick="location.href='history.html'" class="menu-btn border-blue-600">
+                <span>📈 My History</span><span class="text-blue-600">→</span>
+            </button>
+
+            <button onclick="handleLogout()" class="w-full py-4 text-[10px] font-black uppercase text-gray-500 tracking-widest">Sign Out</button>
         </div>
     </div>
 
     <footer>
-    <img src="panther.png" alt="Panther" class="footer-logo">
-
-    <div class="social-container">
-        <a href="https://www.facebook.com/profile.php?id=61573011830957" target="_blank"><img src="facebook.png" alt="Facebook" class="social-icon"></a>
-        </a>
-        <a href="https://www.instagram.com/hsfairbanksfb/" target="_blank"><img src="instagram.jpg" alt="Instagram" class="social-icon"></a>
-        </a>
-        <a href="https://www.hudl.com/library/35871L" target="_blank"><img src="hudl.png" alt="Hudl" class="social-icon"></a>
-        </a>
-    </div>
-    
-    <span class="tdl-branding">TDL</span>
-</footer>
+        <img src="1773084097632.png" alt="Panther" class="footer-logo">
+        <div class="social-container">
+            <a href="https://www.facebook.com/profile.php?id=61573011830957" target="_blank"><img src="facebook.png" alt="Facebook" class="social-icon"></a>
+            <a href="https://www.instagram.com/hsfairbanksfb/" target="_blank"><img src="instagram.jpg" alt="Instagram" class="social-icon"></a>
+            <a href="https://www.hudl.com/library/35871L" target="_blank"><img src="hudl.png" alt="Hudl" class="social-icon"></a>
+        </div>
+        <span class="tdl-branding">TDL</span>
+    </footer>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, collection, query, orderBy, limit, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = { 
             apiKey: "AIzaSyBdY26nH0CAn05IpjzoFvG5E1H-bv8fPwA", 
@@ -182,134 +140,54 @@
         const db = getFirestore(app);
 
         onAuthStateChanged(auth, async (user) => {
+            const authSection = document.getElementById('auth-section');
+            const mainMenu = document.getElementById('main-menu');
+            
             if (user) {
-                const snap = await getDoc(doc(db, "players", user.uid));
-                if(snap.exists()){
-                    const data = snap.data();
-                    document.getElementById('player-name-display').innerText = data.playerName;
-                    if(data.role === 'coach') document.getElementById('coach-tools').classList.remove('hidden');
-                    loadPlayerScorePreview(user.uid);
+                authSection.classList.add('hidden');
+                mainMenu.classList.remove('hidden');
+                const userSnap = await getDoc(doc(db, "players", user.uid));
+                if (userSnap.exists()) {
+                    document.getElementById('welcome-msg').innerText = `Welcome, ${userSnap.data().playerName}`;
                 }
-                document.getElementById('auth-section').classList.add('hidden');
-                document.getElementById('lobby-section').classList.remove('hidden');
             } else {
-                document.getElementById('auth-section').classList.remove('hidden');
-                document.getElementById('lobby-section').classList.add('hidden');
+                authSection.classList.remove('hidden');
+                mainMenu.classList.add('hidden');
             }
         });
 
-        async function loadPlayerScorePreview(uid) {
-            const q = query(collection(db, "players", uid, "maxes"), orderBy("timestamp", "desc"), limit(1));
-            const snap = await getDocs(q);
-            if(!snap.empty) {
-                const m = snap.docs[0].data();
-                const score = (Number(m.bench)||0) + (Number(m.squat)||0) + (Number(m.clean)||0) + (Number(m.deadlift)||0) - (Math.min(Number(m.bodyWeight)||0, 200) * 4);
-                document.getElementById('player-score-preview').innerText = Math.round(score);
-            }
-        }
-
-        window.showPlayerHistory = async () => {
-            const list = document.getElementById('history-list');
-            document.getElementById('history-view').classList.remove('hidden');
-            list.innerHTML = '<p class="text-center text-xs animate-pulse text-blue-400 font-black uppercase">Loading History...</p>';
-            
-            const q = query(collection(db, "players", auth.currentUser.uid, "maxes"), orderBy("timestamp", "desc"), limit(20));
-            const snap = await getDocs(q);
-            list.innerHTML = '';
-
-            let dataArray = [];
-            snap.forEach(doc => dataArray.push({ id: doc.id, ...doc.data() }));
-
-            // Determine Personal Bests by comparing Board Scores
-            dataArray.reverse(); // Start from oldest to calculate progress
-            let highestScoreSeen = 0;
-            dataArray.forEach(d => {
-                const score = (Number(d.bench)||0) + (Number(d.squat)||0) + (Number(d.clean)||0) + (Number(d.deadlift)||0) - (Math.min(Number(d.bodyWeight)||0, 200) * 4);
-                if (score > highestScoreSeen) {
-                    d.isPB = true;
-                    highestScoreSeen = score;
-                }
-                d.boardScore = Math.round(score);
-            });
-            dataArray.reverse(); // Put back in newest-first order for display
-
-            dataArray.forEach(d => {
-                list.innerHTML += `
-                    <div class="history-card">
-                        <div class="flex justify-between items-center mb-2 border-b border-gray-700 pb-1">
-                            <div>
-                                <span class="text-blue-400 font-black text-xs uppercase italic">${d.date}</span>
-                                ${d.isPB ? '<span class="pb-badge">New Record</span>' : ''}
-                            </div>
-                            <button onclick="deleteHistoryEntry('${d.id}')" class="text-[10px] text-gray-600 hover:text-red-500 uppercase font-black">Delete</button>
-                        </div>
-                        <div class="grid grid-cols-5 gap-1 text-center mb-2">
-                            <div><p class="text-[7px] text-gray-500 uppercase">BP</p><p class="text-xs font-black">${d.bench || '-'}</p></div>
-                            <div><p class="text-[7px] text-gray-500 uppercase">SQ</p><p class="text-xs font-black">${d.squat || '-'}</p></div>
-                            <div><p class="text-[7px] text-gray-500 uppercase">CL</p><p class="text-xs font-black">${d.clean || '-'}</p></div>
-                            <div><p class="text-[7px] text-gray-500 uppercase">DL</p><p class="text-xs font-black">${d.deadlift || '-'}</p></div>
-                            <div><p class="text-[7px] text-gray-500 uppercase">PP</p><p class="text-xs font-black">${d.pushpress || '-'}</p></div>
-                        </div>
-                        <div class="flex justify-between items-center bg-black/30 p-2 rounded border border-white/5">
-                            <span class="text-[8px] font-bold text-gray-500 uppercase">Board Score:</span>
-                            <span class="text-xs font-black text-white">${d.boardScore}</span>
-                        </div>
-                    </div>`;
-            });
+        window.toggleAuth = (showSignup) => {
+            document.getElementById('login-form').classList.toggle('hidden', showSignup);
+            document.getElementById('signup-form').classList.toggle('hidden', !showSignup);
         };
 
-        window.deleteHistoryEntry = async (docId) => {
-            if(!confirm("Are you sure you want to delete this entry? It will remove this record from your history and the board.")) return;
-            await deleteDoc(doc(db, "players", auth.currentUser.uid, "maxes", docId));
-            alert("Entry Deleted.");
-            showPlayerHistory(); // Refresh history
-            loadPlayerScorePreview(auth.currentUser.uid); // Refresh preview
+        window.handleLogin = async () => {
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('password').value;
+            try { await signInWithEmailAndPassword(auth, email, pass); } 
+            catch (e) { alert("Login failed: " + e.message); }
         };
 
-        window.showPlayerBoard = async () => {
-            const grid = document.getElementById('player-club-grid');
-            document.getElementById('player-board-view').classList.remove('hidden');
-            grid.innerHTML = '<p class="text-center text-xs animate-pulse text-yellow-500 font-black">RANKING PLAYERS...</p>';
-            
-            const pSnap = await getDocs(collection(db, "players"));
-            let scores = [];
+        window.handleSignup = async () => {
+            const name = document.getElementById('new-name').value;
+            const email = document.getElementById('new-email').value;
+            const pass = document.getElementById('new-password').value;
 
-            for (const d of pSnap.docs) {
-                const maxSnap = await getDocs(query(collection(db, "players", d.id, "maxes"), orderBy("timestamp", "desc"), limit(1)));
-                if(!maxSnap.empty) {
-                    const m = maxSnap.docs[0].data();
-                    const score = (Number(m.bench)||0) + (Number(m.squat)||0) + (Number(m.clean)||0) + (Number(m.deadlift)||0) - (Math.min(Number(m.bodyWeight)||0, 200) * 4);
-                    if(score >= 300) scores.push({ name: d.data().playerName, total: Math.round(score), placed: false });
-                }
-            }
+            if (!name || !email || !pass) return alert("All fields required");
 
-            scores.sort((a, b) => b.total - a.total);
-            grid.innerHTML = '';
-
-            for(let level = 700; level >= 300; level -= 50) {
-                const qualifiers = scores.filter(s => !s.placed && s.total >= level);
-                qualifiers.forEach(s => s.placed = true);
-                if(qualifiers.length > 0) {
-                    grid.innerHTML += `
-                        <div class="club-card">
-                            <p class="text-red-600 font-black italic text-lg border-b border-gray-800 mb-3 pb-1">${level} LB CLUB</p>
-                            ${qualifiers.map(q => `
-                                <div class="flex justify-between items-center text-sm py-2 border-b border-white/5 last:border-0">
-                                    <span class="font-bold uppercase tracking-tight">${q.name}</span>
-                                    <span class="text-blue-400 font-black">${q.total}</span>
-                                </div>`).join('')}
-                        </div>`;
-                }
-            }
+            try {
+                const cred = await createUserWithEmailAndPassword(auth, email, pass);
+                await setDoc(doc(db, "players", cred.user.uid), {
+                    playerName: name,
+                    email: email,
+                    role: "athlete",
+                    joinedAt: new Date().toISOString()
+                });
+                alert("Account created!");
+            } catch (e) { alert(e.message); }
         };
 
-        window.handleLogin = () => {
-            const e = document.getElementById('email').value;
-            const p = document.getElementById('password').value;
-            signInWithEmailAndPassword(auth, e, p).catch(err => alert(err.message));
-        };
-
-        window.handleLogout = () => signOut(auth).then(() => location.reload());
+        window.handleLogout = () => signOut(auth);
     </script>
 </body>
 </html>
