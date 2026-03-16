@@ -53,75 +53,53 @@
         </div>
 
         <section class="bg-gray-800 p-6 rounded-2xl border border-gray-700 shadow-2xl">
-        <h2 class="text-center font-black uppercase italic text-green-500 mb-6 tracking-tight">Log Your Fuel</h2>
-        
-        <label class="text-[9px] uppercase font-bold text-gray-400 ml-1">Entry Date</label>
-        <input id="entry-date" type="date">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="font-black uppercase italic text-blue-400 tracking-tight">Update Weight</h2>
+                <div class="text-right">
+                    <p class="text-[8px] uppercase font-bold text-gray-500">Last Recorded</p>
+                    <p id="last-weight-display" class="text-xs font-black text-white">-- lbs</p>
+                </div>
+            </div>
+            <div class="flex gap-2">
+                <input id="quick-weight" type="number" placeholder="Lbs" class="flex-1">
+                <button onclick="saveQuickWeight()" class="bg-blue-700 hover:bg-blue-600 px-6 rounded-xl font-black uppercase text-xs transition-all active:scale-95">Update</button>
+            </div>
+        </section>
 
-        <select id="meal-type">
-            <option value="Breakfast">Breakfast</option>
-            <option value="Lunch">Lunch</option>
-            <option value="Dinner">Dinner</option>
-            <option value="Snack">Snack/Shake</option>
-        </select>
-
-        <div class="grid grid-cols-2 gap-2">
-            <input id="calories" type="number" placeholder="Total Calories">
-            <input id="protein" type="number" placeholder="Protein (g)">
-        </div>
-        
-        <div class="grid grid-cols-2 gap-2">
-            <input id="carbs" type="number" placeholder="Carbs (g)">
-            <input id="fats" type="number" placeholder="Fats (g)">
-        </div>
-
-        <input id="weight" type="number" placeholder="Body Weight (lbs)">
-        <textarea id="meal-desc" placeholder="What did you eat?" rows="2"></textarea>
-        
-        <button onclick="saveMeal()" class="w-full bg-green-600 hover:bg-green-700 py-4 rounded-xl font-black uppercase shadow-lg transition-all active:scale-95">Record Meal</button>
-    </section>
-
-    <script type="module">
-        // ... (Your imports remain the same)
-
-        // Autopopulate Date
-        document.getElementById('entry-date').valueAsDate = new Date();
-
-        // Updated Save Logic
-        window.saveMeal = async () => {
-            const cal = document.getElementById('calories').value;
-            const selectedDate = document.getElementById('entry-date').value; // Get the user's selected date
+        <section class="bg-gray-800 p-6 rounded-2xl border border-gray-700 shadow-2xl">
+            <h2 class="text-center font-black uppercase italic text-green-500 mb-6 tracking-tight">Log Your Fuel</h2>
             
-            if(!cal || !selectedDate) return alert("Please enter calories and date");
+            <label class="text-[9px] uppercase font-bold text-gray-400 ml-1">Entry Date</label>
+            <input id="entry-date" type="date">
 
-            // Convert the date picker (YYYY-MM-DD) to Locale String to match your existing data
-            const dateObj = new Date(selectedDate);
-            dateObj.setMinutes(dateObj.getMinutes() + dateObj.getTimezoneOffset());
-            const dateStr = dateObj.toLocaleDateString();
+            <select id="meal-type">
+                <option value="Breakfast">Breakfast</option>
+                <option value="Lunch">Lunch</option>
+                <option value="Dinner">Dinner</option>
+                <option value="Snack">Snack/Shake</option>
+            </select>
 
-            await addDoc(collection(db, "players", auth.currentUser.uid, "meals"), {
-                mealType: document.getElementById('meal-type').value,
-                calories: Number(cal),
-                protein: Number(document.getElementById('protein').value),
-                carbs: Number(document.getElementById('carbs').value),
-                fats: Number(document.getElementById('fats').value),
-                bodyWeight: Number(document.getElementById('weight').value),
-                description: document.getElementById('meal-desc').value,
-                date: dateStr,
-                timestamp: serverTimestamp()
-            });
+            <div class="grid grid-cols-2 gap-2">
+                <input id="calories" type="number" placeholder="Calories">
+                <input id="protein" type="number" placeholder="Protein (g)">
+            </div>
+            
+            <div class="grid grid-cols-2 gap-2">
+                <input id="carbs" type="number" placeholder="Carbs (g)">
+                <input id="fats" type="number" placeholder="Fats (g)">
+            </div>
 
-            alert("Meal Saved for " + dateStr);
-            location.reload();
-        };
-    </script>
+            <textarea id="meal-desc" placeholder="What did you eat?" rows="2"></textarea>
+            
+            <button onclick="saveMeal()" class="w-full bg-green-600 hover:bg-green-700 py-4 rounded-xl font-black uppercase shadow-lg transition-all active:scale-95">Record Meal</button>
+        </section>
 
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, collection, addDoc, serverTimestamp, query, where, getDocs, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, collection, addDoc, serverTimestamp, query, where, getDocs, updateDoc, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = { 
             apiKey: "AIzaSyBdY26nH0CAn05IpjzoFvG5E1H-bv8fPwA", 
@@ -137,6 +115,9 @@
         const db = getFirestore(app);
         let userGoal = 0;
 
+        // Autopopulate Date
+        document.getElementById('entry-date').valueAsDate = new Date();
+
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 const snap = await getDoc(doc(db, "players", user.uid));
@@ -145,9 +126,42 @@
                     document.getElementById('target-display').innerText = userGoal || '---';
                     updateDailyTotals();
                 }
+                fetchLastWeight();
             } else { location.href = 'index.html'; }
         });
 
+        // FETCH LAST WEIGHT
+        async function fetchLastWeight() {
+            const weightQuery = query(
+                collection(db, "players", auth.currentUser.uid, "maxes"),
+                orderBy("timestamp", "desc"),
+                limit(1)
+            );
+            const querySnapshot = await getDocs(weightQuery);
+            const display = document.getElementById('last-weight-display');
+            if (!querySnapshot.empty) {
+                const lastData = querySnapshot.docs[0].data();
+                display.innerText = lastData.bodyWeight ? `${lastData.bodyWeight} lbs` : "-- lbs";
+            }
+        }
+
+        // SAVE WEIGHT ONLY
+        window.saveQuickWeight = async () => {
+            const bw = document.getElementById('quick-weight').value;
+            if(!bw) return alert("Enter weight");
+
+            await addDoc(collection(db, "players", auth.currentUser.uid, "maxes"), {
+                bodyWeight: Number(bw),
+                date: new Date().toLocaleDateString(),
+                timestamp: serverTimestamp(),
+                isWeightOnly: true
+            });
+            alert("Weight Updated!");
+            document.getElementById('quick-weight').value = '';
+            fetchLastWeight();
+        };
+
+        // CALORIE GOAL LOGIC
         window.setCalorieGoal = async () => {
             const goal = prompt("Enter your daily calorie target:", userGoal || 3000);
             if(goal && !isNaN(goal)) {
@@ -158,6 +172,7 @@
             }
         };
 
+        // UPDATE TOTALS
         async function updateDailyTotals() {
             const todayStr = new Date().toLocaleDateString();
             const q = query(collection(db, "players", auth.currentUser.uid, "meals"), where("date", "==", todayStr));
@@ -179,23 +194,30 @@
             }
         }
 
+        // SAVE MEAL (Flexible)
         window.saveMeal = async () => {
-            const cal = document.getElementById('calories').value;
-            if(!cal) return alert("Please enter calories");
+            const selectedDate = document.getElementById('entry-date').value;
+            if(!selectedDate) return alert("Please select a date");
+
+            const dateObj = new Date(selectedDate);
+            dateObj.setMinutes(dateObj.getMinutes() + dateObj.getTimezoneOffset());
+            const dateStr = dateObj.toLocaleDateString();
 
             await addDoc(collection(db, "players", auth.currentUser.uid, "meals"), {
                 mealType: document.getElementById('meal-type').value,
-                calories: Number(cal),
-                protein: Number(document.getElementById('protein').value),
-                carbs: Number(document.getElementById('carbs').value),
-                bodyWeight: Number(document.getElementById('weight').value),
-                description: document.getElementById('meal-desc').value,
-                date: new Date().toLocaleDateString(),
+                calories: Number(document.getElementById('calories').value) || 0,
+                protein: Number(document.getElementById('protein').value) || 0,
+                carbs: Number(document.getElementById('carbs').value) || 0,
+                fats: Number(document.getElementById('fats').value) || 0,
+                description: document.getElementById('meal-desc').value || "",
+                date: dateStr,
                 timestamp: serverTimestamp()
             });
 
-            alert("Meal Saved!");
-            location.reload();
+            alert("Meal Logged!");
+            updateDailyTotals();
+            // Optional: reset fields instead of reload for smoother UX
+            ['calories', 'protein', 'carbs', 'fats', 'meal-desc'].forEach(id => document.getElementById(id).value = '');
         };
     </script>
 </body>

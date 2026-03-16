@@ -6,10 +6,7 @@
     <title>Panther Power | Lobby</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { 
-            background-color: #0f172a; 
-            color: white; 
-        }
+        body { background-color: #0f172a; color: white; }
         .menu-btn { 
             background-color: #1e293b; 
             border: 2px solid #374151; 
@@ -39,6 +36,7 @@
             width: 100%; 
             margin-bottom: 0.75rem; 
         }
+        .club-card { background: #111827; border: 1px solid #1f2937; padding: 1rem; border-radius: 0.75rem; margin-bottom: 1rem; }
     </style>
 </head>
 <body class="font-sans pb-10">
@@ -55,8 +53,7 @@
             <input id="email" type="email" placeholder="Email Address">
             <input id="password" type="password" placeholder="Password">
             <button onclick="handleLogin()" class="w-full bg-red-700 py-4 rounded-xl font-black uppercase text-sm">Login</button>
-            <p class="text-[11px] text-center mt-6 text-gray-400 font-bold uppercase tracking-widest">New Panther? <a href="signup.html" class="text-red-500 underline">Create Account</a>
-</p>
+            <p class="text-[11px] text-center mt-6 text-gray-400 font-bold uppercase tracking-widest">New Panther? <a href="signup.html" class="text-red-500 underline">Create Account</a></p>
         </div>
 
         <div id="lobby-section" class="hidden space-y-4">
@@ -65,9 +62,16 @@
                 <button onclick="location.href='coach.html'" class="w-full bg-red-700 p-4 rounded-xl font-black uppercase text-xs">Open The Board & Lifts Audit</button>
             </div>
 
-            <div class="flex justify-between items-center mb-4">
-                <span id="player-name-display" class="font-black italic text-red-500 uppercase"></span>
-                <button onclick="handleLogout()" class="text-[10px] underline text-gray-500 font-bold uppercase">Logout</button>
+            <div class="flex justify-between items-end mb-4 bg-gray-900/50 p-4 rounded-xl border border-white/5">
+                <div>
+                    <p class="text-[8px] font-bold text-gray-500 uppercase">Logged in as</p>
+                    <span id="player-name-display" class="font-black italic text-red-500 uppercase text-lg"></span>
+                </div>
+                <div class="text-right">
+                    <p class="text-[8px] font-bold text-blue-400 uppercase">Current Board Score</p>
+                    <span id="player-score-preview" class="font-black text-xl text-white">--</span>
+                    <button onclick="handleLogout()" class="block text-[8px] underline text-gray-600 font-bold uppercase mt-1">Logout</button>
+                </div>
             </div>
 
             <button onclick="location.href='rack.html'" class="menu-btn border-red-700">
@@ -82,12 +86,15 @@
                 <span>🏆 The Board</span><span class="text-yellow-600">→</span>
             </button>
 
-            <div id="player-board-view" class="hidden fixed inset-0 bg-black/90 z-50 p-6 overflow-y-auto">
+            <div id="player-board-view" class="hidden fixed inset-0 bg-black/95 z-50 p-6 overflow-y-auto">
                 <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-xl font-black italic text-yellow-500">STRENGTH RANKINGS</h2>
-                    <button onclick="document.getElementById('player-board-view').classList.add('hidden')" class="text-white text-xs font-bold underline uppercase">Close</button>
+                    <div>
+                        <h2 class="text-xl font-black italic text-yellow-500 uppercase">Strength Rankings</h2>
+                        <p class="text-[8px] text-gray-500 font-bold uppercase">Formula: Total Lifts - (BW Cap 200 * 4)</p>
+                    </div>
+                    <button onclick="document.getElementById('player-board-view').classList.add('hidden')" class="bg-white/10 px-4 py-2 rounded-lg text-white text-[10px] font-bold uppercase">Close</button>
                 </div>
-                <div id="player-club-grid"></div>
+                <div id="player-club-grid" class="space-y-4"></div>
             </div>
 
             <button onclick="location.href='guides.html'" class="menu-btn border-blue-700">
@@ -99,7 +106,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = { 
             apiKey: "AIzaSyBdY26nH0CAn05IpjzoFvG5E1H-bv8fPwA", 
@@ -121,6 +128,7 @@
                     const data = snap.data();
                     document.getElementById('player-name-display').innerText = data.playerName;
                     if(data.role === 'coach') document.getElementById('coach-tools').classList.remove('hidden');
+                    loadPlayerScorePreview(user.uid);
                 }
                 document.getElementById('auth-section').classList.add('hidden');
                 document.getElementById('lobby-section').classList.remove('hidden');
@@ -129,14 +137,53 @@
                 document.getElementById('lobby-section').classList.add('hidden');
             }
         });
-  
+
+        // Get single score for the lobby preview
+        async function loadPlayerScorePreview(uid) {
+            const q = query(collection(db, "players", uid, "maxes"), orderBy("timestamp", "desc"), limit(1));
+            const snap = await getDocs(q);
+            if(!snap.empty) {
+                const m = snap.docs[0].data();
+                const score = (Number(m.bench)||0) + (Number(m.squat)||0) + (Number(m.clean)||0) + (Number(m.deadlift)||0) - (Math.min(Number(m.bodyWeight)||0, 200) * 4);
+                document.getElementById('player-score-preview').innerText = Math.round(score);
+            }
+        }
+
         window.showPlayerBoard = async () => {
-            document.getElementById('player-board-view').classList.remove('hidden');
             const grid = document.getElementById('player-club-grid');
-            grid.innerHTML = '<p class="text-center text-xs animate-pulse">Loading Leaderboard...</p>';
+            document.getElementById('player-board-view').classList.remove('hidden');
+            grid.innerHTML = '<p class="text-center text-xs animate-pulse text-yellow-500 font-bold uppercase">Calculating Rankings...</p>';
             
-            // Copy the logic from coach.html loadTheBoard() here to populate player-club-grid
-            // (Ensure you reference the correct grid ID: 'player-club-grid')
+            const pSnap = await getDocs(collection(db, "players"));
+            let scores = [];
+
+            for (const d of pSnap.docs) {
+                const maxSnap = await getDocs(query(collection(db, "players", d.id, "maxes"), orderBy("timestamp", "desc"), limit(1)));
+                if(!maxSnap.empty) {
+                    const m = maxSnap.docs[0].data();
+                    const score = (Number(m.bench)||0) + (Number(m.squat)||0) + (Number(m.clean)||0) + (Number(m.deadlift)||0) - (Math.min(Number(m.bodyWeight)||0, 200) * 4);
+                    if(score >= 300) scores.push({ name: d.data().playerName, total: Math.round(score), placed: false });
+                }
+            }
+
+            scores.sort((a, b) => b.total - a.total);
+            grid.innerHTML = '';
+
+            for(let level = 700; level >= 300; level -= 50) {
+                const qualifiers = scores.filter(s => !s.placed && s.total >= level);
+                if(qualifiers.length > 0 || level === 700) {
+                    qualifiers.forEach(s => s.placed = true);
+                    grid.innerHTML += `
+                        <div class="club-card">
+                            <p class="text-red-600 font-black italic text-lg border-b border-gray-800 mb-3 pb-1">${level} LB CLUB</p>
+                            ${qualifiers.length > 0 ? qualifiers.map(q => `
+                                <div class="flex justify-between items-center text-sm py-2 border-b border-white/5 last:border-0">
+                                    <span class="font-bold uppercase tracking-tight">${q.name}</span>
+                                    <span class="text-blue-400 font-black">${q.total}</span>
+                                </div>`).join('') : '<p class="text-[10px] text-gray-600 font-bold uppercase italic text-center py-2">No qualifiers yet</p>'}
+                        </div>`;
+                }
+            }
         };
 
         window.handleLogin = () => {

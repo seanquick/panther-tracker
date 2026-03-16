@@ -33,7 +33,21 @@
                 <div class="max-card"><p class="text-[8px] uppercase text-gray-400">Clean</p><p id="view-clean" class="text-xl font-black">--</p></div>
                 <div class="max-card"><p class="text-[8px] uppercase text-gray-400">Deadlift</p><p id="view-dead" class="text-xl font-black">--</p></div>
                 <div class="max-card"><p class="text-[8px] uppercase text-gray-400">Press</p><p id="view-press" class="text-xl font-black">--</p></div>
-                <div class="max-card border-blue-600"><p class="text-[8px] uppercase text-blue-400">Total</p><p id="view-total" class="text-xl font-black text-blue-400">0</p></div>
+                <div class="max-card border-blue-600"><p class="text-[8px] uppercase text-blue-400">Board Score</p><p id="view-total" class="text-xl font-black text-blue-400">0</p></div>
+            </div>
+        </section>
+
+        <section class="bg-gray-800 p-6 rounded-2xl border border-gray-700 shadow-2xl">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="font-black uppercase italic text-blue-400 tracking-tight">Update Weight</h2>
+                <div class="text-right">
+                    <p class="text-[8px] uppercase font-bold text-gray-500">Last Recorded</p>
+                    <p id="last-weight-display" class="text-xs font-black text-white">-- lbs</p>
+                </div>
+            </div>
+            <div class="flex gap-2">
+                <input id="quick-weight" type="number" placeholder="Lbs" class="flex-1">
+                <button onclick="saveQuickWeight()" class="bg-blue-700 hover:bg-blue-600 px-6 rounded-xl font-black uppercase text-xs transition-all active:scale-95">Update</button>
             </div>
         </section>
 
@@ -53,43 +67,12 @@
                 <div><label class="text-[9px] uppercase font-bold text-gray-400 ml-1">Deadlift</label><input id="deadlift" type="number" placeholder="Lbs"></div>
             </div>
 
-            <div class="grid grid-cols-2 gap-2">
+            <div class="grid grid-cols-1 gap-2">
                 <div><label class="text-[9px] uppercase font-bold text-gray-400 ml-1">Push Press</label><input id="pushpress" type="number" placeholder="Lbs"></div>
-                <div><label class="text-[9px] uppercase font-bold text-gray-400 ml-1">Body Weight</label><input id="weight" type="number" placeholder="Lbs"></div>
             </div>
 
             <button onclick="saveMaxes()" class="w-full bg-red-700 hover:bg-red-800 py-4 rounded-xl font-black uppercase shadow-lg transition-all active:scale-95 mt-2">Log New Maxes</button>
         </section>
-
-        <script type="module">
-            document.getElementById('entry-date').valueAsDate = new Date();
-
-            window.saveMaxes = async () => {
-                const selectedDate = document.getElementById('entry-date').value;
-                const dateObj = new Date(selectedDate);
-                dateObj.setMinutes(dateObj.getMinutes() + dateObj.getTimezoneOffset());
-                const dateStr = dateObj.toLocaleDateString();
-
-                // Check if at least something was entered
-                const inputs = ['bench', 'squat', 'clean', 'deadlift', 'pushpress', 'weight'];
-                const hasData = inputs.some(id => document.getElementById(id).value !== "");
-                if(!hasData) return alert("Enter data before saving.");
-
-                await addDoc(collection(db, "players", auth.currentUser.uid, "maxes"), {
-                    bench: Number(document.getElementById('bench').value),
-                    squat: Number(document.getElementById('squat').value),
-                    clean: Number(document.getElementById('clean').value),
-                    deadlift: Number(document.getElementById('deadlift').value),
-                    pushpress: Number(document.getElementById('pushpress').value),
-                    bodyWeight: Number(document.getElementById('weight').value), // Added BW here
-                    date: dateStr,
-                    timestamp: serverTimestamp()
-                });
-
-                alert("Stats Saved for " + dateStr);
-                location.reload();
-            };
-        </script>
 
     </div>
 
@@ -111,12 +94,17 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
+        // Set default date
+        document.getElementById('entry-date').valueAsDate = new Date();
+
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 loadCurrentMaxes();
+                fetchLastWeight();
             } else { location.href = 'index.html'; }
         });
 
+        // 1. FETCH PRs & CALCULATE BOARD SCORE
         async function loadCurrentMaxes() {
             const q = query(collection(db, "players", auth.currentUser.uid, "maxes"), orderBy("timestamp", "desc"), limit(1));
             const snap = await getDocs(q);
@@ -129,12 +117,59 @@
                 document.getElementById('view-dead').innerText = data.deadlift || '--';
                 document.getElementById('view-press').innerText = data.pushpress || '--';
                 
-                const total = (Number(data.bench)||0) + (Number(data.squat)||0) + (Number(data.clean)||0) + (Number(data.deadlift)||0);
-                document.getElementById('view-total').innerText = total;
+                // Formula Logic: Score = (Bench + Squat + Clean + Deadlift) - (Min(BW, 200) * 4)
+                const bench = Number(data.bench) || 0;
+                const squat = Number(data.squat) || 0;
+                const clean = Number(data.clean) || 0;
+                const dead = Number(data.deadlift) || 0;
+                const bw = Number(data.bodyWeight) || 0;
+
+                const cappedBW = Math.min(bw, 200);
+                const score = (bench + squat + clean + dead) - (cappedBW * 4);
+                
+                document.getElementById('view-total').innerText = Math.round(score);
             }
         }
 
+        // 2. FETCH LAST WEIGHT FOR DISPLAY
+        async function fetchLastWeight() {
+            const weightQuery = query(
+                collection(db, "players", auth.currentUser.uid, "maxes"),
+                orderBy("timestamp", "desc"),
+                limit(1)
+            );
+            const querySnapshot = await getDocs(weightQuery);
+            const display = document.getElementById('last-weight-display');
+            if (!querySnapshot.empty) {
+                const lastData = querySnapshot.docs[0].data();
+                display.innerText = lastData.bodyWeight ? `${lastData.bodyWeight} lbs` : "-- lbs";
+            }
+        }
+
+        // 3. SAVE WEIGHT ONLY
+        window.saveQuickWeight = async () => {
+            const bw = document.getElementById('quick-weight').value;
+            if(!bw) return alert("Enter weight");
+
+            await addDoc(collection(db, "players", auth.currentUser.uid, "maxes"), {
+                bodyWeight: Number(bw),
+                date: new Date().toLocaleDateString(),
+                timestamp: serverTimestamp(),
+                isWeightOnly: true
+            });
+            alert("Weight Updated!");
+            document.getElementById('quick-weight').value = '';
+            fetchLastWeight();
+            loadCurrentMaxes(); // Refresh the board score with new weight
+        };
+
+        // 4. SAVE NEW MAXES
         window.saveMaxes = async () => {
+            const selectedDate = document.getElementById('entry-date').value;
+            const dateObj = new Date(selectedDate);
+            dateObj.setMinutes(dateObj.getMinutes() + dateObj.getTimezoneOffset());
+            const dateStr = dateObj.toLocaleDateString();
+
             const b = document.getElementById('bench').value;
             const s = document.getElementById('squat').value;
             const c = document.getElementById('clean').value;
@@ -143,13 +178,19 @@
 
             if(!b && !s && !c && !d && !p) return alert("Enter at least one lift to update.");
 
+            // Fetch the last known weight so the "Score" remains accurate in the new entry
+            const q = query(collection(db, "players", auth.currentUser.uid, "maxes"), orderBy("timestamp", "desc"), limit(1));
+            const snap = await getDocs(q);
+            const lastWeight = !snap.empty ? snap.docs[0].data().bodyWeight : 0;
+
             await addDoc(collection(db, "players", auth.currentUser.uid, "maxes"), {
-                bench: Number(b),
-                squat: Number(s),
-                clean: Number(c),
-                deadlift: Number(d),
-                pushpress: Number(p),
-                date: new Date().toLocaleDateString(),
+                bench: Number(b) || 0,
+                squat: Number(s) || 0,
+                clean: Number(c) || 0,
+                deadlift: Number(d) || 0,
+                pushpress: Number(p) || 0,
+                bodyWeight: lastWeight, // Carries over the current weight
+                date: dateStr,
                 timestamp: serverTimestamp()
             });
 
