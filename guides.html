@@ -6,70 +6,70 @@
     <title>Panther Power | Guides</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #0f172a; color: white; }
+        body { background-color: #0f172a; color: white; display: flex; flex-direction: column; min-height: 100vh; }
         .guide-card { background: #1e293b; border-radius: 1rem; padding: 1.5rem; border-left: 4px solid #3b82f6; transition: 0.2s; }
         .guide-card:active { transform: scale(0.98); }
         .pdf-link { background: #2563eb; color: white; padding: 0.75rem; border-radius: 0.5rem; display: block; text-align: center; font-weight: 900; text-transform: uppercase; font-size: 12px; margin-top: 1rem; }
-        .nav-btn { background-color: #374151; padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 10px; font-weight: 900; text-transform: uppercase; color: white; }
-               /* Footer Branding */
+        .nav-btn { background-color: #374151; padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 10px; font-weight: 900; text-transform: uppercase; color: white; margin-top: 10px; }
+        
+        /* Consistent Footer Branding */
         footer { 
-                background: black; 
-                border-top: 4px solid #b91c1c; 
-                padding: 3rem 1rem; 
-                text-align: center;
-                margin-top: auto;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-            }
+            background: black; 
+            border-top: 4px solid #b91c1c; 
+            padding: 3rem 1rem; 
+            text-align: center;
+            margin-top: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
-            .footer-logo { 
-                height: 5rem; 
-                width: auto; 
-                margin-bottom: 1.5rem; 
-            }
+        .footer-logo { 
+            height: 5rem; 
+            width: auto; 
+            margin-bottom: 1.5rem; 
+        }
 
-            .social-container { 
-                display: flex; 
-                justify-content: center; 
-                gap: 2rem; 
-                margin-bottom: 2rem; 
-            }
+        .social-container { 
+            display: flex; 
+            justify-content: center; 
+            gap: 2rem; 
+            margin-bottom: 2rem; 
+        }
 
-            .social-icon { 
-                height: 2rem; 
-                width: auto; 
-                transition: transform 0.2s;
-                display: inline-block;
-            }
+        .social-icon { 
+            height: 2rem; 
+            width: auto; 
+            transition: transform 0.2s;
+            display: inline-block;
+        }
 
-            .social-icon:hover { 
-                transform: scale(1.2); 
-            }
+        .social-icon:hover { 
+            transform: scale(1.2); 
+        }
 
-            .tdl-branding {
-                display: block; 
-                font-size: 5rem; 
-                font-weight: 900; 
-                font-style: italic; 
-                text-transform: uppercase;
-                color: #b91c1c; 
-                line-height: 0.9; 
-                letter-spacing: -2px;
-                text-shadow: -2px -2px 0 #fff, 2px -2px 0 #fff, -2px 2px 0 #fff, 2px 2px 0 #fff;
-            }
+        .tdl-branding {
+            display: block; 
+            font-size: 5rem; 
+            font-weight: 900; 
+            font-style: italic; 
+            text-transform: uppercase;
+            color: #b91c1c; 
+            line-height: 0.9; 
+            letter-spacing: -2px;
+            text-shadow: -2px -2px 0 #fff, 2px -2px 0 #fff, -2px 2px 0 #fff, 2px 2px 0 #fff;
+        }
     </style>
 </head>
 <body class="font-sans pb-20">
 
-     <header class="bg-black p-6 border-b-4 border-red-700 text-center">
+    <header class="bg-black p-6 border-b-4 border-red-700 text-center">
         <img src="Panthers2.png" alt="Panthers Football" class="h-20 mx-auto mb-2">
         <h1 class="text-2xl font-black italic uppercase tracking-tighter text-white">Panther <span class="text-red-600">Power</span></h1>
         <button onclick="location.href='index.html'" class="nav-btn">← Lobby</button>
     </header>
-   
 
-    <div class="max-w-md mx-auto px-4 space-y-6">
+    <div class="max-w-md mx-auto px-4 py-8 space-y-6">
         
         <section class="space-y-4">
             <p class="text-[10px] font-black uppercase text-gray-500 italic tracking-widest ml-2">Official Resources</p>
@@ -93,45 +93,33 @@
             <div class="bg-orange-900/20 border border-orange-700/30 p-5 rounded-2xl">
                 <h3 class="font-black italic uppercase text-orange-500 mb-3 text-lg">Bulk Up (Muscle Growth)</h3>
                 <p class="text-[11px] text-gray-300 leading-relaxed mb-4">
-                    The healthiest way for a teenager to gain muscle is through a combination of consistent resistance training (3-4 times a week), consuming a slight calorie surplus (300-500 extra calories daily) focusing on whole foods, and getting 8-10 hours of sleep for recovery. Aim for slow, steady gains of 1-2 pounds per week to ensure muscle growth rather than just fat.
+                    The healthiest way for a teenager to gain muscle is through a combination of consistent resistance training (3-4 times a week), consuming a slight calorie surplus (300-500 extra calories daily) focusing on whole foods, and getting 8-10 hours of sleep for recovery.
                 </p>
                 <div class="space-y-3">
                     <div class="bg-black/30 p-4 rounded-lg border-l-2 border-orange-500">
                         <p class="text-[10px] text-white font-black uppercase mb-2">Nutritional Strategy</p>
                         <ul class="text-[11px] text-gray-300 space-y-2">
-                            <li>• <span class="font-bold text-orange-400">Increase Calories:</span> Consume 300–500 extra calories per day from nutrient-dense, whole foods.</li>
-                            <li>• <span class="font-bold text-orange-400">Prioritize Protein:</span> (15-20%) Eat protein at every meal. Aim for 1 gram per lb of bodyweight.</li>
-                            <li>• <span class="font-bold text-orange-400">Fuel with Carbohydrates:</span> (50-60%) Include oats, brown rice, potatoes, and whole-grain bread.</li>
-                            <li>• <span class="font-bold text-orange-400">Healthy Fats:</span> (20-30%) Include avocados, nuts, seeds, and olive oil.</li>
-                            <li>• <span class="font-bold text-orange-400">Frequent Eating:</span> Eat every 3–5 hours for a consistent supply of nutrients.</li>
+                            <li>• <span class="font-bold text-orange-400">Increase Calories:</span> 300–500 extra calories daily.</li>
+                            <li>• <span class="font-bold text-orange-400">Prioritize Protein:</span> Aim for 1 gram per lb of bodyweight.</li>
+                            <li>• <span class="font-bold text-orange-400">Fuel with Carbs:</span> Oats, brown rice, and potatoes.</li>
                         </ul>
                     </div>
-                    <p class="text-[10px] text-gray-500 italic uppercase font-bold text-center">Be Patient: Muscle building takes time. Work with a coach to learn proper technique.</p>
                 </div>
             </div>
 
             <div class="bg-cyan-900/20 border border-cyan-700/30 p-5 rounded-2xl">
                 <h3 class="font-black italic uppercase text-cyan-500 mb-3 text-lg">Lean Down (Healthy Weight Loss)</h3>
                 <p class="text-[11px] text-gray-300 leading-relaxed mb-4">
-                    To lose weight healthily, teens should focus on nutrient-dense foods rather than extreme calorie cutting. A balanced approach involves ensuring a slight calorie deficit and increasing physical activity to maintain muscle.
+                    To lose weight healthily, teens should focus on nutrient-dense foods rather than extreme calorie cutting.
                 </p>
                 <div class="space-y-3">
                     <div class="bg-black/30 p-4 rounded-lg border-l-2 border-cyan-500">
                         <p class="text-[10px] text-white font-black uppercase mb-2">Macro Breakdown</p>
                         <ul class="text-[11px] text-gray-300 space-y-2">
-                            <li>• <span class="font-bold text-cyan-400">Protein (10–30%):</span> Crucial for muscle growth. Target 1.2–1.5 g/kg of body weight.</li>
-                            <li>• <span class="font-bold text-cyan-400">Carbohydrates (40–60%):</span> Focus on fiber-rich, complex carbohydrates like whole grains.</li>
-                            <li>• <span class="font-bold text-cyan-400">Fats (25–35%):</span> Essential for hormones. Focus on unsaturated fats (olive oil, nuts).</li>
+                            <li>• <span class="font-bold text-cyan-400">Protein (10–30%):</span> Target 1.2–1.5 g/kg of weight.</li>
+                            <li>• <span class="font-bold text-cyan-400">Carbohydrates (40–60%):</span> Focus on fiber-rich grains.</li>
                         </ul>
                     </div>
-                    
-                    <div class="grid grid-cols-1 gap-2">
-                        <div class="bg-black/20 p-3 rounded text-[10px] text-gray-400">
-                            <p><b class="text-white uppercase">Key Tips:</b> Avoid extreme diets, maintain a 20% deficit, prioritize fiber, and stay hydrated while focusing on whole foods.</p>
-                        </div>
-                    </div>
-                    
-                    <p class="text-[9px] text-red-400 font-bold uppercase text-center mt-2 px-2 leading-tight">It is highly recommended for teens to consult with a doctor or registered dietitian before beginning a weight loss program.</p>
                 </div>
             </div>
         </section>
@@ -139,20 +127,14 @@
     </div>
     
     <footer>
-    <img src="panther.png" alt="Panther" class="footer-logo">
-
-    <div class="social-container">
-        <a href="https://www.facebook.com/profile.php?id=61573011830957" target="_blank"><img src="facebook.png" alt="Facebook" class="social-icon"></a>
-        </a>
-        <a href="https://www.instagram.com/hsfairbanksfb/" target="_blank"><img src="instagram.jpg" alt="Instagram" class="social-icon"></a>
-        </a>
-        <a href="https://www.hudl.com/library/35871L" target="_blank"><img src="hudl.png" alt="Hudl" class="social-icon"></a>
-        </a>
-    </div>
-    
-    <span class="tdl-branding">TDL</span>
-</footer>
-
+        <img src="panther.png" alt="Panther" class="footer-logo">
+        <div class="social-container">
+            <a href="https://www.facebook.com/profile.php?id=61573011830957" target="_blank"><img src="facebook.png" alt="Facebook" class="social-icon"></a>
+            <a href="https://www.instagram.com/hsfairbanksfb/" target="_blank"><img src="instagram.jpg" alt="Instagram" class="social-icon"></a>
+            <a href="https://www.hudl.com/library/35871L" target="_blank"><img src="hudl.png" alt="Hudl" class="social-icon"></a>
+        </div>
+        <span class="tdl-branding">TDL</span>
+    </footer>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
