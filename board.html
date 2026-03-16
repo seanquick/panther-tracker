@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panther Power | The Board</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #0f172a; color: white; display: flex; flex-direction: column; min-height: 100vh; }
+        .club-card { background: #111827; border: 1px solid #1f2937; padding: 1.5rem; border-radius: 0.75rem; margin-bottom: 1.5rem; }
+        .content-wrapper { flex: 1; padding: 1.5rem; }
+        footer { background: black; border-top: 4px solid #b91c1c; padding: 2rem 1rem; text-align: center; }
+    </style>
+</head>
+<body class="font-sans">
+
+    <header class="bg-black p-6 border-b-4 border-red-700 text-center">
+        <div class="flex justify-between items-center max-w-md mx-auto mb-2">
+            <button onclick="location.href='index.html'" class="text-[10px] font-black uppercase bg-gray-800 px-3 py-1 rounded">← Lobby</button>
+            <img src="Panthers2.png" alt="Panthers" class="h-12">
+            <div class="w-10"></div>
+        </div>
+        <h1 class="text-2xl font-black italic uppercase tracking-tighter text-white">THE <span class="text-yellow-500">BOARD</span></h1>
+    </header>
+
+    <div class="content-wrapper">
+        <div id="player-club-grid" class="max-w-md mx-auto">
+            <p class="text-center text-xs animate-pulse text-yellow-500 font-black uppercase">Syncing Rankings...</p>
+        </div>
+    </div>
+
+    <footer>
+        <img src="1773084097632.png" alt="Panther" class="h-12 mx-auto mb-4 opacity-80">
+        <h2 class="text-6xl font-black tracking-tighter text-white opacity-20 italic">TDL</h2>
+    </footer>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = { 
+            apiKey: "AIzaSyBdY26nH0CAn05IpjzoFvG5E1H-bv8fPwA", 
+            authDomain: "panthertracker-b8ff6.firebaseapp.com", 
+            projectId: "panthertracker-b8ff6", 
+            storageBucket: "panthertracker-b8ff6.firebasestorage.app", 
+            messagingSenderId: "647881105335", 
+            appId: "1:647881105335:web:bbb79bb3fe9740de1e1232" 
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        async function loadBoard() {
+            const grid = document.getElementById('player-club-grid');
+            const pSnap = await getDocs(collection(db, "players"));
+            let scores = [];
+
+            for (const d of pSnap.docs) {
+                const maxSnap = await getDocs(query(collection(db, "players", d.id, "maxes"), orderBy("timestamp", "desc"), limit(1)));
+                if(!maxSnap.empty) {
+                    const m = maxSnap.docs[0].data();
+                    const score = (Number(m.bench)||0) + (Number(m.squat)||0) + (Number(m.clean)||0) + (Number(m.deadlift)||0) - (Math.min(Number(m.bodyWeight)||0, 200) * 4);
+                    if(score >= 300) scores.push({ name: d.data().playerName, total: Math.round(score), placed: false });
+                }
+            }
+
+            scores.sort((a, b) => b.total - a.total);
+            grid.innerHTML = '';
+
+            // 50lb Increments
+            for(let level = 700; level >= 300; level -= 50) {
+                const qualifiers = scores.filter(s => !s.placed && s.total >= level);
+                qualifiers.forEach(s => s.placed = true);
+                
+                if(qualifiers.length > 0) {
+                    grid.innerHTML += `
+                        <div class="club-card border-l-4 border-yellow-600">
+                            <p class="text-yellow-500 font-black italic text-lg border-b border-gray-800 mb-3 pb-1">${level} LB CLUB</p>
+                            ${qualifiers.map(q => `
+                                <div class="flex justify-between items-center text-sm py-2 border-b border-white/5 last:border-0">
+                                    <span class="font-bold uppercase tracking-tight">${q.name}</span>
+                                    <span class="text-white font-black">${q.total}</span>
+                                </div>`).join('')}
+                        </div>`;
+                }
+            }
+            if(grid.innerHTML === '') {
+                grid.innerHTML = '<p class="text-center text-gray-600 font-bold uppercase py-10">No qualifiers on the board yet.</p>';
+            }
+        }
+
+        loadBoard();
+    </script>
+</body>
+</html>

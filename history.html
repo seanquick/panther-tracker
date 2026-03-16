@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panther Power | History</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #0f172a; color: white; display: flex; flex-direction: column; min-height: 100vh; }
+        .history-card { background: #1e293b; border-left: 4px solid #3b82f6; padding: 1.25rem; border-radius: 1rem; margin-bottom: 1rem; position: relative; }
+        .pb-badge { background: #ef4444; color: white; font-size: 8px; padding: 2px 6px; border-radius: 4px; font-weight: 900; text-transform: uppercase; margin-left: 8px; }
+        .content-wrapper { flex: 1; padding: 1.5rem; }
+        footer { background: black; border-top: 4px solid #b91c1c; padding: 2rem 1rem; text-align: center; }
+    </style>
+</head>
+<body class="font-sans">
+
+    <header class="bg-black p-6 border-b-4 border-red-700 text-center">
+        <div class="flex justify-between items-center max-w-md mx-auto mb-2">
+            <button onclick="location.href='index.html'" class="text-[10px] font-black uppercase bg-gray-800 px-3 py-1 rounded">← Lobby</button>
+            <img src="Panthers2.png" alt="Panthers" class="h-12">
+            <div class="w-10"></div>
+        </div>
+        <h1 class="text-2xl font-black italic uppercase tracking-tighter text-white">MY <span class="text-blue-500">HISTORY</span></h1>
+    </header>
+
+    <div class="content-wrapper">
+        <div id="history-list" class="max-w-md mx-auto space-y-4">
+            <p class="text-center text-xs animate-pulse text-blue-400 font-black uppercase">Loading your progress...</p>
+        </div>
+    </div>
+
+    <footer>
+        <img src="1773084097632.png" alt="Panther" class="h-12 mx-auto mb-4 opacity-80">
+        <h2 class="text-6xl font-black tracking-tighter text-white opacity-20 italic">TDL</h2>
+    </footer>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, collection, query, orderBy, limit, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = { 
+            apiKey: "AIzaSyBdY26nH0CAn05IpjzoFvG5E1H-bv8fPwA", 
+            authDomain: "panthertracker-b8ff6.firebaseapp.com", 
+            projectId: "panthertracker-b8ff6", 
+            storageBucket: "panthertracker-b8ff6.firebasestorage.app", 
+            messagingSenderId: "647881105335", 
+            appId: "1:647881105335:web:bbb79bb3fe9740de1e1232" 
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) { loadHistory(user.uid); }
+            else { location.href = 'index.html'; }
+        });
+
+        async function loadHistory(uid) {
+            const list = document.getElementById('history-list');
+            const q = query(collection(db, "players", uid, "maxes"), orderBy("timestamp", "desc"), limit(30));
+            const snap = await getDocs(q);
+            
+            if(snap.empty) {
+                list.innerHTML = '<p class="text-center text-gray-500 font-bold uppercase py-10">No records logged yet.</p>';
+                return;
+            }
+
+            let dataArray = [];
+            snap.forEach(doc => dataArray.push({ id: doc.id, ...doc.data() }));
+
+            // Calculate Personal Bests
+            dataArray.reverse(); 
+            let highestScoreSeen = -9999;
+            dataArray.forEach(d => {
+                const score = (Number(d.bench)||0) + (Number(d.squat)||0) + (Number(d.clean)||0) + (Number(d.deadlift)||0) - (Math.min(Number(d.bodyWeight)||0, 200) * 4);
+                if (score > highestScoreSeen) {
+                    d.isPB = true;
+                    highestScoreSeen = score;
+                }
+                d.boardScore = Math.round(score);
+            });
+            dataArray.reverse();
+
+            list.innerHTML = '';
+            dataArray.forEach(d => {
+                list.innerHTML += `
+                    <div class="history-card">
+                        <div class="flex justify-between items-center mb-3 border-b border-gray-700 pb-2">
+                            <div>
+                                <span class="text-blue-400 font-black text-xs uppercase italic">${d.date}</span>
+                                ${d.isPB ? '<span class="pb-badge">New Record</span>' : ''}
+                            </div>
+                            <button onclick="deleteEntry('${d.id}')" class="text-[10px] text-gray-600 hover:text-red-500 font-black uppercase">Delete</button>
+                        </div>
+                        <div class="grid grid-cols-5 gap-2 text-center mb-3">
+                            <div><p class="text-[7px] text-gray-500 uppercase font-bold">BP</p><p class="text-sm font-black">${d.bench || '-'}</p></div>
+                            <div><p class="text-[7px] text-gray-500 uppercase font-bold">SQ</p><p class="text-sm font-black">${d.squat || '-'}</p></div>
+                            <div><p class="text-[7px] text-gray-500 uppercase font-bold">CL</p><p class="text-sm font-black">${d.clean || '-'}</p></div>
+                            <div><p class="text-[7px] text-gray-500 uppercase font-bold">DL</p><p class="text-sm font-black">${d.deadlift || '-'}</p></div>
+                            <div><p class="text-[7px] text-gray-500 uppercase font-bold">PP</p><p class="text-sm font-black">${d.pushpress || '-'}</p></div>
+                        </div>
+                        <div class="flex justify-between items-center bg-black/40 p-3 rounded-lg border border-white/5">
+                            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Calculated Board Score</span>
+                            <span class="text-lg font-black text-white italic">${d.boardScore}</span>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        window.deleteEntry = async (docId) => {
+            if(!confirm("Permanently delete this record?")) return;
+            await deleteDoc(doc(db, "players", auth.currentUser.uid, "maxes", docId));
+            loadHistory(auth.currentUser.uid);
+        };
+    </script>
+</body>
+</html>

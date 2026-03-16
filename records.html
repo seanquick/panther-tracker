@@ -15,6 +15,8 @@
         .val-cell { text-align: right; color: white; width: 4%; padding-right: 4px !important; border-right: 2px solid #374151 !important; }
         .content-wrapper { flex: 1; padding: 1rem; overflow-x: auto; }
         footer { background: black; border-top: 4px solid #b91c1c; padding: 2rem 1rem; text-align: center; margin-top: 2rem; }
+        /* Add this inside your <style> tags */
+        .edit-unlocked {border: 1px solid rgba(234, 179, 8, 0.5) !important; box-shadow: inset 0 0 10px rgba(234, 179, 8, 0.1); animation: pulse-border 2s infinite; }@keyframes pulse-border {0% { border-color: rgba(234, 179, 8, 0.3); } 50% { border-color: rgba(234, 179, 8, 1); } 100% { border-color: rgba(234, 179, 8, 0.3); }}
     </style>
 </head>
 <body>
@@ -23,7 +25,12 @@
         <div class="flex justify-between items-center max-w-6xl mx-auto">
             <button onclick="location.href='index.html'" class="text-[10px] font-black uppercase bg-gray-800 px-3 py-1 rounded">← Lobby</button>
             <img src="Panthers2.png" alt="Panthers" class="h-12">
-            <div class="w-10"></div>
+            <div id="admin-controls" class="hidden">
+                <button id="lock-btn" onclick="toggleLock()" class="text-[10px] font-black uppercase bg-red-700 px-4 py-2 rounded shadow-lg border border-white/20">
+                    🔒 Board Locked
+                </button>
+            </div>
+            <div id="spacer" class="w-10"></div>
         </div>
         <h1 class="text-xl font-black italic uppercase mt-2 tracking-tighter">Weight Class <span class="text-red-600">Records</span></h1>
     </header>
@@ -73,6 +80,7 @@
         const db = getFirestore(app);
         
         let isCoach = false;
+        let boardLocked = true; // Safety lock enabled by default
         const weightClasses = ["125", "135", "145", "155", "165", "175", "185", "195", "210", "225", "250", "UNLIMITED"];
         const lifts = ['bench', 'squat', 'cleans', 'deadlift', 'pushpress', 'dash'];
 
@@ -80,34 +88,62 @@
             if (user) {
                 const userSnap = await getDoc(doc(db, "players", user.uid));
                 isCoach = userSnap.exists() && userSnap.data().role === 'coach';
+                
+                // Display coach-only lock controls
+                if (isCoach) {
+                    const adminDiv = document.getElementById('admin-controls');
+                    const spacer = document.getElementById('spacer');
+                    if(adminDiv) adminDiv.classList.remove('hidden');
+                    if(spacer) spacer.classList.add('hidden');
+                }
                 listenToRecords();
             }
         });
 
+        // Toggle function for the safety lock
+        window.toggleLock = () => {
+            boardLocked = !boardLocked;
+            const btn = document.getElementById('lock-btn');
+            if (boardLocked) {
+                btn.innerText = "🔒 Board Locked";
+                btn.classList.replace('bg-green-600', 'bg-red-700');
+            } else {
+                btn.innerText = "🔓 Editing Enabled";
+                btn.classList.replace('bg-red-700', 'bg-green-600');
+            }
+            listenToRecords(); // Redraw table to show/hide edit borders
+        };
+
         function listenToRecords() {
             const tbody = document.getElementById('records-body');
+            
+            // Apply the 'edit-unlocked' class only if the coach has clicked unlock
+            const editClass = (!boardLocked && isCoach) ? 'edit-unlocked' : 'border-transparent';
             
             tbody.innerHTML = weightClasses.map(wc => `
                 <tr id="row-${wc}">
                     <td class="weight-cell">${wc}</td>
                     ${lifts.map(lift => `
-                        <td class="name-cell cursor-pointer" onclick="editRecord('${wc}', '${lift}', 'name')">
+                        <td class="name-cell cursor-pointer border ${editClass}" onclick="editRecord('${wc}', '${lift}', 'name')">
                             <span id="${wc}-${lift}-name">---</span>
                         </td>
-                        <td class="val-cell cursor-pointer" onclick="editRecord('${wc}', '${lift}', 'val')">
+                        <td class="val-cell cursor-pointer border ${editClass}" onclick="editRecord('${wc}', '${lift}', 'val')">
                             <span id="${wc}-${lift}-val">0</span>
                         </td>
                     `).join('')}
                 </tr>
             `).join('');
 
+            // Set up real-time listeners for each weight class document
             weightClasses.forEach(wc => {
                 onSnapshot(doc(db, "weightClassRecords", wc), (doc) => {
                     if (doc.exists()) {
                         const data = doc.data();
                         lifts.forEach(lift => {
-                            document.getElementById(`${wc}-${lift}-name`).innerText = data[lift]?.name || "---";
-                            document.getElementById(`${wc}-${lift}-val`).innerText = data[lift]?.val || "0";
+                            const nameSpan = document.getElementById(`${wc}-${lift}-name`);
+                            const valSpan = document.getElementById(`${wc}-${lift}-val`);
+                            if(nameSpan) nameSpan.innerText = data[lift]?.name || "---";
+                            if(valSpan) valSpan.innerText = data[lift]?.val || "0";
                         });
                     }
                 });
@@ -115,7 +151,8 @@
         }
 
         window.editRecord = async (wc, lift, type) => {
-            if (!isCoach) return;
+            // Block editing if user isn't a coach OR if the board safety lock is on
+            if (!isCoach || boardLocked) return;
             
             const nameEl = document.getElementById(`${wc}-${lift}-name`);
             const valEl = document.getElementById(`${wc}-${lift}-val`);
@@ -125,10 +162,8 @@
 
             if (newName !== null && newVal !== null) {
                 const ref = doc(db, "weightClassRecords", wc);
-                const existing = (await getDoc(ref)).data() || {};
                 
                 await setDoc(ref, {
-                    ...existing,
                     [lift]: { name: newName, val: newVal }
                 }, { merge: true });
             }
