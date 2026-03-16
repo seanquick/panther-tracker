@@ -13,42 +13,54 @@
             border-radius: 0.75rem !important; width: 100%; margin-bottom: 0.75rem; 
         }
         label { font-size: 10px; font-weight: 900; text-transform: uppercase; color: #64748b; margin-left: 0.5rem; margin-bottom: 0.2rem; display: block; }
-               footer { 
-    background: black; 
-    border-top: 4px solid #b91c1c; 
-    padding: 3rem 1rem; 
-    text-align: center;
-    margin-top: auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Forces horizontal centering */
-}
+               
+        /* Footer Branding */
+        footer { 
+                background: black; 
+                border-top: 4px solid #b91c1c; 
+                padding: 3rem 1rem; 
+                text-align: center;
+                margin-top: auto;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
 
-/* This specifically targets the panther icon to remove any background box */
-.footer-logo {
-    height: 3rem; /* Adjust size as needed */
-    width: auto;
-    background: transparent !important; /* Forces background to be clear */
-    mix-blend-mode: screen; /* Makes black backgrounds on images disappear into the black footer */
-    opacity: 0.9;
-    margin-bottom: 1rem;
-}
+            .footer-logo { 
+                height: 5rem; 
+                width: auto; 
+                margin-bottom: 1.5rem; 
+            }
 
-.tdl-branding {
-    display: block;
-    font-size: 5rem;
-    font-weight: 900;
-    font-style: italic;
-    text-transform: uppercase;
-    color: #b91c1c;
-    line-height: 1;
-    text-shadow: 
-        -2px -2px 0 #fff,  
-         2px -2px 0 #fff,
-        -2px  2px 0 #fff,
-         2px  2px 0 #fff;
-    letter-spacing: -2px;
-}
+            .social-container { 
+                display: flex; 
+                justify-content: center; 
+                gap: 2rem; 
+                margin-bottom: 2rem; 
+            }
+
+            .social-icon { 
+                height: 2rem; 
+                width: auto; 
+                transition: transform 0.2s;
+                display: inline-block;
+            }
+
+            .social-icon:hover { 
+                transform: scale(1.2); 
+            }
+
+            .tdl-branding {
+                display: block; 
+                font-size: 5rem; 
+                font-weight: 900; 
+                font-style: italic; 
+                text-transform: uppercase;
+                color: #b91c1c; 
+                line-height: 0.9; 
+                letter-spacing: -2px;
+                text-shadow: -2px -2px 0 #fff, 2px -2px 0 #fff, -2px 2px 0 #fff, 2px 2px 0 #fff;
+            }
     </style>
 </head>
 <body class="font-sans pb-10">

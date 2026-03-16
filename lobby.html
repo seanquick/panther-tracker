@@ -10,72 +10,54 @@
         .menu-btn { background: #1e293b; border: 2px solid #374151; padding: 1.5rem; border-radius: 1rem; width: 100%; text-align: left; font-weight: 900; text-transform: uppercase; font-style: italic; display: flex; justify-content: space-between; align-items: center; }
         .coach-card { border: 2px solid #b91c1c; background: rgba(185, 28, 28, 0.1); padding: 1rem; border-radius: 1rem; margin-bottom: 1.5rem; }
         input { background-color: #1f2937; color: white; border: 2px solid #374151; padding: 1rem; border-radius: 0.75rem; width: 100%; margin-bottom: 0.75rem; }
-               footer { 
-    background: black; 
-    border-top: 4px solid #b91c1c; 
-    padding: 3rem 1rem; 
-    text-align: center;
-    margin-top: auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Forces horizontal centering */
-}
-
-/* This specifically targets the panther icon to remove any background box */
-.footer-logo {
-    height: 3rem; /* Adjust size as needed */
-    width: auto;
-    background: transparent !important; /* Forces background to be clear */
-    mix-blend-mode: screen; /* Makes black backgrounds on images disappear into the black footer */
-    opacity: 0.9;
-    margin-bottom: 1rem;
-}
-
-.tdl-branding {
-    display: block;
-    font-size: 5rem;
-    font-weight: 900;
-    font-style: italic;
-    text-transform: uppercase;
-    color: #b91c1c;
-    line-height: 1;
-    text-shadow: 
-        -2px -2px 0 #fff,  
-         2px -2px 0 #fff,
-        -2px  2px 0 #fff,
-         2px  2px 0 #fff;
-    letter-spacing: -2px;
-}
-    .social-container {
-                display: flex;
-                justify-content: center;
-                gap: 1.5rem;
-                margin-bottom: 1.5rem;
-            }
-
-            .social-icon {
-                height: 1.5rem; /* Small and clean */
-                width: auto;
-                transition: transform 0.2s, opacity 0.2s;
-                opacity: 0.7;
-                filter: brightness(0) invert(1); /* Makes icons white to match the aesthetic */
-            }
-
-            .social-icon:hover {
-                transform: scale(1.1);
-                opacity: 1;
-            }
-
-            /* Ensure the footer stays at the bottom */
-            body {
+               
+        /* Footer Branding */
+        footer { 
+                background: black; 
+                border-top: 4px solid #b91c1c; 
+                padding: 3rem 1rem; 
+                text-align: center;
+                margin-top: auto;
                 display: flex;
                 flex-direction: column;
-                min-height: 100vh;
-            }
-            .content-wrapper {
-                flex: 1;
+                align-items: center;
             }
 
+            .footer-logo { 
+                height: 5rem; 
+                width: auto; 
+                margin-bottom: 1.5rem; 
+            }
+
+            .social-container { 
+                display: flex; 
+                justify-content: center; 
+                gap: 2rem; 
+                margin-bottom: 2rem; 
+            }
+
+            .social-icon { 
+                height: 2rem; 
+                width: auto; 
+                transition: transform 0.2s;
+                display: inline-block;
+            }
+
+            .social-icon:hover { 
+                transform: scale(1.2); 
+            }
+
+            .tdl-branding {
+                display: block; 
+                font-size: 5rem; 
+                font-weight: 900; 
+                font-style: italic; 
+                text-transform: uppercase;
+                color: #b91c1c; 
+                line-height: 0.9; 
+                letter-spacing: -2px;
+                text-shadow: -2px -2px 0 #fff, 2px -2px 0 #fff, -2px 2px 0 #fff, 2px 2px 0 #fff;
+            }
     </style>
 </head>
 <body class="font-sans pb-10">
