@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panther Power | My Goals</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #0f172a; color: white; display: flex; flex-direction: column; min-height: 100vh; font-family: sans-serif; }
+        input { 
+            background-color: #1f2937 !important; color: white !important; 
+            border: 2px solid #374151 !important; padding: 0.75rem !important; 
+            border-radius: 0.75rem !important; width: 100%; margin-bottom: 0.75rem; 
+        }
+        .nav-btn { background-color: #374151; padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 10px; font-weight: 900; text-transform: uppercase; color: white; margin-top: 10px; }
+        .content-wrapper { flex: 1; padding: 1.5rem; }
+        
+        /* Footer Branding */
+        footer { background: black; border-top: 4px solid #b91c1c; padding: 3rem 1rem; text-align: center; margin-top: auto; display: flex; flex-direction: column; align-items: center; }
+        .footer-logo { height: 5rem; width: auto; margin-bottom: 1.5rem; }
+        .social-container { display: flex; justify-content: center; gap: 2rem; margin-bottom: 2rem; }
+        .social-icon { height: 2rem; width: auto; transition: transform 0.2s; display: inline-block; }
+        .social-icon:hover { transform: scale(1.2); }
+        .tdl-branding {
+            display: block; font-size: 5rem; font-weight: 900; font-style: italic; text-transform: uppercase;
+            color: #b91c1c; line-height: 0.9; letter-spacing: -2px;
+            text-shadow: -2px -2px 0 #fff, 2px -2px 0 #fff, -2px 2px 0 #fff, 2px 2px 0 #fff;
+        }
+    </style>
+</head>
+<body class="pb-20">
+
+    <header class="bg-black p-6 border-b-4 border-red-700 text-center">
+        <img src="Panthers2.png" alt="Panthers Football" class="h-16 mx-auto mb-2">
+        <h1 class="text-2xl font-black italic uppercase tracking-tighter text-white">MY <span class="text-red-600">GOALS</span></h1>
+        <button onclick="location.href='index.html'" class="nav-btn">← Lobby</button>
+    </header>
+
+    <div class="content-wrapper max-w-md mx-auto w-full space-y-6">
+        
+        <section class="bg-gray-800 p-6 rounded-2xl border border-gray-700 shadow-2xl">
+            <h2 class="text-center font-black uppercase italic text-red-500 mb-6 tracking-tight">Set Your Targets</h2>
+            
+            <label class="text-[9px] uppercase font-bold text-gray-400 ml-1">Goal Body Weight (lbs)</label>
+            <input id="goal-bw" type="number" placeholder="e.g. 185">
+
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="text-[9px] uppercase font-bold text-gray-400 ml-1">Bench Goal</label>
+                    <input id="goal-bench" type="number" placeholder="Lbs">
+                </div>
+                <div>
+                    <label class="text-[9px] uppercase font-bold text-gray-400 ml-1">Squat Goal</label>
+                    <input id="goal-squat" type="number" placeholder="Lbs">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="text-[9px] uppercase font-bold text-gray-400 ml-1">Clean Goal</label>
+                    <input id="goal-clean" type="number" placeholder="Lbs">
+                </div>
+                <div>
+                    <label class="text-[9px] uppercase font-bold text-gray-400 ml-1">Deadlift Goal</label>
+                    <input id="goal-deadlift" type="number" placeholder="Lbs">
+                </div>
+            </div>
+
+            <label class="text-[9px] uppercase font-bold text-gray-400 ml-1">Push Press Goal</label>
+            <input id="goal-pushpress" type="number" placeholder="Lbs">
+
+            <button onclick="saveGoals()" class="w-full bg-red-700 hover:bg-red-600 py-4 rounded-xl font-black uppercase shadow-lg transition-all active:scale-95 mt-4">Save Goals</button>
+        </section>
+
+        <div id="goals-display" class="hidden bg-blue-900/10 border border-blue-700/30 p-5 rounded-2xl shadow-xl">
+            <h3 class="text-[10px] font-black uppercase text-blue-500 italic tracking-widest mb-4 text-center">Active Goal Sheet</h3>
+            <div id="goals-list" class="space-y-2 text-sm">
+                </div>
+        </div>
+    </div>
+
+    <footer>
+        <img src="panther.png" alt="Panther" class="footer-logo">
+        <div class="social-container">
+            <a href="https://www.facebook.com/profile.php?id=61573011830957" target="_blank"><img src="facebook.png" alt="Facebook" class="social-icon"></a>
+            <a href="https://www.instagram.com/hsfairbanksfb/" target="_blank"><img src="instagram.jpg" alt="Instagram" class="social-icon"></a>
+            <a href="https://www.hudl.com/library/35871L" target="_blank"><img src="hudl.png" alt="Hudl" class="social-icon"></a>
+        </div>
+        <span class="tdl-branding">TDL</span>
+    </footer>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = { 
+            apiKey: "AIzaSyBdY26nH0CAn05IpjzoFvG5E1H-bv8fPwA", 
+            authDomain: "panthertracker-b8ff6.firebaseapp.com", 
+            projectId: "panthertracker-b8ff6", 
+            storageBucket: "panthertracker-b8ff6.firebasestorage.app", 
+            messagingSenderId: "647881105335", 
+            appId: "1:647881105335:web:bbb79bb3fe9740de1e1232" 
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                loadGoals(user.uid);
+            } else {
+                location.href = 'index.html';
+            }
+        });
+
+        async function loadGoals(uid) {
+            const snap = await getDoc(doc(db, "players", uid, "metadata", "goals"));
+            if (snap.exists()) {
+                const data = snap.data();
+                document.getElementById('goal-bw').value = data.bodyWeight || '';
+                document.getElementById('goal-bench').value = data.bench || '';
+                document.getElementById('goal-squat').value = data.squat || '';
+                document.getElementById('goal-clean').value = data.clean || '';
+                document.getElementById('goal-deadlift').value = data.deadlift || '';
+                document.getElementById('goal-pushpress').value = data.pushpress || '';
+                
+                showDisplay(data);
+            }
+        }
+
+        function showDisplay(data) {
+            const display = document.getElementById('goals-display');
+            const list = document.getElementById('goals-list');
+            display.classList.remove('hidden');
+            list.innerHTML = `
+                <div class="flex justify-between border-b border-white/10 pb-1"><span>Target Weight:</span><span class="font-black text-white">${data.bodyWeight || '--'} lbs</span></div>
+                <div class="flex justify-between border-b border-white/10 pb-1"><span>Bench Goal:</span><span class="font-black text-white">${data.bench || '--'} lbs</span></div>
+                <div class="flex justify-between border-b border-white/10 pb-1"><span>Squat Goal:</span><span class="font-black text-white">${data.squat || '--'} lbs</span></div>
+                <div class="flex justify-between border-b border-white/10 pb-1"><span>Clean Goal:</span><span class="font-black text-white">${data.clean || '--'} lbs</span></div>
+                <div class="flex justify-between border-b border-white/10 pb-1"><span>Deadlift Goal:</span><span class="font-black text-white">${data.deadlift || '--'} lbs</span></div>
+                <div class="flex justify-between"><span>Push Press Goal:</span><span class="font-black text-white">${data.pushpress || '--'} lbs</span></div>
+            `;
+        }
+
+        window.saveGoals = async () => {
+            const user = auth.currentUser;
+            if (!user) return;
+
+            const goals = {
+                bodyWeight: Number(document.getElementById('goal-bw').value) || 0,
+                bench: Number(document.getElementById('goal-bench').value) || 0,
+                squat: Number(document.getElementById('goal-squat').value) || 0,
+                clean: Number(document.getElementById('goal-clean').value) || 0,
+                deadlift: Number(document.getElementById('goal-deadlift').value) || 0,
+                pushpress: Number(document.getElementById('goal-pushpress').value) || 0,
+                updatedAt: new Date().toISOString()
+            };
+
+            try {
+                await setDoc(doc(db, "players", user.uid, "metadata", "goals"), goals);
+                alert("Goals updated! Time to get to work.");
+                showDisplay(goals);
+            } catch (e) {
+                alert("Error saving goals: " + e.message);
+            }
+        };
+    </script>
+</body>
+</html>
