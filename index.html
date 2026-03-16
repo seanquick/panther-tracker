@@ -98,12 +98,28 @@
     <div class="content-wrapper">
         <div class="max-w-md mx-auto px-4 mt-6 space-y-4">
             
-            <div id="auth-section" class="hidden bg-[#1e293b] p-6 rounded-2xl border border-gray-700">
-                <h2 class="text-xl font-bold mb-6 text-center text-red-500 uppercase italic">Secure Access</h2>
+            <div id="auth-section" class="hidden bg-[#1e293b] p-6 rounded-2xl border border-gray-700 shadow-2xl">
+            <div id="login-form">
+                <h2 class="text-xl font-black mb-6 text-center text-red-500 uppercase italic tracking-tighter">Athlete Login</h2>
                 <input id="email" type="email" placeholder="Email Address">
                 <input id="password" type="password" placeholder="Password">
-                <button onclick="handleLogin()" class="w-full bg-red-700 py-4 rounded-xl font-black uppercase text-sm">Login</button>
+                <button onclick="handleLogin()" class="w-full bg-red-700 py-4 rounded-xl font-black uppercase text-sm mb-4 hover:bg-red-600">Login</button>
+                <p class="text-center text-[10px] font-bold text-gray-500 uppercase">
+                    New Athlete? <a href="#" onclick="toggleAuth(true)" class="text-red-500 underline">Create Account</a>
+                </p>
             </div>
+
+            <div id="signup-form" class="hidden">
+                <h2 class="text-xl font-black mb-6 text-center text-blue-500 uppercase italic tracking-tighter">New Athlete Sign-up</h2>
+                <input id="new-name" type="text" placeholder="Full Name (e.g. C. Phelps)">
+                <input id="new-email" type="email" placeholder="Email Address">
+                <input id="new-password" type="password" placeholder="Create Password">
+                <button onclick="handleSignup()" class="w-full bg-blue-600 py-4 rounded-xl font-black uppercase text-sm mb-4 hover:bg-blue-500">Register</button>
+                <p class="text-center text-[10px] font-bold text-gray-500 uppercase">
+                    Already registered? <a href="#" onclick="toggleAuth(false)" class="text-blue-500 underline">Back to Login</a>
+                </p>
+            </div>
+        </div>
 
             <div id="lobby-section" class="hidden space-y-4">
                 <div id="coach-tools" class="hidden bg-red-900/10 border-2 border-red-700 p-4 rounded-xl mb-4 text-center">
@@ -133,7 +149,7 @@
     </div>
 
     <footer>
-    <img src="1773084097632.png" alt="Panther" class="footer-logo">
+    <img src="panther.png" alt="Panther" class="footer-logo">
 
     <div class="social-container">
         <a href="https://www.facebook.com/profile.php?id=61573011830957" target="_blank"><img src="facebook.png" alt="Facebook" class="social-icon"></a>
