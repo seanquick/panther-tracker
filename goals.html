@@ -10,89 +10,69 @@
         input { 
             background-color: #1f2937 !important; color: white !important; 
             border: 2px solid #374151 !important; padding: 0.75rem !important; 
-            border-radius: 0.75rem !important; width: 100%; margin-bottom: 0.75rem; 
+            border-radius: 0.75rem !important; width: 100%; margin-bottom: 0.5rem; 
         }
         .nav-btn { background-color: #374151; padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 10px; font-weight: 900; text-transform: uppercase; color: white; margin-top: 10px; }
         .content-wrapper { flex: 1; padding: 1.5rem; }
         
-        /* Footer Branding */
+        /* Progress Bar Styles */
+        .bar-bg { background: #334155; height: 12px; border-radius: 6px; overflow: hidden; border: 1px solid #475569; }
+        .bar-fill { height: 100%; transition: width 1s ease-in-out; background: linear-gradient(90deg, #ef4444, #b91c1c); }
+        .goal-achieved { background: linear-gradient(90deg, #22c55e, #16a34a) !important; }
+
         footer { background: black; border-top: 4px solid #b91c1c; padding: 3rem 1rem; text-align: center; margin-top: auto; display: flex; flex-direction: column; align-items: center; }
         .footer-logo { height: 5rem; width: auto; margin-bottom: 1.5rem; }
-        .social-container { display: flex; justify-content: center; gap: 2rem; margin-bottom: 2rem; }
-        .social-icon { height: 2rem; width: auto; transition: transform 0.2s; display: inline-block; }
-        .social-icon:hover { transform: scale(1.2); }
-        .tdl-branding {
-            display: block; font-size: 5rem; font-weight: 900; font-style: italic; text-transform: uppercase;
-            color: #b91c1c; line-height: 0.9; letter-spacing: -2px;
-            text-shadow: -2px -2px 0 #fff, 2px -2px 0 #fff, -2px 2px 0 #fff, 2px 2px 0 #fff;
-        }
+        .tdl-branding { display: block; font-size: 5rem; font-weight: 900; font-style: italic; text-transform: uppercase; color: #b91c1c; line-height: 0.9; letter-spacing: -2px; text-shadow: -2px -2px 0 #fff, 2px -2px 0 #fff, -2px 2px 0 #fff, 2px 2px 0 #fff; }
     </style>
 </head>
 <body class="pb-20">
 
     <header class="bg-black p-6 border-b-4 border-red-700 text-center">
         <img src="Panthers2.png" alt="Panthers Football" class="h-16 mx-auto mb-2">
-        <h1 class="text-2xl font-black italic uppercase tracking-tighter text-white">MY <span class="text-red-600">GOALS</span></h1>
+        <h1 class="text-2xl font-black italic uppercase tracking-tighter text-white">GOAL <span class="text-red-600">TRACKER</span></h1>
         <button onclick="location.href='index.html'" class="nav-btn">← Lobby</button>
     </header>
 
     <div class="content-wrapper max-w-md mx-auto w-full space-y-6">
         
         <section class="bg-gray-800 p-6 rounded-2xl border border-gray-700 shadow-2xl">
-            <h2 class="text-center font-black uppercase italic text-red-500 mb-6 tracking-tight">Set Your Targets</h2>
+            <h2 class="text-center font-black uppercase italic text-red-500 mb-4 tracking-tight">Set Target Maxes</h2>
             
-            <label class="text-[9px] uppercase font-bold text-gray-400 ml-1">Goal Body Weight (lbs)</label>
-            <input id="goal-bw" type="number" placeholder="e.g. 185">
+            <label class="text-[9px] uppercase font-bold text-gray-400 ml-1">Weight Club Goal</label>
+            <select id="goal-club" class="bg-[#1f2937] text-white border-2 border-[#374151] p-3 rounded-xl w-full mb-4">
+                <option value="0">Select a Club...</option>
+                <option value="300">300 LB Club</option>
+                <option value="350">350 LB Club</option>
+                <option value="400">400 LB Club</option>
+                <option value="450">450 LB Club</option>
+                <option value="500">500 LB Club</option>
+                <option value="550">550 LB Club</option>
+                <option value="600">600 LB Club</option>
+                <option value="650">650 LB Club</option>
+                <option value="700">700 LB Club</option>
+            </select>
 
             <div class="grid grid-cols-2 gap-3">
-                <div>
-                    <label class="text-[9px] uppercase font-bold text-gray-400 ml-1">Bench Goal</label>
-                    <input id="goal-bench" type="number" placeholder="Lbs">
-                </div>
-                <div>
-                    <label class="text-[9px] uppercase font-bold text-gray-400 ml-1">Squat Goal</label>
-                    <input id="goal-squat" type="number" placeholder="Lbs">
-                </div>
+                <input id="goal-bench" type="number" placeholder="Bench Goal">
+                <input id="goal-squat" type="number" placeholder="Squat Goal">
+                <input id="goal-clean" type="number" placeholder="Clean Goal">
+                <input id="goal-deadlift" type="number" placeholder="Deadlift Goal">
             </div>
-
-            <div class="grid grid-cols-2 gap-3">
-                <div>
-                    <label class="text-[9px] uppercase font-bold text-gray-400 ml-1">Clean Goal</label>
-                    <input id="goal-clean" type="number" placeholder="Lbs">
-                </div>
-                <div>
-                    <label class="text-[9px] uppercase font-bold text-gray-400 ml-1">Deadlift Goal</label>
-                    <input id="goal-deadlift" type="number" placeholder="Lbs">
-                </div>
-            </div>
-
-            <label class="text-[9px] uppercase font-bold text-gray-400 ml-1">Push Press Goal</label>
-            <input id="goal-pushpress" type="number" placeholder="Lbs">
-
-            <button onclick="saveGoals()" class="w-full bg-red-700 hover:bg-red-600 py-4 rounded-xl font-black uppercase shadow-lg transition-all active:scale-95 mt-4">Save Goals</button>
+            <input id="goal-pushpress" type="number" placeholder="Push Press Goal" class="mt-2">
+            
+            <button onclick="saveGoals()" class="w-full bg-red-700 hover:bg-red-600 py-3 rounded-xl font-black uppercase text-sm shadow-lg mt-2">Update Targets</button>
         </section>
-
-        <div id="goals-display" class="hidden bg-blue-900/10 border border-blue-700/30 p-5 rounded-2xl shadow-xl">
-            <h3 class="text-[10px] font-black uppercase text-blue-500 italic tracking-widest mb-4 text-center">Active Goal Sheet</h3>
-            <div id="goals-list" class="space-y-2 text-sm">
-                </div>
-        </div>
     </div>
 
     <footer>
         <img src="panther.png" alt="Panther" class="footer-logo">
-        <div class="social-container">
-            <a href="https://www.facebook.com/profile.php?id=61573011830957" target="_blank"><img src="facebook.png" alt="Facebook" class="social-icon"></a>
-            <a href="https://www.instagram.com/hsfairbanksfb/" target="_blank"><img src="instagram.jpg" alt="Instagram" class="social-icon"></a>
-            <a href="https://www.hudl.com/library/35871L" target="_blank"><img src="hudl.png" alt="Hudl" class="social-icon"></a>
-        </div>
         <span class="tdl-branding">TDL</span>
     </footer>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = { 
             apiKey: "AIzaSyBdY26nH0CAn05IpjzoFvG5E1H-bv8fPwA", 
@@ -107,64 +87,128 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                loadGoals(user.uid);
-            } else {
-                location.href = 'index.html';
-            }
+        onAuthStateChanged(auth, (user) => {
+            if (user) loadDashboard(user.uid);
+            else location.href = 'index.html';
         });
 
-        async function loadGoals(uid) {
-            const snap = await getDoc(doc(db, "players", uid, "metadata", "goals"));
-            if (snap.exists()) {
-                const data = snap.data();
-                document.getElementById('goal-bw').value = data.bodyWeight || '';
-                document.getElementById('goal-bench').value = data.bench || '';
-                document.getElementById('goal-squat').value = data.squat || '';
-                document.getElementById('goal-clean').value = data.clean || '';
-                document.getElementById('goal-deadlift').value = data.deadlift || '';
-                document.getElementById('goal-pushpress').value = data.pushpress || '';
+        async function loadDashboard(uid) {
+            // 1. Get Goals
+            const goalSnap = await getDoc(doc(db, "players", uid, "metadata", "goals"));
+            const goals = goalSnap.exists() ? goalSnap.data() : {};
+
+            // 2. Get Current PRs
+            const q = query(collection(db, "players", uid, "maxes"), orderBy("timestamp", "desc"), limit(1));
+            const prSnap = await getDocs(q);
+            const current = prSnap.empty ? {} : prSnap.docs[0].data();
+
+            // Set input values
+            ['bench', 'squat', 'clean', 'deadlift', 'pushpress'].forEach(lift => {
+                document.getElementById(`goal-${lift}`).value = goals[lift] || '';
+            });
+
+            renderProgress(goals, current);
+        }
+
+        function renderProgress(goals, current) {
+            const container = document.getElementById('progress-container');
+            container.innerHTML = '';
+            
+            // 1. Calculate Weight Club Score (The Board Formula)
+            const b = Number(current.bench) || 0;
+            const s = Number(current.squat) || 0;
+            const c = Number(current.clean) || 0;
+            const d = Number(current.deadlift) || 0;
+            const bw = Number(current.weight) || 0;
+            const cappedBW = Math.min(bw, 200);
+            
+            const currentBoardScore = (b + s + c + d) - (cappedBW * 4);
+            const clubGoal = Number(goals.club) || 0;
+
+            // 2. Render Weight Club Progress if goal is set
+            if (clubGoal > 0) {
+                const clubPct = Math.min(Math.round((currentBoardScore / clubGoal) * 100), 100);
+                const clubDone = clubPct >= 100;
                 
-                showDisplay(data);
+                container.innerHTML += `
+                    <div class="bg-gradient-to-br from-gray-800 to-black p-5 rounded-2xl border-2 ${clubDone ? 'border-green-500 shadow-[0_0_15px_rgba(34,197,94,0.3)]' : 'border-red-900'}">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs font-black uppercase text-red-500 italic">The Board Goal</span>
+                            <span class="text-2xl font-black italic ${clubDone ? 'text-green-500' : 'text-white'}">${clubGoal} LB CLUB</span>
+                        </div>
+                        <div class="flex justify-between text-[10px] mb-1 font-bold">
+                            <span>Current Score: ${currentBoardScore}</span>
+                            <span>${clubPct}%</span>
+                        </div>
+                        <div class="bar-bg">
+                            <div class="bar-fill ${clubDone ? 'goal-achieved' : ''}" style="width: ${clubPct}%"></div>
+                        </div>
+                        ${clubDone ? `
+                            <div class="mt-3 text-center animate-bounce">
+                                <p class="text-xs font-black text-green-400 uppercase">🏆 CLUB ELITE! SET A HIGHER TIER.</p>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
             }
+
+            // 3. Render Individual Lift Progress
+            const lifts = ['bench', 'squat', 'clean', 'deadlift', 'pushpress'];
+            lifts.forEach(lift => {
+                const target = Number(goals[lift]) || 0;
+                const actual = Number(current[lift]) || 0;
+                
+                if (target > 0) {
+                    const pct = Math.min(Math.round((actual / target) * 100), 100);
+                    const isDone = pct >= 100;
+
+                    container.innerHTML += `
+                        <div class="bg-gray-800/50 p-4 rounded-xl border border-gray-700">
+                            <div class="flex justify-between items-end mb-2">
+                                <div>
+                                    <span class="text-[10px] font-black uppercase text-gray-500 block">${lift}</span>
+                                    <span class="text-lg font-black italic uppercase ${isDone ? 'text-green-500' : 'text-white'}">
+                                        ${actual} / ${target}
+                                    </span>
+                                </div>
+                                <span class="text-xl font-black italic ${isDone ? 'text-green-500' : 'text-red-500'}">${pct}%</span>
+                            </div>
+                            <div class="bar-bg">
+                                <div class="bar-fill ${isDone ? 'goal-achieved' : ''}" style="width: ${pct}%"></div>
+                            </div>
+                            ${isDone ? `<p class="mt-2 text-[10px] font-black text-green-400 text-center uppercase tracking-tighter">PR ACHIEVED! TIME FOR A NEW GOAL.</p>` : ''}
+                        </div>
+                    `;
+                }
+            });
         }
 
-        function showDisplay(data) {
-            const display = document.getElementById('goals-display');
-            const list = document.getElementById('goals-list');
-            display.classList.remove('hidden');
-            list.innerHTML = `
-                <div class="flex justify-between border-b border-white/10 pb-1"><span>Target Weight:</span><span class="font-black text-white">${data.bodyWeight || '--'} lbs</span></div>
-                <div class="flex justify-between border-b border-white/10 pb-1"><span>Bench Goal:</span><span class="font-black text-white">${data.bench || '--'} lbs</span></div>
-                <div class="flex justify-between border-b border-white/10 pb-1"><span>Squat Goal:</span><span class="font-black text-white">${data.squat || '--'} lbs</span></div>
-                <div class="flex justify-between border-b border-white/10 pb-1"><span>Clean Goal:</span><span class="font-black text-white">${data.clean || '--'} lbs</span></div>
-                <div class="flex justify-between border-b border-white/10 pb-1"><span>Deadlift Goal:</span><span class="font-black text-white">${data.deadlift || '--'} lbs</span></div>
-                <div class="flex justify-between"><span>Push Press Goal:</span><span class="font-black text-white">${data.pushpress || '--'} lbs</span></div>
-            `;
-        }
-
+        // Update saveGoals to include the club selector
         window.saveGoals = async () => {
-            const user = auth.currentUser;
-            if (!user) return;
-
             const goals = {
-                bodyWeight: Number(document.getElementById('goal-bw').value) || 0,
                 bench: Number(document.getElementById('goal-bench').value) || 0,
                 squat: Number(document.getElementById('goal-squat').value) || 0,
                 clean: Number(document.getElementById('goal-clean').value) || 0,
                 deadlift: Number(document.getElementById('goal-deadlift').value) || 0,
                 pushpress: Number(document.getElementById('goal-pushpress').value) || 0,
-                updatedAt: new Date().toISOString()
+                club: Number(document.getElementById('goal-club').value) || 0
             };
+            await setDoc(doc(db, "players", auth.currentUser.uid, "metadata", "goals"), goals);
+            alert("Goals Locked In! Get after it.");
+            loadDashboard(auth.currentUser.uid);
+        };
 
-            try {
-                await setDoc(doc(db, "players", user.uid, "metadata", "goals"), goals);
-                alert("Goals updated! Time to get to work.");
-                showDisplay(goals);
-            } catch (e) {
-                alert("Error saving goals: " + e.message);
-            }
+        window.saveGoals = async () => {
+            const goals = {
+                bench: Number(document.getElementById('goal-bench').value) || 0,
+                squat: Number(document.getElementById('goal-squat').value) || 0,
+                clean: Number(document.getElementById('goal-clean').value) || 0,
+                deadlift: Number(document.getElementById('goal-deadlift').value) || 0,
+                pushpress: Number(document.getElementById('goal-pushpress').value) || 0,
+            };
+            await setDoc(doc(db, "players", auth.currentUser.uid, "metadata", "goals"), goals);
+            alert("Targets Locked In!");
+            loadDashboard(auth.currentUser.uid);
         };
     </script>
 </body>
