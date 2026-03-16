@@ -115,7 +115,6 @@
         const db = getFirestore(app);
         let userGoal = 0;
 
-        // Autopopulate Date
         document.getElementById('entry-date').valueAsDate = new Date();
 
         onAuthStateChanged(auth, async (user) => {
@@ -130,7 +129,6 @@
             } else { location.href = 'index.html'; }
         });
 
-        // FETCH LAST WEIGHT
         async function fetchLastWeight() {
             const weightQuery = query(
                 collection(db, "players", auth.currentUser.uid, "maxes"),
@@ -145,12 +143,29 @@
             }
         }
 
-        // SAVE WEIGHT ONLY
+        // SAVE WEIGHT (CARRIES OVER MAXES)
         window.saveQuickWeight = async () => {
             const bw = document.getElementById('quick-weight').value;
             if(!bw) return alert("Enter weight");
 
+            // Pull previous snapshot to avoid wiping PRs
+            const q = query(collection(db, "players", auth.currentUser.uid, "maxes"), orderBy("timestamp", "desc"), limit(1));
+            const snap = await getDocs(q);
+            
+            let lastData = { bench: 0, squat: 0, clean: 0, deadlift: 0, pushpress: 0 };
+            if(!snap.empty) {
+                const d = snap.docs[0].data();
+                lastData = {
+                    bench: d.bench || 0,
+                    squat: d.squat || 0,
+                    clean: d.clean || 0,
+                    deadlift: d.deadlift || 0,
+                    pushpress: d.pushpress || 0
+                };
+            }
+
             await addDoc(collection(db, "players", auth.currentUser.uid, "maxes"), {
+                ...lastData,
                 bodyWeight: Number(bw),
                 date: new Date().toLocaleDateString(),
                 timestamp: serverTimestamp(),
@@ -161,7 +176,6 @@
             fetchLastWeight();
         };
 
-        // CALORIE GOAL LOGIC
         window.setCalorieGoal = async () => {
             const goal = prompt("Enter your daily calorie target:", userGoal || 3000);
             if(goal && !isNaN(goal)) {
@@ -172,7 +186,6 @@
             }
         };
 
-        // UPDATE TOTALS
         async function updateDailyTotals() {
             const todayStr = new Date().toLocaleDateString();
             const q = query(collection(db, "players", auth.currentUser.uid, "meals"), where("date", "==", todayStr));
@@ -194,7 +207,6 @@
             }
         }
 
-        // SAVE MEAL (Flexible)
         window.saveMeal = async () => {
             const selectedDate = document.getElementById('entry-date').value;
             if(!selectedDate) return alert("Please select a date");
@@ -216,7 +228,6 @@
 
             alert("Meal Logged!");
             updateDailyTotals();
-            // Optional: reset fields instead of reload for smoother UX
             ['calories', 'protein', 'carbs', 'fats', 'meal-desc'].forEach(id => document.getElementById(id).value = '');
         };
     </script>

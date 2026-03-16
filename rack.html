@@ -146,24 +146,42 @@
             }
         }
 
-        // 3. SAVE WEIGHT ONLY
+        // 1. IMPROVED: SAVE WEIGHT ONLY (WITHOUT WIPING LIFT DATA)
         window.saveQuickWeight = async () => {
             const bw = document.getElementById('quick-weight').value;
             if(!bw) return alert("Enter weight");
 
+            // Pull the last known lifts so the "Score" for this new entry is accurate
+            const q = query(collection(db, "players", auth.currentUser.uid, "maxes"), orderBy("timestamp", "desc"), limit(1));
+            const snap = await getDocs(q);
+            
+            let lastLifts = { bench: 0, squat: 0, clean: 0, deadlift: 0, pushpress: 0 };
+            if(!snap.empty) {
+                const d = snap.docs[0].data();
+                lastLifts = {
+                    bench: d.bench || 0,
+                    squat: d.squat || 0,
+                    clean: d.clean || 0,
+                    deadlift: d.deadlift || 0,
+                    pushpress: d.pushpress || 0
+                };
+            }
+
             await addDoc(collection(db, "players", auth.currentUser.uid, "maxes"), {
-                bodyWeight: Number(bw),
+                ...lastLifts, // Carry over the old lifts
+                bodyWeight: Number(bw), // Update with new weight
                 date: new Date().toLocaleDateString(),
                 timestamp: serverTimestamp(),
                 isWeightOnly: true
             });
+
             alert("Weight Updated!");
             document.getElementById('quick-weight').value = '';
             fetchLastWeight();
-            loadCurrentMaxes(); // Refresh the board score with new weight
+            loadCurrentMaxes(); 
         };
 
-        // 4. SAVE NEW MAXES
+        // 2. IMPROVED: SAVE MAXES (WITHOUT WIPING WEIGHT DATA)
         window.saveMaxes = async () => {
             const selectedDate = document.getElementById('entry-date').value;
             const dateObj = new Date(selectedDate);
@@ -176,20 +194,25 @@
             const d = document.getElementById('deadlift').value;
             const p = document.getElementById('pushpress').value;
 
-            if(!b && !s && !c && !d && !p) return alert("Enter at least one lift to update.");
+            if(!b && !s && !c && !d && !p) return alert("Enter at least one lift.");
 
-            // Fetch the last known weight so the "Score" remains accurate in the new entry
+            // Fetch the last entry to get the most recent weight and any lifts NOT being updated now
             const q = query(collection(db, "players", auth.currentUser.uid, "maxes"), orderBy("timestamp", "desc"), limit(1));
             const snap = await getDocs(q);
-            const lastWeight = !snap.empty ? snap.docs[0].data().bodyWeight : 0;
+            
+            let currentData = { bench: 0, squat: 0, clean: 0, deadlift: 0, pushpress: 0, bodyWeight: 0 };
+            if(!snap.empty) {
+                currentData = snap.docs[0].data();
+            }
 
             await addDoc(collection(db, "players", auth.currentUser.uid, "maxes"), {
-                bench: Number(b) || 0,
-                squat: Number(s) || 0,
-                clean: Number(c) || 0,
-                deadlift: Number(d) || 0,
-                pushpress: Number(p) || 0,
-                bodyWeight: lastWeight, // Carries over the current weight
+                // Use New Value IF provided, otherwise keep the Current Data
+                bench: b ? Number(b) : (currentData.bench || 0),
+                squat: s ? Number(s) : (currentData.squat || 0),
+                clean: c ? Number(c) : (currentData.clean || 0),
+                deadlift: d ? Number(d) : (currentData.deadlift || 0),
+                pushpress: p ? Number(p) : (currentData.pushpress || 0),
+                bodyWeight: currentData.bodyWeight || 0, 
                 date: dateStr,
                 timestamp: serverTimestamp()
             });
