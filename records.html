@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panther Power | Records</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #0f172a; color: white; display: flex; flex-direction: column; min-height: 100vh; font-family: sans-serif; }
+        .records-table { width: 100%; border-collapse: collapse; font-size: 9px; text-transform: uppercase; font-weight: 900; min-width: 800px; }
+        .records-table th { background: black; border: 1px solid #374151; padding: 8px; color: white; font-style: italic; } /* Fixed italic error */
+        .records-table td { border: 1px solid #475569; padding: 4px; background: rgba(255,255,255,0.05); }
+        .weight-cell { background: black !important; text-align: center; font-size: 12px; border-right: 2px solid #b91c1c !important; }
+        .name-cell { color: #94a3b8; width: 12%; }
+        .val-cell { text-align: right; color: white; width: 4%; padding-right: 4px !important; border-right: 2px solid #374151 !important; }
+        .content-wrapper { flex: 1; padding: 1rem; overflow-x: auto; }
+        footer { background: black; border-top: 4px solid #b91c1c; padding: 2rem 1rem; text-align: center; margin-top: 2rem; }
+    </style>
+</head>
+<body>
+
+    <header class="bg-black p-4 border-b-4 border-red-700 text-center">
+        <div class="flex justify-between items-center max-w-6xl mx-auto">
+            <button onclick="location.href='index.html'" class="text-[10px] font-black uppercase bg-gray-800 px-3 py-1 rounded">← Lobby</button>
+            <img src="Panthers2.png" alt="Panthers" class="h-12">
+            <div class="w-10"></div>
+        </div>
+        <h1 class="text-xl font-black italic uppercase mt-2 tracking-tighter">Weight Class <span class="text-red-600">Records</span></h1>
+    </header>
+
+    <div class="content-wrapper">
+        <div class="max-w-7xl mx-auto">
+            <table class="records-table">
+                <thead>
+                    <tr>
+                        <th>WT</th>
+                        <th colspan="2">BENCH</th>
+                        <th colspan="2">SQUAT</th>
+                        <th colspan="2">CLEANS</th>
+                        <th colspan="2">DEADLIFT</th>
+                        <th colspan="2">PUSH PRESS</th>
+                        <th colspan="2">40 YD DASH</th>
+                    </tr>
+                </thead>
+                <tbody id="records-body">
+                    </tbody>
+            </table>
+            <p class="text-[8px] text-gray-500 mt-4 text-center font-bold uppercase italic">Coaches: Click any name or value to update</p>
+        </div>
+    </div>
+
+    <footer>
+        <img src="1773084097632.png" alt="Panther" class="h-12 mx-auto mb-4 opacity-80">
+        <h2 class="text-6xl font-black tracking-tighter text-white opacity-20 italic uppercase">TDL</h2>
+    </footer>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = { 
+            apiKey: "AIzaSyBdY26nH0CAn05IpjzoFvG5E1H-bv8fPwA", 
+            authDomain: "panthertracker-b8ff6.firebaseapp.com", 
+            projectId: "panthertracker-b8ff6", 
+            storageBucket: "panthertracker-b8ff6.firebasestorage.app", 
+            messagingSenderId: "647881105335", 
+            appId: "1:647881105335:web:bbb79bb3fe9740de1e1232" 
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        
+        let isCoach = false;
+        const weightClasses = ["125", "135", "145", "155", "165", "175", "185", "195", "210", "225", "250", "UNLIMITED"];
+        const lifts = ['bench', 'squat', 'cleans', 'deadlift', 'pushpress', 'dash'];
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                const userSnap = await getDoc(doc(db, "players", user.uid));
+                isCoach = userSnap.exists() && userSnap.data().role === 'coach';
+                listenToRecords();
+            }
+        });
+
+        function listenToRecords() {
+            const tbody = document.getElementById('records-body');
+            
+            tbody.innerHTML = weightClasses.map(wc => `
+                <tr id="row-${wc}">
+                    <td class="weight-cell">${wc}</td>
+                    ${lifts.map(lift => `
+                        <td class="name-cell cursor-pointer" onclick="editRecord('${wc}', '${lift}', 'name')">
+                            <span id="${wc}-${lift}-name">---</span>
+                        </td>
+                        <td class="val-cell cursor-pointer" onclick="editRecord('${wc}', '${lift}', 'val')">
+                            <span id="${wc}-${lift}-val">0</span>
+                        </td>
+                    `).join('')}
+                </tr>
+            `).join('');
+
+            weightClasses.forEach(wc => {
+                onSnapshot(doc(db, "weightClassRecords", wc), (doc) => {
+                    if (doc.exists()) {
+                        const data = doc.data();
+                        lifts.forEach(lift => {
+                            document.getElementById(`${wc}-${lift}-name`).innerText = data[lift]?.name || "---";
+                            document.getElementById(`${wc}-${lift}-val`).innerText = data[lift]?.val || "0";
+                        });
+                    }
+                });
+            });
+        }
+
+        window.editRecord = async (wc, lift, type) => {
+            if (!isCoach) return;
+            
+            const nameEl = document.getElementById(`${wc}-${lift}-name`);
+            const valEl = document.getElementById(`${wc}-${lift}-val`);
+            
+            const newName = type === 'name' ? prompt(`Update Name for ${wc}lb ${lift}:`, nameEl.innerText) : nameEl.innerText;
+            const newVal = type === 'val' ? prompt(`Update Value for ${wc}lb ${lift}:`, valEl.innerText) : valEl.innerText;
+
+            if (newName !== null && newVal !== null) {
+                const ref = doc(db, "weightClassRecords", wc);
+                const existing = (await getDoc(ref)).data() || {};
+                
+                await setDoc(ref, {
+                    ...existing,
+                    [lift]: { name: newName, val: newVal }
+                }, { merge: true });
+            }
+        };
+    </script>
+</body>
+</html>
