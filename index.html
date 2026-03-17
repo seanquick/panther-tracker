@@ -185,29 +185,31 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
+        // 1. THE WATCHER: Runs automatically on load and after every login/logout
         onAuthStateChanged(auth, async (user) => {
             const authSection = document.getElementById('auth-section');
             const mainMenu = document.getElementById('main-menu');
             
             if (user) {
-                // 1. Fetch the user's profile to check their role
+                // User is logged in, fetch their profile
                 const userSnap = await getDoc(doc(db, "players", user.uid));
                 
                 if (userSnap.exists()) {
                     const userData = userSnap.data();
                     
-                    // 2. REDIRECT IF COACH
+                    // REDIRECT COACHES IMMEDIATELY
                     if (userData.role === "coach") {
                         window.location.href = "coach.html";
-                        return; // Stop execution here so the player menu doesn't flicker
+                        return; 
                     }
 
-                    // 3. Otherwise, show player menu as normal
+                    // SHOW PLAYER MENU
                     authSection.classList.add('hidden');
                     mainMenu.classList.remove('hidden');
-                    document.getElementById('welcome-msg').innerText = `Welcome, ${userData.playerName}`;
+                    document.getElementById('welcome-msg').innerText = `Welcome, ${userData.playerName || userData.firstName}`;
                 }
             } else {
+                // No user is logged in, show the login form
                 authSection.classList.remove('hidden');
                 mainMenu.classList.add('hidden');
             }
@@ -222,8 +224,8 @@
             const email = document.getElementById('email').value;
             const pass = document.getElementById('password').value;
             try { 
+                // This triggers onAuthStateChanged above
                 await signInWithEmailAndPassword(auth, email, pass); 
-                // The onAuthStateChanged listener above will handle the redirect
             } 
             catch (e) { alert("Login failed: " + e.message); }
         };
@@ -232,11 +234,10 @@
             const name = document.getElementById('new-name').value;
             const email = document.getElementById('new-email').value;
             const pass = document.getElementById('new-password').value;
-            const coachCode = document.getElementById('coach-code')?.value; // Ensure you have this input in your HTML
+            const coachCode = document.getElementById('coach-code')?.value; 
 
             if (!name || !email || !pass) return alert("All fields required");
 
-            // Determine role based on secret code
             let assignedRole = "athlete";
             if (coachCode === "PANTHERS2026") {
                 assignedRole = "coach";
@@ -247,7 +248,7 @@
                 await setDoc(doc(db, "players", cred.user.uid), {
                     playerName: name,
                     email: email,
-                    role: assignedRole, // Uses the determined role
+                    role: assignedRole,
                     joinedAt: new Date().toISOString()
                 });
                 alert(assignedRole === "coach" ? "Coach Account Created!" : "Account created!");
