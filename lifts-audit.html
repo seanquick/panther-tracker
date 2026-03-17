@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panther Power | Lifts Audit</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #0f172a; color: white; min-height: 100vh; font-family: sans-serif; }
+        select { background-color: #1f2937 !important; color: white !important; border: 2px solid #374151 !important; padding: 0.75rem !important; border-radius: 0.75rem !important; width: 100%; margin-bottom: 1rem; }
+    </style>
+</head>
+<body class="p-6">
+    <header class="max-w-2xl mx-auto mb-6 flex justify-between items-center">
+        <h1 class="text-2xl font-black italic uppercase text-red-600">Lifts <span class="text-white">Audit</span></h1>
+        <button onclick="location.href='coach.html'" class="bg-gray-800 px-4 py-2 rounded text-[10px] font-black uppercase">← Back</button>
+    </header>
+
+    <main class="max-w-2xl mx-auto">
+        <select id="player-select" onchange="loadPlayerLifts()">
+            <option value="">Select an Athlete...</option>
+        </select>
+
+        <div id="lifts-container" class="space-y-3">
+            <p class="text-center text-gray-500 text-sm mt-10">Select an athlete to view their iron history.</p>
+        </div>
+    </main>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = { apiKey: "AIzaSyBdY26nH0CAn05IpjzoFvG5E1H-bv8fPwA", authDomain: "panthertracker-b8ff6.firebaseapp.com", projectId: "panthertracker-b8ff6", storageBucket: "panthertracker-b8ff6.firebasestorage.app", messagingSenderId: "647881105335", appId: "1:647881105335:web:bbb79bb3fe9740de1e1232" };
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        async function init() {
+            const snap = await getDocs(collection(db, "players"));
+            const select = document.getElementById('player-select');
+            snap.forEach(doc => {
+                const p = doc.data();
+                const opt = document.createElement('option');
+                opt.value = doc.id;
+                opt.textContent = `${p.lastName || p.playerName}, ${p.firstName || ''} (Gr. ${p.grade || '?'})`;
+                select.appendChild(opt);
+            });
+        }
+
+        window.loadPlayerLifts = async () => {
+            const pid = document.getElementById('player-select').value;
+            const container = document.getElementById('lifts-container');
+            if(!pid) return;
+
+            container.innerHTML = '<p class="text-center animate-pulse">Fetching Maxes...</p>';
+            const q = query(collection(db, "players", pid, "maxes"), orderBy("timestamp", "desc"));
+            const snap = await getDocs(q);
+
+            container.innerHTML = '';
+            if (snap.empty) {
+                container.innerHTML = '<p class="text-center text-gray-500">No lift data found for this athlete.</p>';
+                return;
+            }
+
+            snap.forEach(doc => {
+                const d = doc.data();
+                const date = new Date(d.timestamp).toLocaleDateString();
+                container.innerHTML += `
+                    <div class="bg-gray-800 p-4 rounded-xl border border-gray-700">
+                        <div class="flex justify-between text-[10px] font-bold text-red-500 mb-2 uppercase tracking-widest">
+                            <span>${date}</span>
+                            <span>Weight: ${d.weight} lbs</span>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 text-center text-xs font-black uppercase">
+                            <div class="bg-black/30 p-2 rounded">B: ${d.bench}</div>
+                            <div class="bg-black/30 p-2 rounded">S: ${d.squat}</div>
+                            <div class="bg-black/30 p-2 rounded">C: ${d.clean}</div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+        init();
+    </script>
+</body>
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Season Recap | Panther Power</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #0f172a; color: white; min-height: 100vh; font-family: sans-serif; }
+        .stat-card { background: linear-gradient(145deg, #1e293b, #0f172a); border: 1px solid #334155; }
+    </style>
+</head>
+<body class="p-6 pb-20">
+    <header class="max-w-3xl mx-auto mb-8 flex justify-between items-center">
+        <div>
+            <h1 class="text-3xl font-black italic uppercase text-yellow-500">Season <span class="text-white">Recap</span></h1>
+            <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Final Performance Snapshot</p>
+        </div>
+        <button onclick="location.href='coach.html'" class="bg-gray-800 px-4 py-2 rounded text-[10px] font-black uppercase">← Back</button>
+    </header>
+
+    <main id="stats-content" class="max-w-3xl mx-auto space-y-6">
+        <div id="loader" class="text-center py-20">
+            <p class="animate-pulse font-black uppercase italic text-xl">Analyzing Season Data...</p>
+        </div>
+
+        <div id="dashboard" class="hidden space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="stat-card p-6 rounded-2xl text-center">
+                    <p class="text-[10px] font-black uppercase text-blue-400 mb-1">Team Combined Tonnage</p>
+                    <h2 id="total-tonnage" class="text-4xl font-black italic">0 <span class="text-sm font-normal text-gray-500">lbs</span></h2>
+                </div>
+                <div class="stat-card p-6 rounded-2xl text-center">
+                    <p class="text-[10px] font-black uppercase text-red-500 mb-1">Total Max Logs</p>
+                    <h2 id="total-logs" class="text-4xl font-black italic">0</h2>
+                </div>
+            </div>
+
+            <div class="stat-card p-6 rounded-2xl">
+                <h3 class="text-sm font-black uppercase italic mb-4 border-b border-gray-700 pb-2">Individual Leaders</h3>
+                <div id="leaders-list" class="space-y-4">
+                    </div>
+            </div>
+        </div>
+    </main>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = { apiKey: "AIzaSyBdY26nH0CAn05IpjzoFvG5E1H-bv8fPwA", authDomain: "panthertracker-b8ff6.firebaseapp.com", projectId: "panthertracker-b8ff6", storageBucket: "panthertracker-b8ff6.firebasestorage.app", messagingSenderId: "647881105335", appId: "1:647881105335:web:bbb79bb3fe9740de1e1232" };
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        async function generateRecap() {
+            let totalWeight = 0;
+            let totalEntries = 0;
+            let leaders = {
+                bench: { val: 0, name: "" },
+                squat: { val: 0, name: "" },
+                clean: { val: 0, name: "" },
+                board: { val: -Infinity, name: "" }
+            };
+
+            const playerSnap = await getDocs(collection(db, "players"));
+            
+            for (let pDoc of playerSnap.docs) {
+                const p = pDoc.data();
+                if(p.role === 'coach') continue;
+
+                const maxSnap = await getDocs(collection(db, "players", pDoc.id, "maxes"));
+                
+                maxSnap.forEach(mDoc => {
+                    const m = mDoc.data();
+                    const b = Number(m.bench) || 0;
+                    const s = Number(m.squat) || 0;
+                    const c = Number(m.clean) || 0;
+                    const d = Number(m.deadlift) || 0;
+                    const bw = Number(m.weight) || 150;
+
+                    totalWeight += (b + s + c);
+                    totalEntries++;
+
+                    // Check individual peaks
+                    if (b > leaders.bench.val) leaders.bench = { val: b, name: p.playerName || p.lastName };
+                    if (s > leaders.squat.val) leaders.squat = { val: s, name: p.playerName || p.lastName };
+                    if (c > leaders.clean.val) leaders.clean = { val: c, name: p.playerName || p.lastName };
+
+                    // Calculate Board Score: (B+S+C+D) - (Min(BW, 200) * 4)
+                    const score = (b + s + c + d) - (Math.min(bw, 200) * 4);
+                    if (score > leaders.board.val) leaders.board = { val: score, name: p.playerName || p.lastName };
+                });
+            }
+
+            // Update UI
+            document.getElementById('total-tonnage').innerHTML = `${totalWeight.toLocaleString()} <span class="text-sm font-normal text-gray-500">lbs</span>`;
+            document.getElementById('total-logs').textContent = totalEntries;
+
+            const list = document.getElementById('leaders-list');
+            const categories = [
+                { label: "Top Bench Press", data: leaders.bench, color: "text-red-500" },
+                { label: "Top Squat", data: leaders.squat, color: "text-green-500" },
+                { label: "Top Power Clean", data: leaders.clean, color: "text-yellow-500" },
+                { label: "Top Board Score", data: leaders.board, color: "text-blue-500" }
+            ];
+
+            list.innerHTML = categories.map(cat => `
+                <div class="flex justify-between items-center bg-black/20 p-3 rounded-xl">
+                    <span class="text-[10px] font-bold uppercase text-gray-400">${cat.label}</span>
+                    <div class="text-right">
+                        <p class="font-black italic uppercase text-sm">${cat.data.name || '---'}</p>
+                        <p class="${cat.color} font-black text-xs">${Math.round(cat.data.val)}</p>
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('loader').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+        }
+
+        generateRecap();
+    </script>
+</body>
+</html>
