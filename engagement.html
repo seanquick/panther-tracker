@@ -84,23 +84,93 @@
             renderBoard('kitchen-list', kitchenStats.sort((a,b) => b.count - a.count));
         }
 
-        function renderBoard(elementId, data) {
+        // Define the Badge Icons & Rules
+const BADGES = {
+    WORKHORSE: { icon: '🐎', label: 'Workhorse', desc: 'Over 20 Lift Logs' },
+    CONSISTENT: { icon: '📅', label: 'Consistent', desc: '3+ Meals in a single day' },
+    SNACK_KING: { icon: '🥨', label: 'Snack King', desc: 'Most Snacks Recorded' },
+    ELITE: { icon: '🔥', label: 'Elite', desc: 'Top 3 in Total Entries' }
+};
+
+async function loadLeaderboards() {
+    const playersSnap = await getDocs(collection(db, "players"));
+    let rackStats = [];
+    let kitchenStats = [];
+
+    for (let pDoc of playersSnap.docs) {
+        const p = pDoc.data();
+        const name = `${p.firstName} ${p.lastName}`;
+        const badges = [];
+
+        // 1. Process Rack Data
+        const rackSnap = await getDocs(collection(db, "players", pDoc.id, "maxes"));
+        const rackCount = rackSnap.size;
+        if (rackCount >= 20) badges.push(BADGES.WORKHORSE);
+        if (rackCount > 0) rackStats.push({ name, count: rackCount, badges: [...badges] });
+
+        // 2. Process Kitchen Data for Specific Awards
+        const kitchenSnap = await getDocs(collection(db, "players", pDoc.id, "kitchen"));
+        const meals = kitchenSnap.docs.map(d => d.data());
+        
+        let snackCount = meals.filter(m => m.type === 'snack').length;
+        
+        // Check for "3 Meals in a Day" (Consistency)
+        const dates = meals.map(m => new Date(m.timestamp).toLocaleDateString());
+        const dateCounts = dates.reduce((acc, date) => {
+            acc[date] = (acc[date] || 0) + 1;
+            return acc;
+        }, {});
+        const hasTripleMealDay = Object.values(dateCounts).some(count => count >= 3);
+
+        const kitchenBadges = [];
+        if (hasTripleMealDay) kitchenBadges.push(BADGES.CONSISTENT);
+        // Note: Snack King will be assigned after comparing all players
+        
+        if (meals.length > 0) {
+            kitchenStats.push({ 
+                name, 
+                count: meals.length, 
+                snackCount: snackCount, 
+                badges: kitchenBadges 
+            });
+        }
+    }
+
+    // Assign "Snack King" to the person with the highest snackCount
+    if (kitchenStats.length > 0) {
+        const king = kitchenStats.reduce((prev, current) => (prev.snackCount > current.snackCount) ? prev : current);
+        if (king.snackCount > 0) king.badges.push(BADGES.SNACK_KING);
+    }
+
+    renderBoard('rack-list', rackStats.sort((a,b) => b.count - a.count), true);
+    renderBoard('kitchen-list', kitchenStats.sort((a,b) => b.count - a.count), false);
+}
+
+        function renderBoard(elementId, data, isRack) {
             const list = document.getElementById(elementId);
             list.innerHTML = '';
             
-            if (data.length === 0) {
-                list.innerHTML = '<p class="text-center text-xs text-gray-600">No entries recorded yet.</p>';
-                return;
-            }
-
             data.slice(0, 10).forEach((entry, index) => {
+                // Add "Elite" badge to Top 3
+                if (index < 3) entry.badges.push(BADGES.ELITE);
+
+                const badgeHtml = entry.badges.map(b => 
+                    `<span title="${b.label}: ${b.desc}" class="cursor-help text-lg">${b.icon}</span>`
+                ).join(' ');
+
                 list.innerHTML += `
                     <div class="flex justify-between items-center bg-gray-900/50 p-3 rounded-xl border border-gray-800">
                         <div class="flex items-center gap-3">
                             <span class="rank-badge">${index + 1}</span>
-                            <span class="font-bold text-sm uppercase italic text-gray-200">${entry.name}</span>
+                            <div>
+                                <span class="font-bold text-sm uppercase italic text-gray-200 block">${entry.name}</span>
+                                <div class="flex gap-1 mt-1">${badgeHtml}</div>
+                            </div>
                         </div>
-                        <span class="font-black text-red-500 italic">${entry.count} <span class="text-[8px] uppercase not-italic text-gray-500">Logs</span></span>
+                        <div class="text-right">
+                            <span class="font-black text-red-500 italic text-lg">${entry.count}</span>
+                            <p class="text-[8px] uppercase font-bold text-gray-500">Total Logs</p>
+                        </div>
                     </div>
                 `;
             });
