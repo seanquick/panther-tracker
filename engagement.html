@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panther Power | Consistency</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #0f172a; color: white; display: flex; flex-direction: column; min-height: 100vh; font-family: sans-serif; }
+        .leaderboard-card { background: rgba(30, 41, 59, 0.5); border: 1px solid #334155; border-radius: 1.5rem; padding: 1.5rem; }
+        .rank-badge { background: #b91c1c; color: white; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 10px; font-weight: 900; }
+        footer { background: black; border-top: 4px solid #b91c1c; padding: 2rem 1rem; text-align: center; margin-top: auto; }
+        .tdl-branding { font-size: 3rem; font-weight: 900; font-style: italic; text-transform: uppercase; color: #b91c1c; text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff; }
+    </style>
+</head>
+<body class="pb-10">
+
+    <header class="bg-black p-6 border-b-4 border-red-700 text-center">
+        <h1 class="text-2xl font-black italic uppercase text-white">Consistency <span class="text-red-600">Leaderboards</span></h1>
+        <button onclick="location.href='index.html'" class="mt-2 text-[10px] font-black uppercase bg-gray-800 px-4 py-1 rounded">← Back</button>
+    </header>
+
+    <main class="p-6 max-w-md mx-auto w-full space-y-8">
+        
+        <section class="leaderboard-card">
+            <h2 class="text-center font-black uppercase italic text-red-500 mb-4 tracking-tight flex items-center justify-center gap-2">
+                🏋️ The Rack (Lift Entries)
+            </h2>
+            <div id="rack-list" class="space-y-3">
+                <p class="text-center text-xs text-gray-500 animate-pulse">Calculating Grunts...</p>
+            </div>
+        </section>
+
+        <section class="leaderboard-card">
+            <h2 class="text-center font-black uppercase italic text-orange-500 mb-4 tracking-tight flex items-center justify-center gap-2">
+                🍳 The Kitchen (Meal Logs)
+            </h2>
+            <div id="kitchen-list" class="space-y-3">
+                <p class="text-center text-xs text-gray-500 animate-pulse">Checking the Fridge...</p>
+            </div>
+        </section>
+
+    </main>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = { 
+            apiKey: "AIzaSyBdY26nH0CAn05IpjzoFvG5E1H-bv8fPwA", 
+            authDomain: "panthertracker-b8ff6.firebaseapp.com", 
+            projectId: "panthertracker-b8ff6", 
+            storageBucket: "panthertracker-b8ff6.firebasestorage.app", 
+            messagingSenderId: "647881105335", 
+            appId: "1:647881105335:web:bbb79bb3fe9740de1e1232" 
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        async function loadLeaderboards() {
+            const playersSnap = await getDocs(collection(db, "players"));
+            let rackStats = [];
+            let kitchenStats = [];
+
+            for (let pDoc of playersSnap.docs) {
+                const p = pDoc.data();
+                const name = `${p.firstName} ${p.lastName}`;
+
+                // Count Rack Entries
+                const rackSnap = await getDocs(collection(db, "players", pDoc.id, "maxes"));
+                if (rackSnap.size > 0) {
+                    rackStats.push({ name, count: rackSnap.size });
+                }
+
+                // Count Kitchen Entries
+                const kitchenSnap = await getDocs(collection(db, "players", pDoc.id, "kitchen"));
+                if (kitchenSnap.size > 0) {
+                    kitchenStats.push({ name, count: kitchenSnap.size });
+                }
+            }
+
+            renderBoard('rack-list', rackStats.sort((a,b) => b.count - a.count));
+            renderBoard('kitchen-list', kitchenStats.sort((a,b) => b.count - a.count));
+        }
+
+        function renderBoard(elementId, data) {
+            const list = document.getElementById(elementId);
+            list.innerHTML = '';
+            
+            if (data.length === 0) {
+                list.innerHTML = '<p class="text-center text-xs text-gray-600">No entries recorded yet.</p>';
+                return;
+            }
+
+            data.slice(0, 10).forEach((entry, index) => {
+                list.innerHTML += `
+                    <div class="flex justify-between items-center bg-gray-900/50 p-3 rounded-xl border border-gray-800">
+                        <div class="flex items-center gap-3">
+                            <span class="rank-badge">${index + 1}</span>
+                            <span class="font-bold text-sm uppercase italic text-gray-200">${entry.name}</span>
+                        </div>
+                        <span class="font-black text-red-500 italic">${entry.count} <span class="text-[8px] uppercase not-italic text-gray-500">Logs</span></span>
+                    </div>
+                `;
+            });
+        }
+
+            loadLeaderboards();
+    </script>
+
+    <footer>
+        <span class="tdl-branding">TDL</span>
+    </footer>
+</body>
+</html>
