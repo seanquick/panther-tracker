@@ -3,177 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coach Command</title>
+    <title>Coach Command Center</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #0f172a; color: white; }
-        .club-card { 
-            background: linear-gradient(145deg, #1a1a1a, #262626); 
-            border-top: 3px solid #b91c1c; 
-            border-radius: 1rem; 
-            margin-bottom: 1.5rem; 
-            padding: 1.25rem; 
-        }
-        select, input, textarea { 
-            background-color: #1f2937 !important; 
-            color: #ffffff !important; 
-            border: 2px solid #374151 !important; 
-            padding: 0.75rem !important; 
-            border-radius: 0.75rem !important; 
-            width: 100% !important; 
-            margin-bottom: 0.75rem !important; 
-            display: block !important;
-        }
-        .nav-btn { background-color: #374151; padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 10px; font-weight: 900; text-transform: uppercase; color: white; }
-        table { width: 100%; border-collapse: collapse; font-size: 10px; }
-        th { background: #111827; color: #ef4444; padding: 8px; text-align: left; text-transform: uppercase; border-bottom: 2px solid #374151; }
-        td { padding: 8px; border-bottom: 1px solid #374151; }
-        .hidden { display: none !important; }
-               /* Footer Branding */
-        footer { 
-                background: black; 
-                border-top: 4px solid #b91c1c; 
-                padding: 3rem 1rem; 
-                text-align: center;
-                margin-top: auto;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .footer-logo { 
-                height: 5rem; 
-                width: auto; 
-                margin-bottom: 1.5rem; 
-            }
-
-            .social-container { 
-                display: flex; 
-                justify-content: center; 
-                gap: 2rem; 
-                margin-bottom: 2rem; 
-            }
-
-            .social-icon { 
-                height: 2rem; 
-                width: auto; 
-                transition: transform 0.2s;
-                display: inline-block;
-            }
-
-            .social-icon:hover { 
-                transform: scale(1.2); 
-            }
-
-            .tdl-branding {
-                display: block; 
-                font-size: 5rem; 
-                font-weight: 900; 
-                font-style: italic; 
-                text-transform: uppercase;
-                color: #b91c1c; 
-                line-height: 0.9; 
-                letter-spacing: -2px;
-                text-shadow: -2px -2px 0 #fff, 2px -2px 0 #fff, -2px 2px 0 #fff, 2px 2px 0 #fff;
-            }
+        body { background-color: #0f172a; color: white; display: flex; flex-direction: column; min-height: 100vh; font-family: sans-serif; }
+        .content-wrapper { flex: 1; padding: 1.5rem; }
+        footer { background: black; border-top: 4px solid #b91c1c; padding: 3rem 1rem; text-align: center; margin-top: auto; display: flex; flex-direction: column; align-items: center; }
+        .footer-logo { height: 5rem; width: auto; margin-bottom: 1.5rem; }
+        .tdl-branding { display: block; font-size: 5rem; font-weight: 900; font-style: italic; text-transform: uppercase; color: #b91c1c; line-height: 0.9; letter-spacing: -2px; text-shadow: -2px -2px 0 #fff, 2px -2px 0 #fff, -2px 2px 0 #fff, 2px 2px 0 #fff; }
     </style>
 </head>
-<body class="font-sans pb-20">
+<body class="pb-20">
 
-      <header class="bg-black p-6 border-b-4 border-red-700 text-center">
-        <img src="Panthers2.png" alt="Panthers Football" class="h-20 mx-auto mb-2">
-        <h1 class="text-2xl font-black italic uppercase tracking-tighter text-white">Panther <span class="text-red-600">Power</span></h1>
-        <button onclick="location.href='index.html'" class="nav-btn">← Lobby</button>
+    <header class="bg-black p-6 border-b-4 border-red-700 text-center relative">
+        <img src="Panthers2.png" alt="Panthers Football" class="h-16 mx-auto mb-2">
+        <h1 class="text-2xl font-black italic uppercase tracking-tighter text-white">Coach <span class="text-red-600">Command Center</span></h1>
+        <button onclick="logout()" class="absolute top-4 right-4 text-[10px] font-black uppercase bg-gray-800 px-3 py-1 rounded border border-gray-600">Logout</button>
     </header>
 
-    <div class="max-w-4xl mx-auto px-4">
+    <div class="content-wrapper max-w-md mx-auto w-full space-y-4">
         
-        <div class="flex gap-2 mb-8">
-            <button onclick="showTab('board')" id="btn-board" class="flex-1 py-3 rounded-xl font-black uppercase text-[10px] bg-red-700 transition-all">The Board</button>
-            <button onclick="showTab('audit')" id="btn-audit" class="flex-1 py-3 rounded-xl font-black uppercase text-[10px] bg-gray-800 transition-all">Individual Audit</button>
-            <button onclick="showTab('export')" id="btn-export" class="flex-1 py-3 rounded-xl font-black uppercase text-[10px] bg-gray-800 transition-all">Master Export</button>
-        </div>
+        <button onclick="location.href='board.html'" 
+                class="w-full bg-red-700 hover:bg-red-600 py-6 rounded-2xl font-black uppercase italic shadow-2xl transition-all active:scale-95 flex items-center justify-center gap-3 border-b-4 border-red-900">
+            <span class="text-2xl tracking-tighter">The Board</span>
+        </button>
 
-        <div id="tab-board" class="max-w-md mx-auto">
-            <h2 class="text-xs font-black uppercase text-gray-500 mb-4 tracking-widest text-center">Strength Rankings</h2>
-            <div id="club-grid"></div>
-        </div>
+        <button onclick="location.href='lifts-audit.html'" 
+                class="w-full bg-gray-800 hover:bg-gray-700 py-6 rounded-2xl font-black uppercase italic shadow-2xl transition-all active:scale-95 flex items-center justify-center gap-3 border-b-4 border-black">
+            <span class="text-2xl tracking-tighter text-gray-300">Lifts Audit</span>
+        </button>
 
-        <div id="tab-audit" class="hidden max-w-md mx-auto space-y-4">
-            <div class="bg-blue-900/20 border border-blue-700/30 p-4 rounded-xl mb-6">
-                <h3 class="text-[10px] font-black uppercase text-blue-500 mb-3 tracking-widest">Manual Historical Entry</h3>
-                <div class="grid grid-cols-2 gap-2">
-                    <input id="manual-date" type="date">
-                    <input id="manual-bw" type="number" placeholder="Body Weight">
-                </div>
-                <div class="grid grid-cols-3 gap-2">
-                    <input id="manual-bench" type="number" placeholder="Bench">
-                    <input id="manual-squat" type="number" placeholder="Squat">
-                    <input id="manual-clean" type="number" placeholder="Clean">
-                </div>
-                <div class="grid grid-cols-2 gap-2">
-                    <input id="manual-dead" type="number" placeholder="Deadlift">
-                    <input id="manual-press" type="number" placeholder="Push Press">
-                </div>
-                <button onclick="saveManualEntry()" class="w-full bg-blue-700 hover:bg-blue-600 py-3 rounded-lg font-black uppercase text-[10px] mt-2 transition-all">Save to Player History</button>
-            </div>
-            <div class="bg-gray-800 p-4 rounded-xl border border-gray-700">
-                <label class="text-[10px] font-bold uppercase text-gray-400 block mb-2">Select Athlete</label>
-                <select id="player-select" onchange="runIndividualAudit()">
-                    <option value="">Select Player...</option>
-                </select>
-            </div>
-            
-            <div id="audit-results-rack" class="bg-gray-800/50 p-4 rounded-xl border border-red-900/30">
-                <p class="text-[10px] font-black text-red-500 uppercase mb-3">Rack History (PRs)</p>
-                <div id="rack-list" class="space-y-2"></div>
-            </div>
+        <button onclick="location.href='kitchen-audit.html'" 
+                class="w-full bg-gray-800 hover:bg-gray-700 py-6 rounded-2xl font-black uppercase italic shadow-2xl transition-all active:scale-95 flex items-center justify-center gap-3 border-b-4 border-black">
+            <span class="text-2xl tracking-tighter text-gray-300">Kitchen Audit</span>
+        </button>
 
-            <div id="audit-results-kitchen" class="bg-gray-800/50 p-4 rounded-xl border border-green-900/30">
-                <p class="text-[10px] font-black text-green-500 uppercase mb-3">Kitchen History (Fuel)</p>
-                <div id="kitchen-list" class="space-y-2"></div>
-            </div>
-        </div>
+        <button onclick="location.href='audit.html'" 
+                class="w-full bg-red-800 hover:bg-red-700 py-6 rounded-2xl font-black uppercase italic shadow-2xl transition-all active:scale-95 flex items-center justify-center gap-3 border-b-4 border-red-950">
+            <span class="text-2xl tracking-tighter">Export Data (CSV)</span>
+        </button>
 
-        <div id="tab-export" class="hidden">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-sm font-black uppercase italic tracking-tighter">Master Lift Log</h2>
-                <button onclick="exportToCSV()" class="bg-green-700 hover:bg-green-600 px-4 py-2 rounded-lg font-black text-[10px] uppercase shadow-lg">Export CSV</button>
-            </div>
-            <div class="overflow-x-auto bg-gray-900 rounded-xl border border-gray-700">
-                <table id="master-table">
-                    <thead>
-                        <tr>
-                            <th>Player</th><th>Date</th><th>Bench</th><th>Squat</th><th>Clean</th><th>Dead</th><th>Press</th><th>BW</th>
-                        </tr>
-                    </thead>
-                    <tbody id="master-body"></tbody>
-                </table>
-            </div>
+        <button onclick="location.href='manage-roster.html'" 
+                class="w-full bg-blue-900 hover:bg-blue-800 py-6 rounded-2xl font-black uppercase italic shadow-2xl transition-all active:scale-95 flex items-center justify-center gap-3 border-b-4 border-blue-950">
+            <span class="text-2xl tracking-tighter">Manage Roster</span>
+        </button>
+
+        <div class="pt-6">
+            <p class="text-[10px] font-black uppercase text-gray-500 italic tracking-widest mb-2 ml-2">Coaching Resources</p>
+            <button onclick="window.open('guidelines.pdf')" 
+                    class="w-full bg-white text-black py-4 rounded-xl font-black uppercase italic shadow-xl flex items-center justify-center gap-2">
+                <span>View Guidelines PDF</span>
+            </button>
         </div>
 
     </div>
 
     <footer>
-    <img src="panther.png" alt="Panther" class="footer-logo">
-
-    <div class="social-container">
-        <a href="https://www.facebook.com/profile.php?id=61573011830957" target="_blank"><img src="facebook.png" alt="Facebook" class="social-icon"></a>
-        </a>
-        <a href="https://www.instagram.com/hsfairbanksfb/" target="_blank"><img src="instagram.jpg" alt="Instagram" class="social-icon"></a>
-        </a>
-        <a href="https://www.hudl.com/library/35871L" target="_blank"><img src="hudl.png" alt="Hudl" class="social-icon"></a>
-        </a>
-    </div>
-    
-    <span class="tdl-branding">TDL</span>
-</footer>
-
+        <img src="panther.png" alt="Panther" class="footer-logo">
+        <span class="tdl-branding">TDL</span>
+    </footer>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
         const firebaseConfig = { 
             apiKey: "AIzaSyBdY26nH0CAn05IpjzoFvG5E1H-bv8fPwA", 
@@ -186,210 +78,16 @@
         
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        const db = getFirestore(app);
 
-        // Tab Handling
-        window.showTab = (tab) => {
-            ['board', 'audit', 'export'].forEach(t => {
-                document.getElementById('tab-' + t).classList.toggle('hidden', t !== tab);
-                document.getElementById('btn-' + t).classList.toggle('bg-red-700', t === tab);
-                document.getElementById('btn-' + t).classList.toggle('bg-gray-800', t !== tab);
-            });
-            if(tab === 'board') loadTheBoard();
-            if(tab === 'export') loadMasterTable();
-        };
-
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                // Populate Dropdown
-                const pSnap = await getDocs(collection(db, "players"));
-                const sel = document.getElementById('player-select');
-                pSnap.forEach(p => {
-                    if(p.data().role === 'player') {
-                        const opt = document.createElement('option');
-                        opt.value = p.id;
-                        opt.textContent = p.data().playerName;
-                        sel.appendChild(opt);
-                    }
-                });
-                loadTheBoard();
-            } else { location.href = 'index.html'; }
+        onAuthStateChanged(auth, (user) => {
+            if (!user) location.href = 'index.html';
         });
 
-        async function loadTheBoard() {
-            const grid = document.getElementById('club-grid');
-            const pSnap = await getDocs(collection(db, "players"));
-            let scores = [];
-
-            for (const d of pSnap.docs) {
-                // Get only the most recent entry for each player
-                const maxSnap = await getDocs(query(collection(db, "players", d.id, "maxes"), orderBy("timestamp", "desc"), limit(1)));
-                
-                if(!maxSnap.empty) {
-                    const m = maxSnap.docs[0].data();
-                    
-                    // Raw Lift Values
-                    const bench = Number(m.bench) || 0;
-                    const squat = Number(m.squat) || 0;
-                    const clean = Number(m.clean) || 0;
-                    const deadlift = Number(m.deadlift) || 0;
-                    const bw = Number(m.bodyWeight) || 0;
-
-                    // Relative Strength Formula
-                    // Subtracts 4x Body Weight (capped at 200lbs) from the raw total
-                    const cappedBW = Math.min(bw, 200);
-                    const relativeScore = (bench + squat + clean + deadlift) - (cappedBW * 4);
-
-                    // Only include players who meet the minimum 300lb adjusted score
-                    if(relativeScore >= 300) {
-                        scores.push({ 
-                            name: d.data().playerName, 
-                            total: Math.round(relativeScore), 
-                            placed: false 
-                        });
-                    }
-                }
-            }
-
-            // Sort by adjusted score, highest to lowest
-            scores.sort((a, b) => b.total - a.total);
-            grid.innerHTML = '';
-
-            // Generate Club Cards from 700 down to 300
-            for(let level = 700; level >= 300; level -= 50) {
-                // Filter players who belong in this club and haven't been placed in a higher one
-                const qualifiers = scores.filter(s => !s.placed && s.total >= level);
-                
-                if(qualifiers.length > 0 || level === 700) {
-                    qualifiers.forEach(s => s.placed = true);
-                    grid.innerHTML += `
-                        <div class="club-card">
-                            <p class="text-red-600 font-black italic text-lg border-b border-gray-800 mb-3 pb-1">${level} LB CLUB</p>
-                            ${qualifiers.length > 0 ? qualifiers.map(q => `
-                                <div class="flex justify-between items-center text-sm py-2 border-b border-white/5 last:border-0">
-                                    <span class="font-bold uppercase tracking-tight">${q.name}</span>
-                                    <span class="text-blue-400 font-black">${q.total} <span class="text-[8px] text-gray-500 uppercase">Score</span></span>
-                                </div>`).join('') : '<p class="text-[10px] text-gray-600 font-bold uppercase italic">No qualifiers yet</p>'}
-                        </div>`;
-                }
-            }
-        }
-
-        window.runIndividualAudit = async () => {
-            const pid = document.getElementById('player-select').value;
-            if(!pid) return;
-
-            const rackList = document.getElementById('rack-list');
-            const kitchenList = document.getElementById('kitchen-list');
-            rackList.innerHTML = '<p class="text-[9px] animate-pulse">Fetching...</p>';
-            kitchenList.innerHTML = '<p class="text-[9px] animate-pulse">Fetching...</p>';
-
-            const rSnap = await getDocs(query(collection(db, "players", pid, "maxes"), orderBy("timestamp", "desc")));
-            rackList.innerHTML = rSnap.docs.map(d => {
-                const m = d.data();
-                return `<div class="bg-black/40 p-3 rounded-lg text-[10px] border border-white/5">
-                            <span class="text-red-500 font-bold">${m.date}</span>: 
-                            B:${m.bench || 0} | S:${m.squat || 0} | C:${m.clean || 0} | D:${m.deadlift || 0} | P:${m.pushpress || 0}
-                        </div>`;
-            }).join('') || '<p class="text-[9px] text-gray-600">No lift data found.</p>';
-
-            const kSnap = await getDocs(query(collection(db, "players", pid, "meals"), orderBy("timestamp", "desc")));
-            kitchenList.innerHTML = kSnap.docs.map(d => {
-                const m = d.data();
-                return `<div class="bg-black/40 p-3 rounded-lg text-[10px] border border-white/5">
-                            <span class="text-green-500 font-bold">${m.date}</span>: 
-                            ${m.calories} cal | P:${m.protein}g | F:${m.fats || 0}g | <span class="italic text-gray-400">${m.mealType}</span>
-                        </div>`;
-            }).join('') || '<p class="text-[9px] text-gray-600">No meal data found.</p>';
-        };
-
-        async function loadMasterTable() {
-            const body = document.getElementById('master-body');
-            body.innerHTML = '<tr><td colspan="8" class="text-center py-4 animate-pulse">Compiling Master Data...</td></tr>';
-            const pSnap = await getDocs(collection(db, "players"));
-            let rows = '';
-            
-            for(const p of pSnap.docs) {
-                const mSnap = await getDocs(collection(db, "players", p.id, "maxes"));
-                mSnap.forEach(mDoc => {
-                    const d = mDoc.data();
-                    rows += `<tr>
-                        <td class="font-bold text-white uppercase">${p.data().playerName}</td>
-                        <td class="text-gray-400">${d.date}</td>
-                        <td>${d.bench || 0}</td>
-                        <td>${d.squat || 0}</td>
-                        <td>${d.clean || 0}</td>
-                        <td>${d.deadlift || 0}</td>
-                        <td>${d.pushpress || 0}</td>
-                        <td class="text-blue-400 font-bold">${d.bodyWeight || '--'}</td>
-                    </tr>`;
-                });
-            }
-            body.innerHTML = rows || '<tr><td colspan="8" class="text-center py-4">No records found.</td></tr>';
-        }
-
-        window.exportToCSV = () => {
-            let csv = "Player,Date,Bench,Squat,Clean,Deadlift,PushPress,BodyWeight\n";
-            const tableRows = document.querySelectorAll("#master-table tbody tr");
-            if(tableRows.length === 0 || tableRows[0].innerText.includes("No records")) return alert("No data to export.");
-            
-            tableRows.forEach(tr => {
-                const row = Array.from(tr.querySelectorAll("td")).map(td => td.innerText).join(",");
-                csv += row + "\n";
+        window.logout = () => {
+            signOut(auth).then(() => {
+                location.href = 'index.html';
             });
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.setAttribute('href', url);
-            a.setAttribute('download', `Panther_Master_Audit_${new Date().toLocaleDateString()}.csv`);
-            a.click();
         };
-
-        import { addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-            window.saveManualEntry = async () => {
-                const pid = document.getElementById('player-select').value;
-                const dateInput = document.getElementById('manual-date').value;
-                
-                if(!pid) return alert("Please select a player first!");
-                if(!dateInput) return alert("Please select a date for this record.");
-
-                // Format the date properly for the UI
-                const dateObj = new Date(dateInput);
-                dateObj.setMinutes(dateObj.getMinutes() + dateObj.getTimezoneOffset());
-                const dateStr = dateObj.toLocaleDateString();
-
-                try {
-                    await addDoc(collection(db, "players", pid, "maxes"), {
-                        bench: Number(document.getElementById('manual-bench').value) || 0,
-                        squat: Number(document.getElementById('manual-squat').value) || 0,
-                        clean: Number(document.getElementById('manual-clean').value) || 0,
-                        deadlift: Number(document.getElementById('manual-dead').value) || 0,
-                        pushpress: Number(document.getElementById('manual-press').value) || 0,
-                        bodyWeight: Number(document.getElementById('manual-bw').value) || 0,
-                        date: dateStr,
-                        timestamp: serverTimestamp(), // Helps with ordering
-                        isManual: true // Flag to identify historical data
-                    });
-
-                    alert("Historical record added for " + dateStr);
-                    
-                    // Clear inputs
-                    ['manual-bench', 'manual-squat', 'manual-clean', 'manual-dead', 'manual-press', 'manual-bw'].forEach(id => {
-                        document.getElementById(id).value = '';
-                    });
-                    
-                    // Refresh the audit view
-                    runIndividualAudit();
-                    loadTheBoard();
-                } catch (e) {
-                    console.error("Error adding document: ", e);
-                    alert("Error saving record.");
-                }
-            };
-
-            // Add this line to your onAuthStateChanged or script init to default the date
-            document.getElementById('manual-date').valueAsDate = new Date();
     </script>
 </body>
 </html>
