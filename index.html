@@ -144,7 +144,7 @@
                     class="w-full bg-indigo-900 hover:bg-indigo-800 py-4 rounded-xl font-black uppercase italic shadow-xl flex items-center justify-center gap-2 border-b-4 border-indigo-950">
                 <span>🔥 Consistency Boards</span>
             </button>
-            
+
             <button onclick="location.href='guides.html'" class="menu-btn border-purple-500">
                 <span>📖 Guides</span><span class="text-purple-500">→</span>
             </button>
@@ -190,11 +190,22 @@
             const mainMenu = document.getElementById('main-menu');
             
             if (user) {
-                authSection.classList.add('hidden');
-                mainMenu.classList.remove('hidden');
+                // 1. Fetch the user's profile to check their role
                 const userSnap = await getDoc(doc(db, "players", user.uid));
+                
                 if (userSnap.exists()) {
-                    document.getElementById('welcome-msg').innerText = `Welcome, ${userSnap.data().playerName}`;
+                    const userData = userSnap.data();
+                    
+                    // 2. REDIRECT IF COACH
+                    if (userData.role === "coach") {
+                        window.location.href = "coach.html";
+                        return; // Stop execution here so the player menu doesn't flicker
+                    }
+
+                    // 3. Otherwise, show player menu as normal
+                    authSection.classList.add('hidden');
+                    mainMenu.classList.remove('hidden');
+                    document.getElementById('welcome-msg').innerText = `Welcome, ${userData.playerName}`;
                 }
             } else {
                 authSection.classList.remove('hidden');
@@ -210,7 +221,10 @@
         window.handleLogin = async () => {
             const email = document.getElementById('email').value;
             const pass = document.getElementById('password').value;
-            try { await signInWithEmailAndPassword(auth, email, pass); } 
+            try { 
+                await signInWithEmailAndPassword(auth, email, pass); 
+                // The onAuthStateChanged listener above will handle the redirect
+            } 
             catch (e) { alert("Login failed: " + e.message); }
         };
 
@@ -218,18 +232,25 @@
             const name = document.getElementById('new-name').value;
             const email = document.getElementById('new-email').value;
             const pass = document.getElementById('new-password').value;
+            const coachCode = document.getElementById('coach-code')?.value; // Ensure you have this input in your HTML
 
             if (!name || !email || !pass) return alert("All fields required");
+
+            // Determine role based on secret code
+            let assignedRole = "athlete";
+            if (coachCode === "PANTHERS2026") {
+                assignedRole = "coach";
+            }
 
             try {
                 const cred = await createUserWithEmailAndPassword(auth, email, pass);
                 await setDoc(doc(db, "players", cred.user.uid), {
                     playerName: name,
                     email: email,
-                    role: "athlete",
+                    role: assignedRole, // Uses the determined role
                     joinedAt: new Date().toISOString()
                 });
-                alert("Account created!");
+                alert(assignedRole === "coach" ? "Coach Account Created!" : "Account created!");
             } catch (e) { alert(e.message); }
         };
 

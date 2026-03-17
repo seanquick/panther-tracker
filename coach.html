@@ -79,8 +79,34 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        onAuthStateChanged(auth, (user) => {
-            if (!user) location.href = 'index.html';
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                // Not logged in? Send them back to the login page
+                window.location.href = 'index.html';
+                return;
+            }
+
+            try {
+                // Fetch the user's document from Firestore
+                const userDoc = await getDoc(doc(db, "players", user.uid));
+                
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    
+                    // IF THEY ARE NOT A COACH, KICK THEM OUT
+                    if (userData.role !== "coach") {
+                        alert("Restricted Access: Coaches Only.");
+                        window.location.href = 'index.html'; // Or 'lobby.html'
+                    }
+                    // If they ARE a coach, the page stays visible and continues loading
+                } else {
+                    // No profile found? Something is wrong, send back to login
+                    window.location.href = 'index.html';
+                }
+            } catch (e) {
+                console.error("Auth Guard Error:", e);
+                window.location.href = 'index.html';
+            }
         });
 
         window.logout = () => {
