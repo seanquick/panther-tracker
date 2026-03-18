@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Next Level | Panther Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #0f172a; color: white; min-height: 100vh; font-family: sans-serif; }
+        .section-card { background: #1e293b; border: 1px solid #334155; padding: 1.5rem; border-radius: 1.5rem; margin-bottom: 1.5rem; }
+        label { font-size: 10px; font-weight: 800; text-transform: uppercase; color: #94a3b8; letter-spacing: 0.1em; display: block; margin-bottom: 0.5rem; }
+        input, select, textarea { background-color: #0f172a !important; color: white !important; border: 1px solid #334155 !important; padding: 0.75rem !important; border-radius: 0.75rem !important; width: 100%; }
+        .range-label { display: flex; justify-content: space-between; font-size: 9px; font-weight: bold; color: #64748b; margin-top: 0.25rem; }
+    </style>
+</head>
+<body class="p-4 pb-20">
+    <header class="max-w-2xl mx-auto mb-8 flex justify-between items-center">
+        <div>
+            <h1 class="text-3xl font-black italic uppercase text-orange-500">Next <span class="text-white">Level</span></h1>
+            <p class="text-gray-400 text-xs font-bold uppercase tracking-widest">College Recruiting Profile</p>
+        </div>
+        <button onclick="location.href='index.html'" class="bg-gray-800 px-4 py-2 rounded-lg text-[10px] font-black uppercase">← Lobby</button>
+    </header>
+
+    <main class="max-w-2xl mx-auto">
+        <form id="next-level-form">
+            <div class="section-card">
+                <h2 class="text-orange-500 font-black italic uppercase mb-4 text-sm">Step 1: About Me</h2>
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div><label>Graduation Year</label><input type="number" id="gradYear" placeholder="2027"></div>
+                    <div><label>Primary Positions</label><input type="text" id="positions" placeholder="LB / TE"></div>
+                </div>
+                <div class="grid grid-cols-3 gap-4 mb-4">
+                    <div><label>Cum. GPA</label><input type="number" step="0.01" id="gpa" placeholder="4.0"></div>
+                    <div><label>ACT Score</label><input type="number" id="act" placeholder="--"></div>
+                    <div><label>SAT Score</label><input type="number" id="sat" placeholder="--"></div>
+                </div>
+                <label>AP / CCP Courses (Current)</label>
+                <div class="space-y-2">
+                    <input type="text" class="ap-course" placeholder="Course 1">
+                    <input type="text" class="ap-course" placeholder="Course 2">
+                    <input type="text" class="ap-course" placeholder="Course 3">
+                    <input type="text" class="ap-course" placeholder="Course 4">
+                    <input type="text" class="ap-course" placeholder="Course 5">
+                </div>
+    
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                    <div>
+                        <label>X (Twitter) Profile URL</label>
+                        <input type="url" id="twitter-url" placeholder="https://x.com/yourhandle">
+                    </div>
+                    <div>
+                        <label>YouTube / Hudl Highlight URL</label>
+                        <input type="url" id="highlight-url" placeholder="https://youtube.com/... or hudl.com/...">
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-card">
+                <h2 class="text-orange-500 font-black italic uppercase mb-4 text-sm">Step 2: College Interest</h2>
+                <div class="mb-6">
+                    <label>Overall Interest in College Football</label>
+                    <input type="range" id="interest-overall" min="0" max="5" step="1" class="accent-orange-500">
+                    <div class="range-label"><span>0 - None</span><span>5 - Extreme</span></div>
+                </div>
+                <label class="mb-3">Interest by Division (0-5)</label>
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label>D1 (FBS)</label><input type="number" class="div-interest" id="div-fbs" min="0" max="5"></div>
+                    <div><label>D1 (FCS)</label><input type="number" class="div-interest" id="div-fcs" min="0" max="5"></div>
+                    <div><label>NCAA D2</label><input type="number" class="div-interest" id="div-d2" min="0" max="5"></div>
+                    <div><label>NCAA D3</label><input type="number" class="div-interest" id="div-d3" min="0" max="5"></div>
+                    <div><label>NAIA</label><input type="number" class="div-interest" id="div-naia" min="0" max="5"></div>
+                    <div><label>JUCO</label><input type="number" class="div-interest" id="div-juco" min="0" max="5"></div>
+                </div>
+            </div>
+
+            <div class="section-card">
+                <h2 class="text-orange-500 font-black italic uppercase mb-4 text-sm">Step 3: Academics & Goals</h2>
+                <div class="mb-4">
+                    <label>Intended Major</label>
+                    <input type="text" id="major" placeholder="Business / Engineering / Undecided">
+                </div>
+                <div class="mb-4">
+                    <label>Football vs Academics Priority</label>
+                    <input type="range" id="priority" min="0" max="5" step="1" class="accent-blue-500">
+                    <div class="range-label"><span>Football Priority</span><span>Academics Priority</span></div>
+                </div>
+                <div class="mb-4">
+                    <label>NCAA Eligibility Status</label>
+                    <select id="eligibility">
+                        <option value="Yes">Yes, I expect to be eligible</option>
+                        <option value="Not Sure">Not Sure</option>
+                        <option value="Need Help">I need help understanding requirements</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Long-Term Goal</label>
+                    <select id="long-term">
+                        <option value="Professional Athletics">Professional Athletics</option>
+                        <option value="Graduate School">Graduate School</option>
+                        <option value="Career-Focused">Career-Focused Employment</option>
+                        <option value="Military">Military</option>
+                        <option value="Undecided">Undecided</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="section-card">
+                <h2 class="text-orange-500 font-black italic uppercase mb-4 text-sm">Step 4: Location & Culture</h2>
+                <div class="grid grid-cols-1 gap-4 mb-4">
+                    <div>
+                        <label>Distance From Home</label>
+                        <select id="distance">
+                            <option value="2 Hours">Within 2 Hours</option>
+                            <option value="State">Within the State</option>
+                            <option value="Neighboring">Neighboring States</option>
+                            <option value="Regional">Regional (Midwest)</option>
+                            <option value="Anywhere">Anywhere in the US</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Setting Preference</label>
+                        <input type="range" id="setting" min="0" max="5" step="1" class="accent-green-500">
+                        <div class="range-label"><span>Rural Area</span><span>Big City</span></div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label>Attend Religious School?</label>
+                        <select id="rel-attend"><option>Yes</option><option>No</option><option>Depends</option></select>
+                    </div>
+                    <div>
+                        <label>Specifically Seeking Religious?</label>
+                        <select id="rel-seek"><option>No</option><option>Yes</option></select>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label>Preferred College Size</label>
+                    <select id="school-size">
+                        <option value="Small">Small (Under 3000)</option>
+                        <option value="Medium">Medium (3000-10000)</option>
+                        <option value="Large">Large (10000+)</option>
+                        <option value="No Preference">No Preference</option>
+                    </select>
+                </div>
+                <label>Colleges I'm Already Interested In</label>
+                <div class="space-y-2">
+                    <input type="text" class="target-college" placeholder="College 1">
+                    <input type="text" class="target-college" placeholder="College 2">
+                    <input type="text" class="target-college" placeholder="College 3">
+                    <input type="text" class="target-college" placeholder="College 4">
+                    <input type="text" class="target-college" placeholder="College 5">
+                </div>
+            </div>
+
+            <button type="button" onclick="submitProfile()" class="w-full bg-orange-600 py-5 rounded-2xl font-black italic uppercase shadow-xl hover:bg-orange-500 transition-all border-b-4 border-orange-900 active:border-b-0">
+                Save Next Level Profile
+            </button>
+        </form>
+    </main>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = { /* Use your existing config */ };
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        window.submitProfile = async () => {
+            const userId = localStorage.getItem('pantherUserId'); // Or however you track session
+            if(!userId) return alert("Session expired. Please log in.");
+
+            const apCourses = Array.from(document.querySelectorAll('.ap-course')).map(i => i.value).filter(v => v);
+            const targetColleges = Array.from(document.querySelectorAll('.target-college')).map(i => i.value).filter(v => v);
+
+            const data = {
+                gradYear: document.getElementById('gradYear').value,
+                positions: document.getElementById('positions').value,
+                gpa: document.getElementById('gpa').value,
+                act: document.getElementById('act').value,
+                sat: document.getElementById('sat').value,
+                apCourses: apCourses,
+                twitterUrl: document.getElementById('twitter-url').value,
+                highlightUrl: document.getElementById('highlight-url').value,
+                lastUpdated: Date.now(),
+                interestOverall: document.getElementById('interest-overall').value,
+                divInterests: {
+                    fbs: document.getElementById('div-fbs').value,
+                    fcs: document.getElementById('div-fcs').value,
+                    d2: document.getElementById('div-d2').value,
+                    d3: document.getElementById('div-d3').value,
+                    naia: document.getElementById('div-naia').value,
+                    juco: document.getElementById('div-juco').value
+                },
+                major: document.getElementById('major').value,
+                academicPriority: document.getElementById('priority').value,
+                eligibility: document.getElementById('eligibility').value,
+                longTermGoal: document.getElementById('long-term').value,
+                distance: document.getElementById('distance').value,
+                settingPref: document.getElementById('setting').value,
+                religAttend: document.getElementById('rel-attend').value,
+                religSeek: document.getElementById('rel-seek').value,
+                schoolSize: document.getElementById('school-size').value,
+                targetColleges: targetColleges,
+                lastUpdated: Date.now()
+            };
+
+            try {
+                // Save to a specialized subcollection or document
+                await setDoc(doc(db, "players", userId, "recruiting", "profile"), data);
+                alert("Profile saved! Coaches can now view your preferences.");
+            } catch (e) {
+                alert("Error: " + e.message);
+            }
+        };
+    </script>
+</body>
+</html>

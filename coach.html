@@ -16,7 +16,7 @@
 <body class="pb-20">
 
     <header class="bg-black p-6 border-b-4 border-red-700 text-center relative">
-        <img src="Panthers2.png" alt="Panthers Football" class="h-16 mx-auto mb-2">
+        <img src="logo2.png" alt="Panthers Football" class="h-16 mx-auto mb-2">
         <h1 class="text-2xl font-black italic uppercase tracking-tighter text-white">Coach <span class="text-red-600">Command Center</span></h1>
         <button onclick="logout()" class="absolute top-4 right-4 text-[10px] font-black uppercase bg-gray-800 px-3 py-1 rounded border border-gray-600">Logout</button>
     </header>
@@ -29,10 +29,11 @@
         </button>
 
         <div class="grid grid-cols-2 gap-3">
-            <button onclick="location.href='weight-records.html'" 
+            <button onclick="location.href='records.html'" 
                     class="bg-amber-700 hover:bg-amber-600 py-4 rounded-xl font-black uppercase italic shadow-xl transition-all active:scale-95 text-[11px] border-b-4 border-amber-900">
                 Weight Class Records
             </button>
+
             <button onclick="location.href='historical-entry.html'" 
                     class="bg-gray-700 hover:bg-gray-600 py-4 rounded-xl font-black uppercase italic shadow-xl transition-all active:scale-95 text-[11px] border-b-4 border-gray-900">
                 Historical Entry
@@ -52,6 +53,15 @@
         <button onclick="location.href='audit.html'" 
                 class="w-full bg-red-800 hover:bg-red-700 py-6 rounded-2xl font-black uppercase italic shadow-2xl transition-all active:scale-95 flex items-center justify-center gap-3 border-b-4 border-red-950">
             <span class="text-2xl tracking-tighter">Export Data (CSV)</span>
+        </button>
+
+        <button onclick="location.href='next-level.html'" 
+            class="col-span-full bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 p-6 rounded-3xl shadow-2xl transition-all active:scale-95 border-b-4 border-orange-900 flex items-center justify-between group">
+            <div class="text-left">
+                <h2 class="text-2xl font-black italic uppercase leading-none">Next <span class="text-white/80">Level</span></h2>
+                <p class="text-[10px] font-bold uppercase tracking-widest text-orange-200 mt-1">College Recruiting Profile</p>
+            </div>
+            <div class="text-3xl opacity-50 group-hover:opacity-100 transition-opacity">🎓</div>
         </button>
 
         <button onclick="location.href='manage-roster.html'" 
@@ -104,7 +114,7 @@
     </div>
 
     <footer>
-        <img src="panther.png" alt="Panther" class="footer-logo">
+        <img src="logo1.png" alt="Panther" class="footer-logo">
         <span class="tdl-branding">TDL</span>
     </footer>
 
