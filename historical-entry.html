@@ -11,6 +11,7 @@
         label { font-size: 10px; font-weight: 800; text-transform: uppercase; color: #64748b; letter-spacing: 0.1em; }
         .checkbox-container { display: flex; align-items: center; gap: 8px; cursor: pointer; }
         input[type="checkbox"] { width: auto !important; margin: 0 !important; }
+        .preview-box { background: rgba(0,0,0,0.4); border: 1px dashed #334155; }
     </style>
 </head>
 <body class="p-6 pb-20">
@@ -35,7 +36,7 @@
 
             <div class="bg-blue-900/20 p-4 rounded-xl border border-blue-800/50 shadow-inner">
                 <label class="text-blue-400">Direct Board Score Override</label>
-                <input type="number" id="manual-board-score" placeholder="Enter total score (Optional)">
+                <input type="number" id="manual-board-score" placeholder="Enter total score (Optional)" oninput="updatePreview()">
                 <p class="text-[9px] text-gray-500 mt-2 leading-tight uppercase font-bold">
                     Use this for historical accounts where only the final Board Score is known. 
                     Leave blank to calculate using individual lifts below.
@@ -43,12 +44,18 @@
             </div>
 
             <div class="grid grid-cols-2 gap-4">
-                <div><label>Body Weight</label><input type="number" id="bw" placeholder="lbs"></div>
-                <div><label>Bench</label><input type="number" id="bench" placeholder="lbs"></div>
-                <div><label>Squat</label><input type="number" id="squat" placeholder="lbs"></div>
-                <div><label>Clean</label><input type="number" id="clean" placeholder="lbs"></div>
-                <div><label>Deadlift</label><input type="number" id="deadlift" placeholder="lbs"></div>
+                <div><label>Body Weight</label><input type="number" id="bw" placeholder="lbs" oninput="updatePreview()"></div>
+                <div><label>Bench</label><input type="number" id="bench" placeholder="lbs" oninput="updatePreview()"></div>
+                <div><label>Squat</label><input type="number" id="squat" placeholder="lbs" oninput="updatePreview()"></div>
+                <div><label>Clean</label><input type="number" id="clean" placeholder="lbs" oninput="updatePreview()"></div>
+                <div><label>Deadlift</label><input type="number" id="deadlift" placeholder="lbs" oninput="updatePreview()"></div>
                 <div><label>Entry Date</label><input type="date" id="entry-date"></div>
+            </div>
+
+            <div class="preview-box p-4 rounded-xl text-center">
+                <label class="block mb-1">Resulting Board Score</label>
+                <span id="score-preview" class="text-3xl font-black text-white italic">0</span>
+                <p id="preview-method" class="text-[8px] text-gray-500 uppercase mt-1">Waiting for data...</p>
             </div>
             
             <button onclick="submitManualEntry()" class="w-full bg-red-600 py-4 rounded-xl font-black uppercase italic mt-4 hover:bg-red-500 transition-all border-b-4 border-red-900 active:border-b-0">
@@ -93,6 +100,31 @@
             });
         }
 
+        window.updatePreview = () => {
+            const manual = document.getElementById('manual-board-score').value;
+            const preview = document.getElementById('score-preview');
+            const method = document.getElementById('preview-method');
+
+            if (manual) {
+                preview.textContent = Math.round(manual);
+                preview.className = "text-3xl font-black text-yellow-500 italic";
+                method.textContent = "Manual Override Active";
+            } else {
+                const bw = Number(document.getElementById('bw').value) || 0;
+                const b = Number(document.getElementById('bench').value) || 0;
+                const s = Number(document.getElementById('squat').value) || 0;
+                const c = Number(document.getElementById('clean').value) || 0;
+                const d = Number(document.getElementById('deadlift').value) || 0;
+
+                const cappedBW = Math.min(bw, 200);
+                const score = (b + s + c + d) - (cappedBW * 4);
+                
+                preview.textContent = Math.round(score);
+                preview.className = "text-3xl font-black text-white italic";
+                method.textContent = "Calculated via Formula";
+            }
+        };
+
         window.submitManualEntry = async () => {
             const pid = document.getElementById('player-select').value;
             const dateVal = document.getElementById('entry-date').value;
@@ -107,24 +139,22 @@
                 squat: Number(document.getElementById('squat').value) || 0,
                 clean: Number(document.getElementById('clean').value) || 0,
                 deadlift: Number(document.getElementById('deadlift').value) || 0,
-                manualBoardScore: manualScore ? Number(manualScore) : null, // Store override
+                manualBoardScore: manualScore ? Number(manualScore) : null,
                 timestamp: new Date(dateVal).getTime()
             };
 
             try {
-                // 1. Add the stats to the 'maxes' sub-collection
                 await addDoc(collection(db, "players", pid, "maxes"), data);
 
-                // 2. If the 'Graduated' checkbox is checked, update the player's profile status
                 if (isGrad) {
                     const playerRef = doc(db, "players", pid);
                     await updateDoc(playerRef, { grade: "Graduated" });
                 }
 
-                alert("Entry recorded! The Board and Weight Records have been updated.");
+                alert("Historical entry successful.");
                 location.reload();
             } catch (error) {
-                alert("Error saving data: " + error.message);
+                alert("Error: " + error.message);
             }
         };
 

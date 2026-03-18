@@ -83,12 +83,15 @@
 
         let allPlayers = [];
 
-        // Load Player List for dropdown
         async function loadPlayers() {
             const snap = await getDocs(collection(db, "players"));
             allPlayers = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             const select = document.getElementById('individual-player-select');
-            allPlayers.forEach(p => {
+            
+            // Clear existing except first option
+            select.innerHTML = '<option value="">Select a player...</option>';
+            
+            allPlayers.sort((a,b) => a.lastName.localeCompare(b.lastName)).forEach(p => {
                 const opt = document.createElement('option');
                 opt.value = p.id;
                 opt.textContent = `${p.lastName}, ${p.firstName} (Gr. ${p.grade})`;
@@ -97,7 +100,6 @@
         }
         loadPlayers();
 
-        // 1. Export Group Data (Latest Max for everyone in filter)
         window.exportGroupData = async () => {
             const filter = document.getElementById('export-filter').value;
             toggleStatus(true);
@@ -115,8 +117,8 @@
                 
                 if (!maxSnap.empty) {
                     const m = maxSnap.docs[0].data();
-                    const score = calculateBoardScore(m.bench, m.squat, m.clean, m.deadlift, m.weight);
-                    csvRows.push([player.lastName, player.firstName, player.grade, m.weight, m.bench, m.squat, m.clean, m.deadlift, m.pushpress, score]);
+                    const score = calculateBoardScore(m);
+                    csvRows.push([player.lastName, player.firstName, player.grade, m.weight || m.bodyWeight || 0, m.bench || 0, m.squat || 0, m.clean || 0, m.deadlift || 0, m.pushpress || 0, Math.round(score)]);
                 } else {
                     csvRows.push([player.lastName, player.firstName, player.grade, "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A"]);
                 }
@@ -126,7 +128,6 @@
             toggleStatus(false);
         };
 
-        // 2. Export Individual History (Every entry for one player)
         window.exportIndividualData = async () => {
             const pid = document.getElementById('individual-player-select').value;
             if (!pid) return alert("Select a player first.");
@@ -136,20 +137,28 @@
             const q = query(collection(db, "players", pid, "maxes"), orderBy("timestamp", "desc"));
             const snap = await getDocs(q);
 
-            let csvRows = [["Date", "Weight", "Bench", "Squat", "Clean", "Deadlift", "Push Press"]];
+            let csvRows = [["Date", "Weight", "Bench", "Squat", "Clean", "Deadlift", "Push Press", "Board Score"]];
             snap.forEach(doc => {
                 const d = doc.data();
                 const date = d.timestamp ? new Date(d.timestamp).toLocaleDateString() : "N/A";
-                csvRows.push([date, d.weight, d.bench, d.squat, d.clean, d.deadlift, d.pushpress]);
+                const score = calculateBoardScore(d);
+                csvRows.push([date, d.weight || d.bodyWeight || 0, d.bench || 0, d.squat || 0, d.clean || 0, d.deadlift || 0, d.pushpress || 0, Math.round(score)]);
             });
 
             downloadCSV(`${player.lastName}_Progress_History.csv`, csvRows);
             toggleStatus(false);
         };
 
-        function calculateBoardScore(b, s, c, d, w) {
-            const cappedBW = Math.min(Number(w) || 0, 200);
-            return ((Number(b)||0) + (Number(s)||0) + (Number(c)||0) + (Number(d)||0)) - (cappedBW * 4);
+        function calculateBoardScore(m) {
+            // Check for manual override first
+            if (m.manualBoardScore !== undefined && m.manualBoardScore !== null) {
+                return Number(m.manualBoardScore);
+            }
+            // Standard Formula fallback
+            const w = Number(m.weight) || Number(m.bodyWeight) || 0;
+            const cappedBW = Math.min(w, 200);
+            const totalLifts = (Number(m.bench)||0) + (Number(m.squat)||0) + (Number(m.clean)||0) + (Number(m.deadlift)||0);
+            return totalLifts - (cappedBW * 4);
         }
 
         function downloadCSV(filename, rows) {
@@ -162,8 +171,24 @@
         }
 
         function toggleStatus(show) {
-            document.getElementById('status-msg').classList.toggle('hidden', !show);
+            const el = document.getElementById('status-msg');
+            if (el) el.classList.toggle('hidden', !show);
         }
+
+        window.filterPlayerList = () => {
+            const search = document.getElementById('player-search').value.toLowerCase();
+            const select = document.getElementById('individual-player-select');
+            select.innerHTML = '<option value="">Select a player...</option>';
+            
+            allPlayers
+                .filter(p => p.lastName.toLowerCase().includes(search))
+                .forEach(p => {
+                    const opt = document.createElement('option');
+                    opt.value = p.id;
+                    opt.textContent = `${p.lastName}, ${p.firstName} (Gr. ${p.grade})`;
+                    select.appendChild(opt);
+                });
+        };
     </script>
 </body>
 </html>

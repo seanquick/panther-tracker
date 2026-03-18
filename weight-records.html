@@ -27,13 +27,20 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        const firebaseConfig = { apiKey: "AIzaSyBdY26nH0CAn05IpjzoFvG5E1H-bv8fPwA", authDomain: "panthertracker-b8ff6.firebaseapp.com", projectId: "panthertracker-b8ff6", storageBucket: "panthertracker-b8ff6.firebasestorage.app", messagingSenderId: "647881105335", appId: "1:647881105335:web:bbb79bb3fe9740de1e1232" };
+        const firebaseConfig = { 
+            apiKey: "AIzaSyBdY26nH0CAn05IpjzoFvG5E1H-bv8fPwA", 
+            authDomain: "panthertracker-b8ff6.firebaseapp.com", 
+            projectId: "panthertracker-b8ff6", 
+            storageBucket: "panthertracker-b8ff6.firebasestorage.app", 
+            messagingSenderId: "647881105335", 
+            appId: "1:647881105335:web:bbb79bb3fe9740de1e1232" 
+        };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
         async function loadRecords() {
             const playerSnap = await getDocs(collection(db, "players"));
-            let classRecords = {}; // Key will be "150", "160", etc.
+            let classRecords = {}; 
 
             for (let pDoc of playerSnap.docs) {
                 const p = pDoc.data();
@@ -41,50 +48,75 @@
                 
                 maxSnap.forEach(mDoc => {
                     const m = mDoc.data();
-                    const bw = Number(m.weight) || 0;
+                    const bw = Number(m.weight) || Number(m.bodyWeight) || 0;
                     if (bw === 0) return;
 
-                    // Group by 10lb increments (e.g., 150-159 is "150s")
+                    // Group by 10lb increments
                     const weightClass = Math.floor(bw / 10) * 10;
                     
                     if (!classRecords[weightClass]) {
-                        classRecords[weightClass] = { bench: {v:0, n:''}, squat: {v:0, n:''}, clean: {v:0, n:''}, board: {v:-Infinity, n:''} };
+                        classRecords[weightClass] = { 
+                            bench: {v:0, n:''}, 
+                            squat: {v:0, n:''}, 
+                            clean: {v:0, n:''}, 
+                            board: {v:-Infinity, n:''} 
+                        };
                     }
 
-                    const b = Number(m.bench) || 0;
-                    const s = Number(m.squat) || 0;
-                    const c = Number(m.clean) || 0;
-                    const d = Number(m.deadlift) || 0;
-                    const score = (b + s + c + d) - (Math.min(bw, 200) * 4);
+                    // Calculate score: Manual Override vs standard formula
+                    let currentScore = 0;
+                    if (m.manualBoardScore !== undefined && m.manualBoardScore !== null) {
+                        currentScore = Number(m.manualBoardScore);
+                    } else {
+                        const b = Number(m.bench) || 0;
+                        const s = Number(m.squat) || 0;
+                        const c = Number(m.clean) || 0;
+                        const d = Number(m.deadlift) || 0;
+                        currentScore = (b + s + c + d) - (Math.min(bw, 200) * 4);
+                    }
 
-                    const name = p.playerName || `${p.firstName} ${p.lastName}`;
-                    if (b > classRecords[weightClass].bench.v) classRecords[weightClass].bench = {v:b, n:name};
-                    if (s > classRecords[weightClass].squat.v) classRecords[weightClass].squat = {v:s, n:name};
-                    if (c > classRecords[weightClass].clean.v) classRecords[weightClass].clean = {v:c, n:name};
-                    if (score > classRecords[weightClass].board.v) classRecords[weightClass].board = {v:score, n:name};
+                    // Resolve Player Name
+                    const name = p.playerName || (p.firstName ? `${p.firstName} ${p.lastName}` : "Unknown Athlete");
+                    
+                    // Update Records
+                    const bVal = Number(m.bench) || 0;
+                    const sVal = Number(m.squat) || 0;
+                    const cVal = Number(m.clean) || 0;
+
+                    if (bVal > classRecords[weightClass].bench.v) classRecords[weightClass].bench = {v:bVal, n:name};
+                    if (sVal > classRecords[weightClass].squat.v) classRecords[weightClass].squat = {v:sVal, n:name};
+                    if (cVal > classRecords[weightClass].clean.v) classRecords[weightClass].clean = {v:cVal, n:name};
+                    if (currentScore > classRecords[weightClass].board.v) classRecords[weightClass].board = {v:currentScore, n:name};
                 });
             }
 
             const container = document.getElementById('records-container');
             container.innerHTML = '';
 
-            Object.keys(classRecords).sort((a,b) => a-b).forEach(wc => {
+            const sortedClasses = Object.keys(classRecords).sort((a,b) => a-b);
+            
+            if (sortedClasses.length === 0) {
+                container.innerHTML = '<p class="text-center col-span-full text-gray-500 uppercase font-black">No records found.</p>';
+                return;
+            }
+
+            sortedClasses.forEach(wc => {
                 const r = classRecords[wc];
                 container.innerHTML += `
                     <div class="record-card p-5 rounded-2xl">
                         <h2 class="text-xl font-black italic text-blue-400 mb-4">${wc}s Weight Class</h2>
                         <div class="space-y-3 text-xs uppercase font-bold">
                             <div class="flex justify-between border-b border-gray-800 pb-1">
-                                <span>Bench</span><span class="text-white">${r.bench.n} (${r.bench.v})</span>
+                                <span class="text-gray-500">Bench</span><span class="text-white">${r.bench.n || '---'} (${r.bench.v})</span>
                             </div>
                             <div class="flex justify-between border-b border-gray-800 pb-1">
-                                <span>Squat</span><span class="text-white">${r.squat.n} (${r.squat.v})</span>
+                                <span class="text-gray-500">Squat</span><span class="text-white">${r.squat.n || '---'} (${r.squat.v})</span>
                             </div>
                             <div class="flex justify-between border-b border-gray-800 pb-1">
-                                <span>Clean</span><span class="text-white">${r.clean.n} (${r.clean.v})</span>
+                                <span class="text-gray-500">Clean</span><span class="text-white">${r.clean.n || '---'} (${r.clean.v})</span>
                             </div>
-                            <div class="flex justify-between text-blue-500">
-                                <span>Board Score</span><span>${r.board.n} (${Math.round(r.board.v)})</span>
+                            <div class="flex justify-between text-blue-500 pt-1">
+                                <span>Board Score</span><span>${r.board.n || '---'} (${Math.round(r.board.v)})</span>
                             </div>
                         </div>
                     </div>
