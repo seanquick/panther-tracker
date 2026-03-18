@@ -93,16 +93,26 @@
 
     <div class="content-wrapper flex flex-col items-center justify-center">
         
-        <div id="auth-section" class="w-full max-w-md bg-[#1e293b] p-6 rounded-2xl border border-gray-700 shadow-2xl">
-            <form id="login-form" class="space-y-4">
-                <button type="submit" class="w-full bg-orange-600 ...">Login</button>
-            </form>
+        <div id="auth-section">
+            <div id="login-form" class="space-y-4">
+                <input type="email" id="email" placeholder="Email Address" 
+                    class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-sm focus:border-orange-500 outline-none">
+                
+                <input type="password" id="password" placeholder="Password" 
+                    class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-sm focus:border-orange-500 outline-none">
+                
+                <button type="button" onclick="handleLogin()" 
+                        class="w-full bg-orange-600 text-white font-black uppercase py-4 rounded-2xl shadow-xl hover:bg-orange-500 transition-all">
+                    Login
+                </button>
+            </div>
 
             <div class="mt-8 text-center">
                 <p class="text-gray-400 text-sm font-bold uppercase tracking-widest">
                     Need Access? <a href="register.html" class="text-orange-500 hover:text-orange-400 underline">Create Account</a>
                 </p>
             </div>
+        </div>
 
             <div id="signup-form" class="hidden">
                 <h2 class="text-xl font-black mb-6 text-center text-blue-500 uppercase italic tracking-tighter">New Athlete Sign-up</h2>
@@ -209,36 +219,36 @@
     </footer>
 
     <script type="module">
-            import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-            import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-            import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-            const firebaseConfig = { 
-                apiKey: "AIzaSyBdY26nH0CAn05IpjzoFvG5E1H-bv8fPwA", 
-                authDomain: "panthertracker-b8ff6.firebaseapp.com", 
-                projectId: "panthertracker-b8ff6", 
-                storageBucket: "panthertracker-b8ff6.firebasestorage.app", 
-                messagingSenderId: "647881105335", 
-                appId: "1:647881105335:web:bbb79bb3fe9740de1e1232" 
-            };
+        const firebaseConfig = { 
+            apiKey: "AIzaSyBdY26nH0CAn05IpjzoFvG5E1H-bv8fPwA", 
+            authDomain: "panthertracker-b8ff6.firebaseapp.com", 
+            projectId: "panthertracker-b8ff6", 
+            storageBucket: "panthertracker-b8ff6.firebasestorage.app", 
+            messagingSenderId: "647881105335", 
+            appId: "1:647881105335:web:bbb79bb3fe9740de1e1232" 
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // 1. THE WATCHER: Handles redirects and UI state
+        onAuthStateChanged(auth, async (user) => {
+            const authSection = document.getElementById('auth-section');
+            const mainMenu = document.getElementById('main-menu');
             
-            const app = initializeApp(firebaseConfig);
-            const auth = getAuth(app);
-            const db = getFirestore(app);
-
-            // 1. THE WATCHER: Runs automatically on load and after every login/logout
-            onAuthStateChanged(auth, async (user) => {
-                const authSection = document.getElementById('auth-section');
-                const mainMenu = document.getElementById('main-menu');
-                
-                if (user) {
-                    // User is logged in, fetch their profile
+            if (user) {
+                try {
                     const userSnap = await getDoc(doc(db, "players", user.uid));
                     
                     if (userSnap.exists()) {
                         const userData = userSnap.data();
                         
-                        // REDIRECT COACHES IMMEDIATELY
+                        // REDIRECT COACHES
                         if (userData.role === "coach") {
                             window.location.href = "coach.html";
                             return; 
@@ -253,78 +263,45 @@
                             welcomeEl.innerText = `Welcome, ${userData.playerName || userData.firstName || 'Athlete'}`;
                         }
                     }
-                } else {
-                    // No user is logged in, show the login form
-                    if (authSection) authSection.classList.remove('hidden');
-                    if (mainMenu) mainMenu.classList.add('hidden');
+                } catch (e) {
+                    console.error("Error fetching user profile:", e);
                 }
-            });
+            } else {
+                if (authSection) authSection.classList.remove('hidden');
+                if (mainMenu) mainMenu.classList.add('hidden');
+            }
+        });
 
-            // 2. TOGGLE BETWEEN LOGIN & SIGNUP UI
-            window.toggleAuth = (showSignup) => {
-                const loginForm = document.getElementById('login-form');
-                const signupForm = document.getElementById('signup-form');
-                if (loginForm) loginForm.classList.toggle('hidden', showSignup);
-                if (signupForm) signupForm.classList.toggle('hidden', !showSignup);
-            };
+        // 2. LOGIN LOGIC (Attached to Window for HTML visibility)
+        window.handleLogin = async () => {
+            const email = document.getElementById('email').value.trim();
+            const pass = document.getElementById('password').value;
 
-            // 3. LOGIN LOGIC
-            window.handleLogin = async () => {
-                const email = document.getElementById('email').value;
-                const pass = document.getElementById('password').value;
+            if (!email || !pass) {
+                alert("Please enter both email and password.");
+                return;
+            }
 
-                if (!email || !pass) return alert("Please enter email and password");
-
-                try { 
-                    // This triggers onAuthStateChanged above
-                    await signInWithEmailAndPassword(auth, email, pass); 
-                } 
-                catch (e) { 
-                    console.error(e);
+            try { 
+                await signInWithEmailAndPassword(auth, email, pass);
+                // Redirection/UI toggle is handled by onAuthStateChanged above
+            } 
+            catch (e) { 
+                console.error("Login attempt failed:", e.code);
+                if (e.code === 'auth/invalid-credential') {
+                    alert("Incorrect email or password. Please try again.");
+                } else {
                     alert("Login failed: " + e.message); 
                 }
-            };
+            }
+        };
 
-            // 4. SIGNUP LOGIC (Handles Athlete vs Coach via Code)
-            window.handleSignup = async () => {
-                const name = document.getElementById('new-name').value;
-                const email = document.getElementById('new-email').value;
-                const pass = document.getElementById('new-password').value;
-                const coachCodeInput = document.getElementById('coach-code');
-                const coachCode = coachCodeInput ? coachCodeInput.value : ""; 
-
-                if (!name || !email || !pass) return alert("All fields required");
-
-                // Determine Role
-                let assignedRole = "athlete";
-                if (coachCode === "PANTHERS2026") {
-                    assignedRole = "coach";
-                } else if (coachCode !== "") {
-                    return alert("Invalid Coach Code. Leave blank if you are an athlete.");
-                }
-
-                try {
-                    const cred = await createUserWithEmailAndPassword(auth, email, pass);
-                    
-                    // Save Profile to Firestore
-                    await setDoc(doc(db, "players", cred.user.uid), {
-                        playerName: name,
-                        firstName: name.split(' ')[0], // Helper for display
-                        lastName: name.split(' ')[1] || '',
-                        email: email,
-                        role: assignedRole,
-                        joinedAt: new Date().toISOString()
-                    });
-
-                    alert(assignedRole === "coach" ? "Coach Account Created!" : "Athlete Account Created!");
-                    // The Watcher (onAuthStateChanged) will handle the redirect now
-                } catch (e) { 
-                    alert(e.message); 
-                }
-            };
-
-            // 5. LOGOUT LOGIC
-            window.handleLogout = () => signOut(auth);
-        </script>
+        // 3. LOGOUT LOGIC
+        window.handleLogout = () => {
+            signOut(auth).then(() => {
+                window.location.reload(); // Refresh to clear state
+            });
+        };
+    </script>
 </body>
 </html>
