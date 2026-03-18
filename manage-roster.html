@@ -21,6 +21,22 @@
 
     <main class="max-w-2xl mx-auto space-y-4 pb-20">
         
+        <section class="bg-gray-900/50 border border-blue-900/30 p-6 rounded-2xl mb-8 shadow-xl">
+            <h2 class="text-xs font-black uppercase italic text-blue-500 mb-4 tracking-widest text-center">Quick Add New Athlete</h2>
+            <div class="grid grid-cols-2 gap-3">
+                <input type="text" id="new-first" placeholder="First Name" class="text-sm">
+                <input type="text" id="new-last" placeholder="Last Name" class="text-sm">
+                <select id="new-grade" class="text-sm">
+                    <option value="9">9th Grade</option>
+                    <option value="10">10th Grade</option>
+                    <option value="11">11th Grade</option>
+                    <option value="12">12th Grade</option>
+                    <option value="Graduated">Graduated</option>
+                </select>
+                <button onclick="manualAddAthlete()" class="bg-blue-600 hover:bg-blue-500 font-black uppercase italic text-[10px] rounded-xl transition-all active:scale-95">Add to Roster</button>
+            </div>
+        </section>
+
         <div class="grid grid-cols-2 gap-3 mb-6">
             <input type="text" id="name-search" placeholder="Search Name..." onkeyup="filterRoster()" class="text-sm">
             <select id="grade-filter" onchange="filterRoster()" class="text-sm">
@@ -29,7 +45,8 @@
                 <option value="10">10th Grade</option>
                 <option value="11">11th Grade</option>
                 <option value="12">12th Grade</option>
-                <option value="Graduated">Graduated</option> </select>
+                <option value="Graduated">Graduated</option>
+            </select>
         </div>
 
         <div id="roster-list" class="space-y-3">
@@ -38,33 +55,26 @@
 
         <div class="mt-12 pt-8 border-t border-gray-800">
             <h3 class="text-sm font-black uppercase italic text-gray-500 mb-4 tracking-widest text-center">Season Transition</h3>
-            
             <div class="grid grid-cols-1 gap-3">
                 <button onclick="location.href='season-recap.html'" 
                         class="w-full bg-yellow-600 hover:bg-yellow-500 py-3 rounded-xl font-black uppercase italic shadow-lg transition-all flex items-center justify-center gap-2 border-b-4 border-yellow-800">
                     <span>🏆 View Season Recap</span>
                 </button>
-
                 <button onclick="massPromote()" 
                         class="w-full bg-blue-600 hover:bg-blue-500 py-4 rounded-xl font-black uppercase italic shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2 border-b-4 border-blue-900">
                     <span>🚀 Mass Promote All Grades</span>
                 </button>
-
                 <button onclick="resetLeaderboards()" 
                         class="w-full bg-red-900 hover:bg-red-800 py-4 rounded-xl font-black uppercase italic shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2 border-b-4 border-red-950">
                     <span>🧹 Reset Leaderboards (Wipe Logs)</span>
                 </button>
             </div>
-            <p class="text-[9px] text-center text-gray-600 mt-4 uppercase font-bold px-4 leading-relaxed">
-                Warning: Resetting deletes all Iron and Kitchen logs for every player. <br>
-                Promote: 9→10, 10→11, 11→12, 12→Graduated.
-            </p>
         </div>
     </main>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, getDocs, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, doc, deleteDoc, updateDoc, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = { 
             apiKey: "AIzaSyBdY26nH0CAn05IpjzoFvG5E1H-bv8fPwA", 
@@ -83,7 +93,6 @@
         async function loadRoster() {
             const snap = await getDocs(collection(db, "players"));
             allPlayers = [];
-            
             snap.forEach(docSnap => {
                 const data = docSnap.data();
                 if (data.role !== 'coach') {
@@ -93,29 +102,54 @@
             renderRoster(allPlayers);
         }
 
+        // NEW: Function to manually add a player
+        window.manualAddAthlete = async () => {
+            const firstName = document.getElementById('new-first').value.trim();
+            const lastName = document.getElementById('new-last').value.trim();
+            const grade = document.getElementById('new-grade').value;
+
+            if (!firstName || !lastName) return alert("Please enter both First and Last names.");
+
+            try {
+                await addDoc(collection(db, "players"), {
+                    firstName: firstName,
+                    lastName: lastName,
+                    playerName: `${firstName} ${lastName}`,
+                    grade: grade,
+                    role: 'player',
+                    createdAt: new Date().getTime()
+                });
+
+                // Clear fields and refresh
+                document.getElementById('new-first').value = '';
+                document.getElementById('new-last').value = '';
+                alert(`${firstName} ${lastName} added to the roster!`);
+                loadRoster();
+            } catch (e) {
+                alert("Error adding athlete: " + e.message);
+            }
+        };
+
         window.filterRoster = () => {
             const searchTerm = document.getElementById('name-search').value.toLowerCase();
             const gradeFilter = document.getElementById('grade-filter').value;
-
             const filtered = allPlayers.filter(p => {
                 const fullName = `${p.firstName} ${p.lastName}`.toLowerCase();
                 const matchesName = fullName.includes(searchTerm);
                 const matchesGrade = gradeFilter === 'all' || String(p.grade) === gradeFilter;
                 return matchesName && matchesGrade;
             });
-
             renderRoster(filtered);
         };
 
         function renderRoster(players) {
             const list = document.getElementById('roster-list');
             list.innerHTML = '';
-
             if (players.length === 0) {
                 list.innerHTML = '<p class="text-center text-gray-600 text-xs font-bold uppercase py-10">No players found</p>';
                 return;
             }
-
+            players.sort((a,b) => (a.lastName || "").localeCompare(b.lastName || ""));
             players.forEach(p => {
                 const isGrad = p.grade === 'Graduated';
                 const div = document.createElement('div');
@@ -142,63 +176,45 @@
         };
 
         window.massPromote = async () => {
-            const confirmFirst = confirm("ARE YOU SURE?\n\nThis will promote EVERY athlete. Seniors will be moved to 'Graduated' status.");
+            const confirmFirst = confirm("ARE YOU SURE?\n\nSeniors will move to 'Graduated' status.");
             if (!confirmFirst) return;
-
-            const confirmSecond = confirm("FINAL WARNING: This action is bulk-editing your entire database. Proceed?");
+            const confirmSecond = confirm("Proceed with bulk-editing?");
             if (!confirmSecond) return;
-
             let promotedCount = 0;
-            
             try {
                 for (let p of allPlayers) {
                     let nextGrade = "";
                     const currentGrade = parseInt(p.grade);
-
                     if (!isNaN(currentGrade)) {
-                        if (currentGrade < 12) {
-                            nextGrade = String(currentGrade + 1);
-                        } else if (currentGrade === 12) {
-                            nextGrade = "Graduated";
-                        }
+                        if (currentGrade < 12) nextGrade = String(currentGrade + 1);
+                        else if (currentGrade === 12) nextGrade = "Graduated";
                     }
-
                     if (nextGrade !== "") {
-                        const playerRef = doc(db, "players", p.id);
-                        await updateDoc(playerRef, {
-                            grade: nextGrade
-                        });
+                        await updateDoc(doc(db, "players", p.id), { grade: nextGrade });
                         promotedCount++;
                     }
                 }
                 alert(`SUCCESS: ${promotedCount} athletes promoted/graduated!`);
                 loadRoster(); 
-            } catch (e) {
-                alert("Error during promotion: " + e.message);
-            }
+            } catch (e) { alert("Error: " + e.message); }
         };
 
         window.resetLeaderboards = async () => {
-            const c1 = confirm("DANGER: This will delete EVERY lift and meal log for EVERY player.");
+            const c1 = confirm("DANGER: Delete EVERY log for EVERY player?");
             if (!c1) return;
-
-            const finalCode = prompt("To confirm, type 'RESET' in all caps:");
-            if (finalCode !== "RESET") return alert("Reset cancelled.");
-
+            const finalCode = prompt("Type 'RESET':");
+            if (finalCode !== "RESET") return;
             try {
-                alert("Resetting logs... please wait.");
+                alert("Resetting logs...");
                 for (let p of allPlayers) {
                     const rackSnap = await getDocs(collection(db, "players", p.id, "maxes"));
                     for (let d of rackSnap.docs) await deleteDoc(doc(db, "players", p.id, "maxes", d.id));
-
                     const kitchenSnap = await getDocs(collection(db, "players", p.id, "kitchen"));
                     for (let d of kitchenSnap.docs) await deleteDoc(doc(db, "players", p.id, "kitchen", d.id));
                 }
                 alert("System Reset Complete!");
                 loadRoster();
-            } catch (e) {
-                alert("Reset failed: " + e.message);
-            }
+            } catch (e) { alert("Reset failed: " + e.message); }
         };
 
         loadRoster();
