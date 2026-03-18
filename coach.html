@@ -55,13 +55,9 @@
             <span class="text-2xl tracking-tighter">Export Data (CSV)</span>
         </button>
 
-        <button onclick="location.href='next-level.html'" 
-            class="col-span-full bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 p-6 rounded-3xl shadow-2xl transition-all active:scale-95 border-b-4 border-orange-900 flex items-center justify-between group">
-            <div class="text-left">
-                <h2 class="text-2xl font-black italic uppercase leading-none">Next <span class="text-white/80">Level</span></h2>
-                <p class="text-[10px] font-bold uppercase tracking-widest text-orange-200 mt-1">College Recruiting Profile</p>
-            </div>
-            <div class="text-3xl opacity-50 group-hover:opacity-100 transition-opacity">🎓</div>
+        <button id="personal-next-level-btn" onclick="location.href='next-level.html'" 
+                class="bg-blue-700 hover:bg-blue-600 py-4 rounded-xl font-black uppercase italic shadow-xl transition-all active:scale-95 text-[11px] border-b-4 border-blue-900">
+            My Next Level Profile
         </button>
 
         <button onclick="location.href='manage-roster.html'" 
@@ -146,9 +142,23 @@
             
             if (userDoc.exists()) {
                 const userData = userDoc.data();
+                
+                // Security Check: If they aren't a coach, boot them to the athlete lobby
                 if (userData.role !== "coach") {
                     window.location.href = 'index.html'; 
+                    return;
                 }
+
+                // UI Logic: Show/Hide buttons based on Coach role
+                const auditBtn = document.getElementById('audit-btn');
+                const personalBtn = document.getElementById('personal-next-level-btn');
+
+                if (auditBtn) auditBtn.classList.remove('hidden');
+                if (personalBtn) personalBtn.classList.add('hidden');
+
+            } else {
+                // If the document doesn't exist at all, send back to login
+                window.location.href = 'index.html';
             }
         });
 

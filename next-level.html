@@ -14,6 +14,16 @@
     </style>
 </head>
 <body class="p-4 pb-20">
+    <div id="save-toast" class="fixed top-6 left-1/2 -translate-x-1/2 z-50 transform transition-all duration-500 translate-y-[-150%] pointer-events-none">
+        <div class="bg-green-600 text-white px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-3 border border-green-400">
+            <span class="text-xl">✅</span>
+            <div>
+                <p class="font-black uppercase italic text-xs leading-none">Profile Secured</p>
+                <p class="text-[10px] font-bold opacity-80 uppercase tracking-widest mt-1">Next Level Data Updated</p>
+            </div>
+        </div>
+    </div>
+    
     <header class="max-w-2xl mx-auto mb-8 flex justify-between items-center">
         <div>
             <h1 class="text-3xl font-black italic uppercase text-orange-500">Next <span class="text-white">Level</span></h1>
@@ -207,11 +217,25 @@
             };
 
             try {
-                // Save to a specialized subcollection or document
-                await setDoc(doc(db, "players", userId, "recruiting", "profile"), data);
-                alert("Profile saved! Coaches can now view your preferences.");
-            } catch (e) {
-                alert("Error: " + e.message);
+                const playerRef = doc(db, "players", user.uid, "recruiting", "profile");
+                await setDoc(playerRef, data, { merge: true });
+
+                // --- TRIGGER THE POP-UP ---
+                const toast = document.getElementById('save-toast');
+                
+                // Slide Down
+                toast.classList.remove('translate-y-[-150%]', 'pointer-events-none');
+                toast.classList.add('translate-y-0');
+
+                // Slide Up after 3 seconds
+                setTimeout(() => {
+                    toast.classList.remove('translate-y-0');
+                    toast.classList.add('translate-y-[-150%]', 'pointer-events-none');
+                }, 3000);
+
+            } catch (error) {
+                console.error("Error saving profile:", error);
+                alert("Error saving profile. Check connection.");
             }
         };
     </script>
