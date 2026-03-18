@@ -40,6 +40,11 @@
             </button>
         </div>
 
+        <button id="audit-btn" onclick="location.href='next-level-audit.html'" 
+                class="hidden w-full bg-orange-700 hover:bg-orange-600 py-6 rounded-2xl font-black uppercase italic shadow-2xl transition-all active:scale-95 flex items-center justify-center gap-3 border-b-4 border-orange-900">
+            <span class="text-2xl tracking-tighter">Recruiting Audit</span>
+        </button>
+
         <button onclick="location.href='rack-audit.html'" 
                 class="w-full bg-gray-800 hover:bg-gray-700 py-6 rounded-2xl font-black uppercase italic shadow-2xl transition-all active:scale-95 flex items-center justify-center gap-3 border-b-4 border-black">
             <span class="text-2xl tracking-tighter text-gray-300">Rack Audit</span>
@@ -56,7 +61,7 @@
         </button>
 
         <button id="personal-next-level-btn" onclick="location.href='next-level.html'" 
-                class="bg-blue-700 hover:bg-blue-600 py-4 rounded-xl font-black uppercase italic shadow-xl transition-all active:scale-95 text-[11px] border-b-4 border-blue-900">
+                class="w-full bg-blue-700 hover:bg-blue-600 py-4 rounded-xl font-black uppercase italic shadow-xl transition-all active:scale-95 text-[11px] border-b-4 border-blue-900">
             My Next Level Profile
         </button>
 
@@ -143,21 +148,20 @@
             if (userDoc.exists()) {
                 const userData = userDoc.data();
                 
-                // Security Check: If they aren't a coach, boot them to the athlete lobby
                 if (userData.role !== "coach") {
                     window.location.href = 'index.html'; 
                     return;
                 }
 
-                // UI Logic: Show/Hide buttons based on Coach role
+                // Locate the buttons
                 const auditBtn = document.getElementById('audit-btn');
                 const personalBtn = document.getElementById('personal-next-level-btn');
 
+                // Toggle visibility: If coach, reveal Audit and hide Personal
                 if (auditBtn) auditBtn.classList.remove('hidden');
                 if (personalBtn) personalBtn.classList.add('hidden');
 
             } else {
-                // If the document doesn't exist at all, send back to login
                 window.location.href = 'index.html';
             }
         });

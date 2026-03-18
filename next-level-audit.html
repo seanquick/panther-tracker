@@ -58,6 +58,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = { 
@@ -69,30 +70,51 @@
             appId: "1:647881105335:web:bbb79bb3fe9740de1e1232" 
         };
         const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
         const db = getFirestore(app);
 
         let recruitingData = [];
 
+        // 1. SECURITY & INITIALIZATION
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            const userDoc = await getDoc(doc(db, "players", user.uid));
+            if (userDoc.exists() && userDoc.data().role === 'coach') {
+                loadRecruitingData(); // Only load if confirmed coach
+            } else {
+                window.location.href = 'index.html'; // Boot non-coaches
+            }
+        });
+
         async function loadRecruitingData() {
-            const playerSnap = await getDocs(collection(db, "players"));
-            const dataPromises = playerSnap.docs.map(async (pDoc) => {
-                const p = pDoc.data();
-                if (p.role === 'coach') return null;
+            try {
+                const playerSnap = await getDocs(collection(db, "players"));
+                const dataPromises = playerSnap.docs.map(async (pDoc) => {
+                    const p = pDoc.data();
+                    if (p.role === 'coach') return null;
 
-                const recDoc = await getDoc(doc(db, "players", pDoc.id, "recruiting", "profile"));
-                if (recDoc.exists()) {
-                    return {
-                        id: pDoc.id,
-                        name: `${p.lastName}, ${p.firstName}`,
-                        ...recDoc.data()
-                    };
-                }
-                return null;
-            });
+                    const recDoc = await getDoc(doc(db, "players", pDoc.id, "recruiting", "profile"));
+                    if (recDoc.exists()) {
+                        return {
+                            id: pDoc.id,
+                            name: `${p.lastName}, ${p.firstName}`,
+                            ...recDoc.data()
+                        };
+                    }
+                    return null;
+                });
 
-            recruitingData = (await Promise.all(dataPromises)).filter(d => d !== null);
-            document.getElementById('loading-msg').classList.add('hidden');
-            renderTable();
+                recruitingData = (await Promise.all(dataPromises)).filter(d => d !== null);
+                document.getElementById('loading-msg').classList.add('hidden');
+                renderTable();
+            } catch (error) {
+                console.error("Error loading audit:", error);
+                document.getElementById('loading-msg').innerText = "Error Loading Data.";
+            }
         }
 
         window.renderTable = () => {
@@ -110,28 +132,34 @@
                 return matchesName && matchesInterest;
             });
 
+            if (filtered.length === 0) {
+                body.innerHTML = `<tr><td colspan="8" class="p-10 text-center text-gray-600 uppercase font-bold tracking-widest">No matching profiles found</td></tr>`;
+                return;
+            }
+
             filtered.forEach(d => {
                 const interestColor = d.interestOverall >= 4 ? 'text-orange-500' : 'text-white';
                 const dateString = d.lastUpdated ? new Date(d.lastUpdated).toLocaleDateString() : "---";
-                
-                // Determine if profile is stale (Needs Attention)
                 const isStale = d.lastUpdated && (now - d.lastUpdated > sixMonthsMs);
                 const staleHtml = isStale ? `<span class="stale-indicator" title="Needs Update (Over 6 months old)"></span>` : '';
 
+                // Format position list for better fit
+                const posList = Array.isArray(d.positions) ? d.positions.join('/') : (d.positions || '---');
+
                 body.innerHTML += `
                     <tr class="border-b border-gray-800 hover:bg-white/5 transition-colors">
-                        <td class="p-4 font-bold text-blue-400">
+                        <td class="p-4 font-bold text-blue-400 leading-tight">
                             ${d.name}<br>
-                            <span class="text-[10px] text-gray-500 uppercase">${d.positions || '---'}</span>
+                            <span class="text-[9px] text-gray-500 uppercase tracking-tighter">${posList}</span>
                         </td>
                         <td class="p-4 text-center font-mono">${d.gradYear || '---'}</td>
                         <td class="p-4 text-center text-green-400 font-bold">${d.gpa || '---'}</td>
                         <td class="p-4 text-center text-gray-400">${d.act || '--'} / ${d.sat || '--'}</td>
                         <td class="p-4 text-center font-black italic ${interestColor}">${d.interestOverall}/5</td>
-                        <td class="p-4 truncate max-w-[120px]">${d.major || 'Undecided'}</td>
-                        <td class="p-4 text-[10px] font-bold text-gray-400 uppercase">${d.distance || '---'}</td>
+                        <td class="p-4 truncate max-w-[120px] uppercase text-[10px] font-bold">${d.major || 'Undecided'}</td>
+                        <td class="p-4 text-[10px] font-bold text-gray-400 uppercase leading-tight">${d.distance || '---'}</td>
                         <td class="p-4 text-center text-[10px] font-mono text-gray-500">
-                            ${staleHtml}${dateString}
+                            <div class="flex items-center justify-center">${staleHtml}${dateString}</div>
                         </td>
                     </tr>
                 `;
@@ -151,7 +179,7 @@
             const rows = recruitingData.map(d => [
                 d.name,
                 d.gradYear,
-                d.positions,
+                Array.isArray(d.positions) ? d.positions.join('/') : d.positions,
                 d.gpa,
                 d.act,
                 d.sat,
@@ -183,8 +211,6 @@
             link.download = `Panther_Recruiting_Audit_${new Date().toLocaleDateString()}.csv`;
             link.click();
         };
-
-        loadRecruitingData();
     </script>
 </body>
 </html>
