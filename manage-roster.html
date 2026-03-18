@@ -72,6 +72,54 @@
         </div>
     </main>
 
+    <div id="edit-modal" class="hidden fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4">
+        <div class="bg-gray-900 border border-blue-900/50 w-full max-w-md rounded-3xl p-6 shadow-2xl">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-black italic uppercase italic">Edit <span id="edit-name-header" class="text-blue-500">Athlete</span></h2>
+                <button onclick="closeEditModal()" class="text-gray-500 hover:text-white text-2xl">&times;</button>
+            </div>
+            
+            <input type="hidden" id="edit-id">
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="text-[10px] font-black uppercase text-gray-500 ml-2">Grade / Status</label>
+                    <select id="edit-grade" class="w-full mt-1">
+                        <option value="9">9th Grade</option>
+                        <option value="10">10th Grade</option>
+                        <option value="11">11th Grade</option>
+                        <option value="12">12th Grade</option>
+                        <option value="Graduated">Graduated</option>
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="text-[10px] font-black uppercase text-gray-500 ml-2">Height (Inches)</label>
+                        <input type="number" id="edit-height" placeholder="Total Inches" class="w-full mt-1">
+                        <p class="text-[8px] text-gray-600 mt-1 italic pl-2">72" = 6'0 | 74" = 6'2</p>
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-black uppercase text-gray-500 ml-2">Weight (Lbs)</label>
+                        <input type="number" id="edit-weight" placeholder="Lbs" class="w-full mt-1">
+                    </div>
+                </div>
+
+                <div class="bg-blue-950/20 border border-blue-900/30 p-4 rounded-xl flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-black uppercase italic text-blue-400">Coach Verified</p>
+                        <p class="text-[9px] text-gray-500 leading-tight">Shows a badge on Recruiting Card</p>
+                    </div>
+                    <input type="checkbox" id="edit-verified" class="w-6 h-6 rounded accent-blue-600">
+                </div>
+
+                <button onclick="savePlayerEdits()" class="w-full bg-blue-600 py-4 rounded-xl font-black uppercase italic shadow-xl hover:bg-blue-500 transition-all mt-4">
+                    Save Profile Changes
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, getDocs, doc, deleteDoc, updateDoc, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
@@ -102,6 +150,52 @@
             renderRoster(allPlayers);
         }
 
+        // --- NEW: ADMIN EDIT MODAL FUNCTIONS ---
+        window.openEditModal = (id) => {
+            const p = allPlayers.find(player => player.id === id);
+            if (!p) return;
+
+            document.getElementById('edit-id').value = id;
+            document.getElementById('edit-name-header').innerText = `${p.firstName} ${p.lastName}`;
+            document.getElementById('edit-grade').value = p.grade || "9";
+            document.getElementById('edit-height').value = p.height || "";
+            document.getElementById('edit-weight').value = p.weight || "";
+            document.getElementById('edit-verified').checked = p.isVerified || false;
+
+            document.getElementById('edit-modal').classList.remove('hidden');
+        };
+
+        window.closeEditModal = () => {
+            document.getElementById('edit-modal').classList.add('hidden');
+        };
+
+        window.savePlayerEdits = async () => {
+            const id = document.getElementById('edit-id').value;
+            const saveBtn = event.target;
+            saveBtn.innerText = "SAVING...";
+            saveBtn.disabled = true;
+
+            try {
+                const playerRef = doc(db, "players", id);
+                await updateDoc(playerRef, {
+                    grade: document.getElementById('edit-grade').value,
+                    height: parseInt(document.getElementById('edit-height').value) || 0,
+                    weight: parseInt(document.getElementById('edit-weight').value) || 0,
+                    isVerified: document.getElementById('edit-verified').checked
+                });
+
+                closeEditModal();
+                await loadRoster(); // Refresh the list
+                alert("Athlete Profile Updated!");
+            } catch (e) {
+                alert("Error: " + e.message);
+            } finally {
+                saveBtn.innerText = "Save Profile Changes";
+                saveBtn.disabled = false;
+            }
+        };
+
+        // --- EXISTING FUNCTIONS (KEPT INTACT) ---
         window.manualAddAthlete = async () => {
             const firstName = document.getElementById('new-first').value.trim();
             const lastName = document.getElementById('new-last').value.trim();
@@ -128,16 +222,12 @@
             }
         };
 
-        // NEW: Function to update an individual's grade
         window.updateIndividualGrade = async (pid, newGrade) => {
             try {
                 const playerRef = doc(db, "players", pid);
                 await updateDoc(playerRef, { grade: newGrade });
-                
-                // Update local data to keep UI in sync
                 const idx = allPlayers.findIndex(p => p.id === pid);
                 if(idx !== -1) allPlayers[idx].grade = newGrade;
-                
                 console.log(`Updated player ${pid} to grade ${newGrade}`);
             } catch (e) {
                 alert("Error updating grade: " + e.message);
@@ -170,7 +260,10 @@
                 div.className = `flex justify-between items-center p-4 rounded-xl border transition-all ${isGrad ? 'bg-slate-900 border-slate-800' : 'bg-gray-800/50 border-gray-700'}`;
                 div.innerHTML = `
                     <div class="flex-1">
-                        <p class="font-black uppercase italic tracking-tight text-sm">${p.lastName || '??'}, ${p.firstName || '??'}</p>
+                        <p class="font-black uppercase italic tracking-tight text-sm">
+                            ${p.lastName || '??'}, ${p.firstName || '??'}
+                            ${p.isVerified ? '<span class="text-blue-500 ml-1 text-[10px]" title="Coach Verified">✓</span>' : ''}
+                        </p>
                         <div class="flex items-center gap-2 mt-1">
                             <label class="text-[8px] font-black text-gray-500 uppercase">Status:</label>
                             <select onchange="updateIndividualGrade('${p.id}', this.value)" 
@@ -183,10 +276,16 @@
                             </select>
                         </div>
                     </div>
-                    <button onclick="removePlayer('${p.id}', '${p.firstName} ${p.lastName}')" 
-                            class="bg-red-950/30 text-red-500 border border-red-900/50 text-[9px] font-black px-3 py-2 rounded-lg hover:bg-red-600 hover:text-white transition-all uppercase ml-4">
-                        Remove
-                    </button>
+                    <div class="flex gap-2 ml-4">
+                        <button onclick="openEditModal('${p.id}')" 
+                                class="bg-blue-600/20 text-blue-400 border border-blue-600/50 text-[9px] font-black px-4 py-2 rounded-lg hover:bg-blue-600 hover:text-white transition-all uppercase">
+                            Edit
+                        </button>
+                        <button onclick="removePlayer('${p.id}', '${p.firstName} ${p.lastName}')" 
+                                class="bg-red-950/30 text-red-500 border border-red-900/50 text-[9px] font-black px-3 py-2 rounded-lg hover:bg-red-600 hover:text-white transition-all uppercase">
+                            Remove
+                        </button>
+                    </div>
                 `;
                 list.appendChild(div);
             });
@@ -243,5 +342,6 @@
 
         loadRoster();
     </script>
+
 </body>
 </html>

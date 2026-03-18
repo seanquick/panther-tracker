@@ -27,6 +27,11 @@
             <input type="email" id="email" placeholder="School Email" required class="w-full bg-gray-800/50 border border-gray-700 rounded-xl px-4 py-3 text-sm focus:border-orange-500 outline-none">
             <input type="password" id="password" placeholder="Create Password" required class="w-full bg-gray-800/50 border border-gray-700 rounded-xl px-4 py-3 text-sm focus:border-orange-500 outline-none">
 
+            <div class="grid grid-cols-2 gap-3">
+                <input type="number" id="height-ft" placeholder="Ht (Ft)" class="bg-gray-800 p-3 rounded-xl border border-gray-700">
+                <input type="number" id="height-in" placeholder="Ht (In)" class="bg-gray-800 p-3 rounded-xl border border-gray-700">
+            </div>
+            
             <div class="py-2">
                 <label class="block text-[10px] font-black uppercase text-gray-500 mb-2">Select Your Role</label>
                 <div class="grid grid-cols-2 gap-2">
@@ -130,6 +135,9 @@
                     lastName: lastName,
                     playerName: `${firstName} ${lastName}`, // Useful for your existing search logic
                     email: email,
+                    height: heightInches || 0,
+                    weight: document.getElementById('weight').value || 0,
+                    grade: document.getElementById('grade').value || "",
                     role: selectedRole,
                     createdAt: Date.now()
                 });
