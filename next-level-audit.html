@@ -101,7 +101,8 @@
                     if (recDoc.exists()) {
                         return {
                             id: pDoc.id,
-                            name: `${p.lastName}, ${p.firstName}`,
+                            // ADDED COMMA HERE after name to fix the 'undefined' merge error
+                            name: (p.lastName && p.firstName) ? `${p.lastName}, ${p.firstName}` : "Unknown Athlete",
                             ...recDoc.data()
                         };
                     }
@@ -123,43 +124,39 @@
             const body = document.getElementById('audit-table-body');
             body.innerHTML = '';
 
-            const now = Date.now();
-            const sixMonthsMs = 6 * 30 * 24 * 60 * 60 * 1000;
-
+            // 1. Filter the data based on search and interest dropdown
             const filtered = recruitingData.filter(d => {
                 const matchesName = d.name.toLowerCase().includes(searchTerm);
                 const matchesInterest = minInterest === 'all' || Number(d.interestOverall) >= Number(minInterest);
                 return matchesName && matchesInterest;
             });
 
+            // 2. Handle the "Empty" state
             if (filtered.length === 0) {
                 body.innerHTML = `<tr><td colspan="8" class="p-10 text-center text-gray-600 uppercase font-bold tracking-widest">No matching profiles found</td></tr>`;
                 return;
             }
 
+            // 3. Loop through filtered data and build the rows (Your new code goes here)
             filtered.forEach(d => {
                 const interestColor = d.interestOverall >= 4 ? 'text-orange-500' : 'text-white';
                 const dateString = d.lastUpdated ? new Date(d.lastUpdated).toLocaleDateString() : "---";
-                const isStale = d.lastUpdated && (now - d.lastUpdated > sixMonthsMs);
-                const staleHtml = isStale ? `<span class="stale-indicator" title="Needs Update (Over 6 months old)"></span>` : '';
-
-                // Format position list for better fit
-                const posList = Array.isArray(d.positions) ? d.positions.join('/') : (d.positions || '---');
-
+                
                 body.innerHTML += `
                     <tr class="border-b border-gray-800 hover:bg-white/5 transition-colors">
                         <td class="p-4 font-bold text-blue-400 leading-tight">
                             ${d.name}<br>
-                            <span class="text-[9px] text-gray-500 uppercase tracking-tighter">${posList}</span>
+                            <span class="text-[9px] text-gray-500 uppercase tracking-tighter">${d.positions || '---'}</span>
                         </td>
                         <td class="p-4 text-center font-mono">${d.gradYear || '---'}</td>
                         <td class="p-4 text-center text-green-400 font-bold">${d.gpa || '---'}</td>
                         <td class="p-4 text-center text-gray-400">${d.act || '--'} / ${d.sat || '--'}</td>
                         <td class="p-4 text-center font-black italic ${interestColor}">${d.interestOverall}/5</td>
-                        <td class="p-4 truncate max-w-[120px] uppercase text-[10px] font-bold">${d.major || 'Undecided'}</td>
-                        <td class="p-4 text-[10px] font-bold text-gray-400 uppercase leading-tight">${d.distance || '---'}</td>
-                        <td class="p-4 text-center text-[10px] font-mono text-gray-500">
-                            <div class="flex items-center justify-center">${staleHtml}${dateString}</div>
+                        <td class="p-4 uppercase text-[10px] font-bold">${d.major || 'Undecided'}</td>
+                        <td class="p-4 text-right">
+                            <button onclick="location.href='recruiting-card.html?id=${d.id}'" class="bg-blue-600 hover:bg-blue-500 text-[9px] font-black uppercase px-3 py-1 rounded shadow-lg transition-all">
+                                View Card
+                            </button>
                         </td>
                     </tr>
                 `;
