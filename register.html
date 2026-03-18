@@ -35,8 +35,9 @@
                 </div>
             </div>
 
-            <div id="coach-code-container" class="hidden animate-bounce-in">
-                <input type="text" id="coachCode" placeholder="Enter Coach Authorization Code" class="w-full bg-orange-900/20 border border-orange-500/50 rounded-xl px-4 py-3 text-sm text-orange-200 outline-none placeholder:text-orange-900">
+            <div id="coach-code-container" class="hidden mt-4">
+                <label class="block text-[10px] font-black uppercase text-gray-500 mb-1">Authorization Code</label>
+                <input type="text" id="coachCode" placeholder="Enter Coach Code" class="w-full bg-gray-800 border border-orange-500/50 rounded-xl px-4 py-3 text-sm outline-none">
             </div>
 
             <button type="submit" class="w-full bg-white text-black font-black uppercase py-4 rounded-2xl shadow-xl hover:bg-gray-200 transition-all mt-4">
@@ -61,22 +62,34 @@
         const MASTER_COACH_CODE = "PANTHERS2026";
 
         // Toggle UI logic
-        window.setRole = (role) => {
-            selectedRole = role;
-            const athleteBtn = document.getElementById('btn-athlete');
-            const coachBtn = document.getElementById('btn-coach');
-            const codeBox = document.getElementById('coach-code-container');
+        // Inside your <script type="module">
+            window.setRole = (role) => {
+                const athleteBtn = document.getElementById('btn-athlete');
+                const coachBtn = document.getElementById('btn-coach');
+                const codeBox = document.getElementById('coach-code-container');
 
-            if (role === 'coach') {
-                coachBtn.className = "role-btn bg-orange-600 text-white font-bold py-2 rounded-lg text-xs uppercase";
-                athleteBtn.className = "role-btn bg-gray-700 text-gray-400 font-bold py-2 rounded-lg text-xs uppercase";
-                codeBox.classList.remove('hidden');
-            } else {
-                athleteBtn.className = "role-btn bg-orange-600 text-white font-bold py-2 rounded-lg text-xs uppercase";
-                coachBtn.className = "role-btn bg-gray-700 text-gray-400 font-bold py-2 rounded-lg text-xs uppercase";
-                codeBox.classList.add('hidden');
-            }
-        };
+                if (role === 'coach') {
+                    // Change Styles
+                    coachBtn.classList.replace('bg-gray-700', 'bg-orange-600');
+                    coachBtn.classList.replace('text-gray-400', 'text-white');
+                    athleteBtn.classList.replace('bg-orange-600', 'bg-gray-700');
+                    athleteBtn.classList.replace('text-white', 'text-gray-400');
+                    
+                    // Show the Code Input
+                    codeBox.classList.remove('hidden');
+                    document.getElementById('coachCode').setAttribute('required', 'true');
+                } else {
+                    // Reset Styles
+                    athleteBtn.classList.replace('bg-gray-700', 'bg-orange-600');
+                    athleteBtn.classList.replace('text-gray-400', 'text-white');
+                    coachBtn.classList.replace('bg-orange-600', 'bg-gray-700');
+                    coachBtn.classList.replace('text-white', 'text-gray-400');
+                    
+                    // Hide the Code Input
+                    codeBox.classList.add('hidden');
+                    document.getElementById('coachCode').removeAttribute('required');
+                }
+            };
 
         document.getElementById('reg-form').addEventListener('submit', async (e) => {
             e.preventDefault();

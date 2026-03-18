@@ -209,94 +209,122 @@
     </footer>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+            import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+            import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+            import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        const firebaseConfig = { 
-            apiKey: "AIzaSyBdY26nH0CAn05IpjzoFvG5E1H-bv8fPwA", 
-            authDomain: "panthertracker-b8ff6.firebaseapp.com", 
-            projectId: "panthertracker-b8ff6", 
-            storageBucket: "panthertracker-b8ff6.firebasestorage.app", 
-            messagingSenderId: "647881105335", 
-            appId: "1:647881105335:web:bbb79bb3fe9740de1e1232" 
-        };
-        
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        // 1. THE WATCHER: Runs automatically on load and after every login/logout
-        onAuthStateChanged(auth, async (user) => {
-            const authSection = document.getElementById('auth-section');
-            const mainMenu = document.getElementById('main-menu');
+            const firebaseConfig = { 
+                apiKey: "AIzaSyBdY26nH0CAn05IpjzoFvG5E1H-bv8fPwA", 
+                authDomain: "panthertracker-b8ff6.firebaseapp.com", 
+                projectId: "panthertracker-b8ff6", 
+                storageBucket: "panthertracker-b8ff6.firebasestorage.app", 
+                messagingSenderId: "647881105335", 
+                appId: "1:647881105335:web:bbb79bb3fe9740de1e1232" 
+            };
             
-            if (user) {
-                // User is logged in, fetch their profile
-                const userSnap = await getDoc(doc(db, "players", user.uid));
+            const app = initializeApp(firebaseConfig);
+            const auth = getAuth(app);
+            const db = getFirestore(app);
+
+            // 1. THE WATCHER: Runs automatically on load and after every login/logout
+            onAuthStateChanged(auth, async (user) => {
+                const authSection = document.getElementById('auth-section');
+                const mainMenu = document.getElementById('main-menu');
                 
-                if (userSnap.exists()) {
-                    const userData = userSnap.data();
+                if (user) {
+                    // User is logged in, fetch their profile
+                    const userSnap = await getDoc(doc(db, "players", user.uid));
                     
-                    // REDIRECT COACHES IMMEDIATELY
-                    if (userData.role === "coach") {
-                        window.location.href = "coach.html";
-                        return; 
+                    if (userSnap.exists()) {
+                        const userData = userSnap.data();
+                        
+                        // REDIRECT COACHES IMMEDIATELY
+                        if (userData.role === "coach") {
+                            window.location.href = "coach.html";
+                            return; 
+                        }
+
+                        // SHOW PLAYER MENU
+                        if (authSection) authSection.classList.add('hidden');
+                        if (mainMenu) mainMenu.classList.remove('hidden');
+                        
+                        const welcomeEl = document.getElementById('welcome-msg');
+                        if (welcomeEl) {
+                            welcomeEl.innerText = `Welcome, ${userData.playerName || userData.firstName || 'Athlete'}`;
+                        }
                     }
-
-                    // SHOW PLAYER MENU
-                    authSection.classList.add('hidden');
-                    mainMenu.classList.remove('hidden');
-                    document.getElementById('welcome-msg').innerText = `Welcome, ${userData.playerName || userData.firstName}`;
+                } else {
+                    // No user is logged in, show the login form
+                    if (authSection) authSection.classList.remove('hidden');
+                    if (mainMenu) mainMenu.classList.add('hidden');
                 }
-            } else {
-                // No user is logged in, show the login form
-                authSection.classList.remove('hidden');
-                mainMenu.classList.add('hidden');
-            }
-        });
+            });
 
-        window.toggleAuth = (showSignup) => {
-            document.getElementById('login-form').classList.toggle('hidden', showSignup);
-            document.getElementById('signup-form').classList.toggle('hidden', !showSignup);
-        };
+            // 2. TOGGLE BETWEEN LOGIN & SIGNUP UI
+            window.toggleAuth = (showSignup) => {
+                const loginForm = document.getElementById('login-form');
+                const signupForm = document.getElementById('signup-form');
+                if (loginForm) loginForm.classList.toggle('hidden', showSignup);
+                if (signupForm) signupForm.classList.toggle('hidden', !showSignup);
+            };
 
-        window.handleLogin = async () => {
-            const email = document.getElementById('email').value;
-            const pass = document.getElementById('password').value;
-            try { 
-                // This triggers onAuthStateChanged above
-                await signInWithEmailAndPassword(auth, email, pass); 
-            } 
-            catch (e) { alert("Login failed: " + e.message); }
-        };
+            // 3. LOGIN LOGIC
+            window.handleLogin = async () => {
+                const email = document.getElementById('email').value;
+                const pass = document.getElementById('password').value;
 
-        window.handleSignup = async () => {
-            const name = document.getElementById('new-name').value;
-            const email = document.getElementById('new-email').value;
-            const pass = document.getElementById('new-password').value;
-            const coachCode = document.getElementById('coach-code')?.value; 
+                if (!email || !pass) return alert("Please enter email and password");
 
-            if (!name || !email || !pass) return alert("All fields required");
+                try { 
+                    // This triggers onAuthStateChanged above
+                    await signInWithEmailAndPassword(auth, email, pass); 
+                } 
+                catch (e) { 
+                    console.error(e);
+                    alert("Login failed: " + e.message); 
+                }
+            };
 
-            let assignedRole = "athlete";
-            if (coachCode === "PANTHERS2026") {
-                assignedRole = "coach";
-            }
+            // 4. SIGNUP LOGIC (Handles Athlete vs Coach via Code)
+            window.handleSignup = async () => {
+                const name = document.getElementById('new-name').value;
+                const email = document.getElementById('new-email').value;
+                const pass = document.getElementById('new-password').value;
+                const coachCodeInput = document.getElementById('coach-code');
+                const coachCode = coachCodeInput ? coachCodeInput.value : ""; 
 
-            try {
-                const cred = await createUserWithEmailAndPassword(auth, email, pass);
-                await setDoc(doc(db, "players", cred.user.uid), {
-                    playerName: name,
-                    email: email,
-                    role: assignedRole,
-                    joinedAt: new Date().toISOString()
-                });
-                alert(assignedRole === "coach" ? "Coach Account Created!" : "Account created!");
-            } catch (e) { alert(e.message); }
-        };
+                if (!name || !email || !pass) return alert("All fields required");
 
-        window.handleLogout = () => signOut(auth);
-    </script>
+                // Determine Role
+                let assignedRole = "athlete";
+                if (coachCode === "PANTHERS2026") {
+                    assignedRole = "coach";
+                } else if (coachCode !== "") {
+                    return alert("Invalid Coach Code. Leave blank if you are an athlete.");
+                }
+
+                try {
+                    const cred = await createUserWithEmailAndPassword(auth, email, pass);
+                    
+                    // Save Profile to Firestore
+                    await setDoc(doc(db, "players", cred.user.uid), {
+                        playerName: name,
+                        firstName: name.split(' ')[0], // Helper for display
+                        lastName: name.split(' ')[1] || '',
+                        email: email,
+                        role: assignedRole,
+                        joinedAt: new Date().toISOString()
+                    });
+
+                    alert(assignedRole === "coach" ? "Coach Account Created!" : "Athlete Account Created!");
+                    // The Watcher (onAuthStateChanged) will handle the redirect now
+                } catch (e) { 
+                    alert(e.message); 
+                }
+            };
+
+            // 5. LOGOUT LOGIC
+            window.handleLogout = () => signOut(auth);
+        </script>
 </body>
 </html>

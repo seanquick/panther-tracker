@@ -138,37 +138,54 @@
         const db = getFirestore(app);
 
         onAuthStateChanged(auth, async (user) => {
+            // SECURITY CHECK 1: Is anyone even logged in?
             if (!user) {
                 window.location.href = 'index.html';
                 return;
             }
 
-            const userDoc = await getDoc(doc(db, "players", user.uid));
-            
-            if (userDoc.exists()) {
-                const userData = userDoc.data();
+            try {
+                const userDoc = await getDoc(doc(db, "players", user.uid));
                 
-                if (userData.role !== "coach") {
-                    window.location.href = 'index.html'; 
-                    return;
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    
+                    // SECURITY CHECK 2: Does this user have the Coach role?
+                    if (userData.role !== "coach") {
+                        console.warn("Unauthorized access attempt by athlete.");
+                        window.location.href = 'index.html'; 
+                        return;
+                    }
+
+                    // PERSONALIZATION: Update the header to greet the coach
+                    const coachHeader = document.querySelector('h1');
+                    const coachName = userData.playerName || userData.firstName || "Coach";
+                    coachHeader.innerHTML = `${coachName}'s <span class="text-red-600">Command Center</span>`;
+
+                    // INTERFACE UPDATES
+                    const auditBtn = document.getElementById('audit-btn');
+                    const personalBtn = document.getElementById('personal-next-level-btn');
+
+                    if (auditBtn) auditBtn.classList.remove('hidden');
+                    if (personalBtn) personalBtn.classList.add('hidden'); // Coaches don't need their own prospect card view here
+
+                } else {
+                    // User exists in Auth but has no Firestore document
+                    window.location.href = 'index.html';
                 }
-
-                // Locate the buttons
-                const auditBtn = document.getElementById('audit-btn');
-                const personalBtn = document.getElementById('personal-next-level-btn');
-
-                // Toggle visibility: If coach, reveal Audit and hide Personal
-                if (auditBtn) auditBtn.classList.remove('hidden');
-                if (personalBtn) personalBtn.classList.add('hidden');
-
-            } else {
+            } catch (error) {
+                console.error("Auth Error:", error);
+                // On a critical error, safety first: boot to login
                 window.location.href = 'index.html';
             }
         });
 
+        // Logout Function (Attached to window so the button can see it)
         window.logout = () => {
             signOut(auth).then(() => {
                 location.href = 'index.html';
+            }).catch((error) => {
+                alert("Error logging out: " + error.message);
             });
         };
     </script>
