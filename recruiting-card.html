@@ -124,72 +124,102 @@
     </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, doc, getDoc, collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+            import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+            import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+            import { getFirestore, doc, getDoc, collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        const firebaseConfig = { 
-            apiKey: "AIzaSyBdY26nH0CAn05IpjzoFvG5E1H-bv8fPwA", 
-            authDomain: "panthertracker-b8ff6.firebaseapp.com", 
-            projectId: "panthertracker-b8ff6", 
-            appId: "1:647881105335:web:bbb79bb3fe9740de1e1232" 
-        };
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+            const firebaseConfig = { 
+                apiKey: "AIzaSyBdY26nH0CAn05IpjzoFvG5E1H-bv8fPwA", 
+                authDomain: "panthertracker-b8ff6.firebaseapp.com", 
+                projectId: "panthertracker-b8ff6", 
+                appId: "1:647881105335:web:bbb79bb3fe9740de1e1232" 
+            };
+            
+            const app = initializeApp(firebaseConfig);
+            const auth = getAuth(app);
+            const db = getFirestore(app);
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const playerId = urlParams.get('id');
+            const urlParams = new URLSearchParams(window.location.search);
+            let targetPlayerId = urlParams.get('id');
 
-        async function loadCard() {
-            if (!playerId) return alert("No player ID provided.");
-
-            const pDoc = await getDoc(doc(db, "players", playerId));
-            if (!pDoc.exists()) return;
-            const p = pDoc.data();
-            document.getElementById('player-name').textContent = `${p.firstName} ${p.lastName}`;
-
-            const recDoc = await getDoc(doc(db, "players", playerId, "recruiting", "profile"));
-            if (recDoc.exists()) {
-                const r = recDoc.data();
-                document.getElementById('player-pos').textContent = r.positions || "Athlete";
-                document.getElementById('grad-year').textContent = r.gradYear || "----";
-                document.getElementById('gpa').textContent = r.gpa || "0.00";
-                document.getElementById('act').textContent = r.act || "--";
-                document.getElementById('sat').textContent = r.sat || "--";
-                document.getElementById('major').textContent = r.major || "Undecided";
-                document.getElementById('distance').textContent = r.distance || "Anywhere";
-                document.getElementById('ap-courses').textContent = (r.apCourses || []).join(', ') || "None Listed";
-                document.getElementById('last-updated').textContent = `Last Updated: ${new Date(r.lastUpdated).toLocaleDateString()}`;
-
-                const targetList = document.getElementById('target-list');
-                (r.targetColleges || []).forEach(school => {
-                    const span = document.createElement('span');
-                    span.className = "bg-orange-900/40 text-orange-200 px-2 py-1 rounded text-[10px] font-bold border border-orange-800/50";
-                    span.textContent = school;
-                    targetList.appendChild(span);
-                });
-
-                // QR Code Generation
-                if (r.twitterUrl) {
-                    document.getElementById('twitter-qr-container').classList.remove('hidden');
-                    document.getElementById('twitter-qr').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(r.twitterUrl)}`;
+            // Handle Authentication & Identity
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    // If no ID in URL, the player is viewing their OWN card
+                    if (!targetPlayerId) {
+                        targetPlayerId = user.uid;
+                    }
+                    loadCard(targetPlayerId);
+                } else if (!targetPlayerId) {
+                    // If not logged in and no ID provided, boot to login
+                    window.location.href = 'index.html';
+                } else {
+                    // Coach viewing a public link/specific ID without being logged in (optional logic)
+                    loadCard(targetPlayerId);
                 }
-                if (r.highlightUrl) {
-                    document.getElementById('highlight-qr-container').classList.remove('hidden');
-                    document.getElementById('highlight-qr').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(r.highlightUrl)}`;
+            });
+
+            async function loadCard(playerId) {
+                try {
+                    // 1. Load Core Player Document (Name/Role)
+                    const pDoc = await getDoc(doc(db, "players", playerId));
+                    if (!pDoc.exists()) {
+                        document.getElementById('player-name').textContent = "Profile Not Found";
+                        return;
+                    }
+                    const p = pDoc.data();
+                    document.getElementById('player-name').textContent = `${p.firstName} ${p.lastName}`;
+
+                    // 2. Load Recruiting Profile
+                    const recDoc = await getDoc(doc(db, "players", playerId, "recruiting", "profile"));
+                    if (recDoc.exists()) {
+                        const r = recDoc.data();
+                        document.getElementById('player-pos').textContent = r.positions || "Athlete";
+                        document.getElementById('grad-year').textContent = r.gradYear || "----";
+                        document.getElementById('gpa').textContent = r.gpa || "0.00";
+                        document.getElementById('act').textContent = r.act || "--";
+                        document.getElementById('sat').textContent = r.sat || "--";
+                        document.getElementById('major').textContent = r.major || "Undecided";
+                        document.getElementById('distance').textContent = r.distance || "Anywhere";
+                        document.getElementById('ap-courses').textContent = (r.apCourses || []).join(', ') || "None Listed";
+                        
+                        if (r.lastUpdated) {
+                            document.getElementById('last-updated').textContent = `Last Updated: ${new Date(r.lastUpdated).toLocaleDateString()}`;
+                        }
+
+                        const targetList = document.getElementById('target-list');
+                        targetList.innerHTML = ''; // Clear previous
+                        (r.targetColleges || []).forEach(school => {
+                            const span = document.createElement('span');
+                            span.className = "bg-orange-900/40 text-orange-200 px-2 py-1 rounded text-[10px] font-bold border border-orange-800/50";
+                            span.textContent = school;
+                            targetList.appendChild(span);
+                        });
+
+                        // QR Code Generation
+                        if (r.twitterUrl) {
+                            document.getElementById('twitter-qr-container').classList.remove('hidden');
+                            document.getElementById('twitter-qr').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(r.twitterUrl)}`;
+                        }
+                        if (r.highlightUrl) {
+                            document.getElementById('highlight-qr-container').classList.remove('hidden');
+                            document.getElementById('highlight-qr').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(r.highlightUrl)}`;
+                        }
+                    }
+
+                    // 3. Load Strength Metrics (Maxes)
+                    const maxesQuery = query(collection(db, "players", playerId, "maxes"), orderBy("timestamp", "desc"), limit(1));
+                    const maxSnap = await getDocs(maxesQuery);
+                    if (!maxSnap.empty) {
+                        const m = maxSnap.docs[0].data();
+                        document.getElementById('bench').textContent = (m.bench || "--") + " lbs";
+                        document.getElementById('squat').textContent = (m.squat || "--") + " lbs";
+                        document.getElementById('clean').textContent = (m.clean || "--") + " lbs";
+                    }
+                } catch (error) {
+                    console.error("Error loading card:", error);
                 }
             }
-
-            const maxesQuery = query(collection(db, "players", playerId, "maxes"), orderBy("timestamp", "desc"), limit(1));
-            const maxSnap = await getDocs(maxesQuery);
-            if (!maxSnap.empty) {
-                const m = maxSnap.docs[0].data();
-                document.getElementById('bench').textContent = m.bench + " lbs";
-                document.getElementById('squat').textContent = m.squat + " lbs";
-                document.getElementById('clean').textContent = m.clean + " lbs";
-            }
-        }
-
-        loadCard();
-    </script>
+        </script>
 </body>
 </html>
