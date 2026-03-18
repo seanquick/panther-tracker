@@ -171,15 +171,53 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        // ADDED: getAuth and onAuthStateChanged to properly track the user session
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        const firebaseConfig = { /* Use your existing config */ };
+        const firebaseConfig = { 
+            apiKey: "AIzaSyBdY26nH0CAn05IpjzoFvG5E1H-bv8fPwA", 
+            authDomain: "panthertracker-b8ff6.firebaseapp.com", 
+            projectId: "panthertracker-b8ff6", 
+            storageBucket: "panthertracker-b8ff6.firebasestorage.app", 
+            messagingSenderId: "647881105335", 
+            appId: "1:647881105335:web:bbb79bb3fe9740de1e1232" 
+        };
         const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
         const db = getFirestore(app);
 
+        let currentUser = null;
+
+        // Listen for the user logging in
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                loadExistingData(user.uid); // Optional: Load their data if it exists
+            } else {
+                window.location.href = 'index.html';
+            }
+        });
+
+        // Function to load existing data so athletes don't have to re-type everything
+        async function loadExistingData(uid) {
+            const docRef = doc(db, "players", uid, "recruiting", "profile");
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                const d = docSnap.data();
+                if(d.gradYear) document.getElementById('gradYear').value = d.gradYear;
+                if(d.positions) document.getElementById('positions').value = d.positions;
+                if(d.gpa) document.getElementById('gpa').value = d.gpa;
+                if(d.act) document.getElementById('act').value = d.act;
+                if(d.sat) document.getElementById('sat').value = d.sat;
+                if(d.major) document.getElementById('major').value = d.major;
+                // Add other fields as needed...
+            }
+        }
+
         window.submitProfile = async () => {
-            const userId = localStorage.getItem('pantherUserId'); // Or however you track session
-            if(!userId) return alert("Session expired. Please log in.");
+            // FIX: Use currentUser instead of the undefined 'user' variable
+            if(!currentUser) return alert("Session expired. Please log in.");
 
             const apCourses = Array.from(document.querySelectorAll('.ap-course')).map(i => i.value).filter(v => v);
             const targetColleges = Array.from(document.querySelectorAll('.target-college')).map(i => i.value).filter(v => v);
@@ -193,15 +231,14 @@
                 apCourses: apCourses,
                 twitterUrl: document.getElementById('twitter-url').value,
                 highlightUrl: document.getElementById('highlight-url').value,
-                lastUpdated: Date.now(),
                 interestOverall: document.getElementById('interest-overall').value,
                 divInterests: {
-                    fbs: document.getElementById('div-fbs').value,
-                    fcs: document.getElementById('div-fcs').value,
-                    d2: document.getElementById('div-d2').value,
-                    d3: document.getElementById('div-d3').value,
-                    naia: document.getElementById('div-naia').value,
-                    juco: document.getElementById('div-juco').value
+                    fbs: document.getElementById('div-fbs').value || 0,
+                    fcs: document.getElementById('div-fcs').value || 0,
+                    d2: document.getElementById('div-d2').value || 0,
+                    d3: document.getElementById('div-d3').value || 0,
+                    naia: document.getElementById('div-naia').value || 0,
+                    juco: document.getElementById('div-juco').value || 0
                 },
                 major: document.getElementById('major').value,
                 academicPriority: document.getElementById('priority').value,
@@ -217,17 +254,15 @@
             };
 
             try {
-                const playerRef = doc(db, "players", user.uid, "recruiting", "profile");
+                // FIX: Pointed correctly to players -> UID -> recruiting -> profile
+                const playerRef = doc(db, "players", currentUser.uid, "recruiting", "profile");
                 await setDoc(playerRef, data, { merge: true });
 
-                // --- TRIGGER THE POP-UP ---
+                // SUCCESS UI
                 const toast = document.getElementById('save-toast');
-                
-                // Slide Down
                 toast.classList.remove('translate-y-[-150%]', 'pointer-events-none');
                 toast.classList.add('translate-y-0');
 
-                // Slide Up after 3 seconds
                 setTimeout(() => {
                     toast.classList.remove('translate-y-0');
                     toast.classList.add('translate-y-[-150%]', 'pointer-events-none');
@@ -235,7 +270,7 @@
 
             } catch (error) {
                 console.error("Error saving profile:", error);
-                alert("Error saving profile. Check connection.");
+                alert("Error saving profile: " + error.message);
             }
         };
     </script>
