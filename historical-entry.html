@@ -33,6 +33,15 @@
                 </label>
             </div>
 
+            <div class="bg-blue-900/20 p-4 rounded-xl border border-blue-800/50 shadow-inner">
+                <label class="text-blue-400">Direct Board Score Override</label>
+                <input type="number" id="manual-board-score" placeholder="Enter total score (Optional)">
+                <p class="text-[9px] text-gray-500 mt-2 leading-tight uppercase font-bold">
+                    Use this for historical accounts where only the final Board Score is known. 
+                    Leave blank to calculate using individual lifts below.
+                </p>
+            </div>
+
             <div class="grid grid-cols-2 gap-4">
                 <div><label>Body Weight</label><input type="number" id="bw" placeholder="lbs"></div>
                 <div><label>Bench</label><input type="number" id="bench" placeholder="lbs"></div>
@@ -68,7 +77,6 @@
             const select = document.getElementById('player-select');
             select.innerHTML = '<option value="">Choose Athlete...</option>';
             
-            // Sort players alphabetically by last name for easier selection
             const players = [];
             snap.forEach(doc => {
                 const data = doc.data();
@@ -89,6 +97,7 @@
             const pid = document.getElementById('player-select').value;
             const dateVal = document.getElementById('entry-date').value;
             const isGrad = document.getElementById('is-graduated').checked;
+            const manualScore = document.getElementById('manual-board-score').value;
 
             if(!pid || !dateVal) return alert("Please select an athlete and a valid date.");
 
@@ -98,6 +107,7 @@
                 squat: Number(document.getElementById('squat').value) || 0,
                 clean: Number(document.getElementById('clean').value) || 0,
                 deadlift: Number(document.getElementById('deadlift').value) || 0,
+                manualBoardScore: manualScore ? Number(manualScore) : null, // Store override
                 timestamp: new Date(dateVal).getTime()
             };
 

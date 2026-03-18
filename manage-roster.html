@@ -102,7 +102,6 @@
             renderRoster(allPlayers);
         }
 
-        // NEW: Function to manually add a player
         window.manualAddAthlete = async () => {
             const firstName = document.getElementById('new-first').value.trim();
             const lastName = document.getElementById('new-last').value.trim();
@@ -120,13 +119,28 @@
                     createdAt: new Date().getTime()
                 });
 
-                // Clear fields and refresh
                 document.getElementById('new-first').value = '';
                 document.getElementById('new-last').value = '';
                 alert(`${firstName} ${lastName} added to the roster!`);
                 loadRoster();
             } catch (e) {
                 alert("Error adding athlete: " + e.message);
+            }
+        };
+
+        // NEW: Function to update an individual's grade
+        window.updateIndividualGrade = async (pid, newGrade) => {
+            try {
+                const playerRef = doc(db, "players", pid);
+                await updateDoc(playerRef, { grade: newGrade });
+                
+                // Update local data to keep UI in sync
+                const idx = allPlayers.findIndex(p => p.id === pid);
+                if(idx !== -1) allPlayers[idx].grade = newGrade;
+                
+                console.log(`Updated player ${pid} to grade ${newGrade}`);
+            } catch (e) {
+                alert("Error updating grade: " + e.message);
             }
         };
 
@@ -153,14 +167,24 @@
             players.forEach(p => {
                 const isGrad = p.grade === 'Graduated';
                 const div = document.createElement('div');
-                div.className = `flex justify-between items-center p-4 rounded-xl border transition-all ${isGrad ? 'bg-slate-900 border-slate-800 opacity-60' : 'bg-gray-800/50 border-gray-700 hover:border-blue-900'}`;
+                div.className = `flex justify-between items-center p-4 rounded-xl border transition-all ${isGrad ? 'bg-slate-900 border-slate-800' : 'bg-gray-800/50 border-gray-700'}`;
                 div.innerHTML = `
-                    <div>
+                    <div class="flex-1">
                         <p class="font-black uppercase italic tracking-tight text-sm">${p.lastName || '??'}, ${p.firstName || '??'}</p>
-                        <p class="text-[9px] font-bold ${isGrad ? 'text-gray-500' : 'text-blue-500'} uppercase tracking-widest">${isGrad ? 'ALUMNI / GRADUATED' : 'Grade ' + p.grade}</p>
+                        <div class="flex items-center gap-2 mt-1">
+                            <label class="text-[8px] font-black text-gray-500 uppercase">Status:</label>
+                            <select onchange="updateIndividualGrade('${p.id}', this.value)" 
+                                    class="bg-black text-[10px] p-1 rounded border-gray-700 text-blue-400 font-bold !py-0 !px-2 !h-6 !w-auto">
+                                <option value="9" ${p.grade == '9' ? 'selected' : ''}>9th</option>
+                                <option value="10" ${p.grade == '10' ? 'selected' : ''}>10th</option>
+                                <option value="11" ${p.grade == '11' ? 'selected' : ''}>11th</option>
+                                <option value="12" ${p.grade == '12' ? 'selected' : ''}>12th</option>
+                                <option value="Graduated" ${p.grade == 'Graduated' ? 'selected' : ''}>Grad</option>
+                            </select>
+                        </div>
                     </div>
                     <button onclick="removePlayer('${p.id}', '${p.firstName} ${p.lastName}')" 
-                            class="bg-red-950/50 text-red-500 border border-red-900 text-[9px] font-black px-3 py-2 rounded-lg hover:bg-red-600 hover:text-white transition-all uppercase">
+                            class="bg-red-950/30 text-red-500 border border-red-900/50 text-[9px] font-black px-3 py-2 rounded-lg hover:bg-red-600 hover:text-white transition-all uppercase ml-4">
                         Remove
                     </button>
                 `;
@@ -169,7 +193,7 @@
         }
 
         window.removePlayer = async (id, name) => {
-            if (confirm(`PERMANENTLY REMOVE ${name.toUpperCase()}?\n\nThis will delete their profile. This action cannot be undone.`)) {
+            if (confirm(`PERMANENTLY REMOVE ${name.toUpperCase()}?\n\nThis will delete their profile.`)) {
                 await deleteDoc(doc(db, "players", id));
                 loadRoster(); 
             }
@@ -194,7 +218,7 @@
                         promotedCount++;
                     }
                 }
-                alert(`SUCCESS: ${promotedCount} athletes promoted/graduated!`);
+                alert(`SUCCESS: ${promotedCount} athletes promoted!`);
                 loadRoster(); 
             } catch (e) { alert("Error: " + e.message); }
         };

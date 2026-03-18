@@ -28,8 +28,16 @@
             <span class="text-2xl tracking-tighter">The Board</span>
         </button>
 
-        <button onclick="location.href='weight-records.html'" class="...">Weight Class Records</button>
-        <button onclick="location.href='historical-entry.html'" class="...">Historical Entry</button>
+        <div class="grid grid-cols-2 gap-3">
+            <button onclick="location.href='weight-records.html'" 
+                    class="bg-amber-700 hover:bg-amber-600 py-4 rounded-xl font-black uppercase italic shadow-xl transition-all active:scale-95 text-[11px] border-b-4 border-amber-900">
+                Weight Class Records
+            </button>
+            <button onclick="location.href='historical-entry.html'" 
+                    class="bg-gray-700 hover:bg-gray-600 py-4 rounded-xl font-black uppercase italic shadow-xl transition-all active:scale-95 text-[11px] border-b-4 border-gray-900">
+                Historical Entry
+            </button>
+        </div>
 
         <button onclick="location.href='rack-audit.html'" 
                 class="w-full bg-gray-800 hover:bg-gray-700 py-6 rounded-2xl font-black uppercase italic shadow-2xl transition-all active:scale-95 flex items-center justify-center gap-3 border-b-4 border-black">
@@ -103,6 +111,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = { 
             apiKey: "AIzaSyBdY26nH0CAn05IpjzoFvG5E1H-bv8fPwA", 
@@ -115,6 +124,7 @@
         
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const db = getFirestore(app);
 
         onAuthStateChanged(auth, async (user) => {
             if (!user) {
@@ -126,11 +136,9 @@
             
             if (userDoc.exists()) {
                 const userData = userDoc.data();
-                // STRICTOR CHECK: If they are NOT a coach, send to player lobby
                 if (userData.role !== "coach") {
                     window.location.href = 'index.html'; 
                 }
-                // If they ARE a coach, do nothing. The page stays loaded.
             }
         });
 
