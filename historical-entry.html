@@ -9,9 +9,11 @@
         body { background-color: #0f172a; color: white; font-family: sans-serif; }
         input, select { background-color: #1e293b !important; color: white !important; border: 1px solid #334155 !important; padding: 0.75rem !important; border-radius: 0.75rem !important; width: 100%; margin-top: 0.25rem; }
         label { font-size: 10px; font-weight: 800; text-transform: uppercase; color: #64748b; letter-spacing: 0.1em; }
+        .checkbox-container { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+        input[type="checkbox"] { width: auto !important; margin: 0 !important; }
     </style>
 </head>
-<body class="p-6">
+<body class="p-6 pb-20">
     <header class="max-w-md mx-auto mb-8 flex justify-between items-center">
         <h1 class="text-2xl font-black italic uppercase">Manual <span class="text-red-600">Entry</span></h1>
         <button onclick="location.href='coach.html'" class="bg-gray-800 px-4 py-2 rounded text-[10px] font-black uppercase">← Back</button>
@@ -23,23 +25,41 @@
                 <label>Select Athlete</label>
                 <select id="player-select"><option>Loading...</option></select>
             </div>
+
+            <div class="bg-black/30 p-3 rounded-lg border border-gray-800">
+                <label class="checkbox-container">
+                    <input type="checkbox" id="is-graduated">
+                    <span class="text-[10px] font-black text-yellow-500 uppercase">Mark as Graduated / Alumni</span>
+                </label>
+            </div>
+
             <div class="grid grid-cols-2 gap-4">
-                <div><label>Body Weight</label><input type="number" id="bw"></div>
-                <div><label>Bench</label><input type="number" id="bench"></div>
-                <div><label>Squat</label><input type="number" id="squat"></div>
-                <div><label>Clean</label><input type="number" id="clean"></div>
-                <div><label>Deadlift</label><input type="number" id="deadlift"></div>
+                <div><label>Body Weight</label><input type="number" id="bw" placeholder="lbs"></div>
+                <div><label>Bench</label><input type="number" id="bench" placeholder="lbs"></div>
+                <div><label>Squat</label><input type="number" id="squat" placeholder="lbs"></div>
+                <div><label>Clean</label><input type="number" id="clean" placeholder="lbs"></div>
+                <div><label>Deadlift</label><input type="number" id="deadlift" placeholder="lbs"></div>
                 <div><label>Entry Date</label><input type="date" id="entry-date"></div>
             </div>
-            <button onclick="submitManualEntry()" class="w-full bg-red-600 py-4 rounded-xl font-black uppercase italic mt-4 hover:bg-red-500 transition-all">Log Historical Data</button>
+            
+            <button onclick="submitManualEntry()" class="w-full bg-red-600 py-4 rounded-xl font-black uppercase italic mt-4 hover:bg-red-500 transition-all border-b-4 border-red-900 active:border-b-0">
+                Log Historical Data
+            </button>
         </div>
     </main>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, doc, addDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        const firebaseConfig = { apiKey: "AIzaSyBdY26nH0CAn05IpjzoFvG5E1H-bv8fPwA", authDomain: "panthertracker-b8ff6.firebaseapp.com", projectId: "panthertracker-b8ff6", storageBucket: "panthertracker-b8ff6.firebasestorage.app", messagingSenderId: "647881105335", appId: "1:647881105335:web:bbb79bb3fe9740de1e1232" };
+        const firebaseConfig = { 
+            apiKey: "AIzaSyBdY26nH0CAn05IpjzoFvG5E1H-bv8fPwA", 
+            authDomain: "panthertracker-b8ff6.firebaseapp.com", 
+            projectId: "panthertracker-b8ff6", 
+            storageBucket: "panthertracker-b8ff6.firebasestorage.app", 
+            messagingSenderId: "647881105335", 
+            appId: "1:647881105335:web:bbb79bb3fe9740de1e1232" 
+        };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
@@ -47,12 +67,20 @@
             const snap = await getDocs(collection(db, "players"));
             const select = document.getElementById('player-select');
             select.innerHTML = '<option value="">Choose Athlete...</option>';
+            
+            // Sort players alphabetically by last name for easier selection
+            const players = [];
             snap.forEach(doc => {
-                const p = doc.data();
-                if(p.role === 'coach') return;
+                const data = doc.data();
+                if(data.role !== 'coach') players.push({ id: doc.id, ...data });
+            });
+            
+            players.sort((a, b) => (a.lastName || "").localeCompare(b.lastName || ""));
+
+            players.forEach(p => {
                 const opt = document.createElement('option');
-                opt.value = doc.id;
-                opt.textContent = `${p.lastName}, ${p.firstName}`;
+                opt.value = p.id;
+                opt.textContent = `${p.lastName || '??'}, ${p.firstName || '??'} (${p.grade || 'N/A'})`;
                 select.appendChild(opt);
             });
         }
@@ -60,21 +88,36 @@
         window.submitManualEntry = async () => {
             const pid = document.getElementById('player-select').value;
             const dateVal = document.getElementById('entry-date').value;
-            if(!pid || !dateVal) return alert("Select athlete and date!");
+            const isGrad = document.getElementById('is-graduated').checked;
+
+            if(!pid || !dateVal) return alert("Please select an athlete and a valid date.");
 
             const data = {
-                weight: Number(document.getElementById('bw').value),
-                bench: Number(document.getElementById('bench').value),
-                squat: Number(document.getElementById('squat').value),
-                clean: Number(document.getElementById('clean').value),
-                deadlift: Number(document.getElementById('deadlift').value),
+                weight: Number(document.getElementById('bw').value) || 0,
+                bench: Number(document.getElementById('bench').value) || 0,
+                squat: Number(document.getElementById('squat').value) || 0,
+                clean: Number(document.getElementById('clean').value) || 0,
+                deadlift: Number(document.getElementById('deadlift').value) || 0,
                 timestamp: new Date(dateVal).getTime()
             };
 
-            await addDoc(collection(db, "players", pid, "maxes"), data);
-            alert("Record added to The Board!");
-            location.reload();
+            try {
+                // 1. Add the stats to the 'maxes' sub-collection
+                await addDoc(collection(db, "players", pid, "maxes"), data);
+
+                // 2. If the 'Graduated' checkbox is checked, update the player's profile status
+                if (isGrad) {
+                    const playerRef = doc(db, "players", pid);
+                    await updateDoc(playerRef, { grade: "Graduated" });
+                }
+
+                alert("Entry recorded! The Board and Weight Records have been updated.");
+                location.reload();
+            } catch (error) {
+                alert("Error saving data: " + error.message);
+            }
         };
+
         init();
     </script>
 </body>
