@@ -33,55 +33,29 @@
             color: white; 
             font-weight: bold;
         }
-        .content-wrapper { flex: 1; padding: 1.5rem; }
+        .content-wrapper { flex: 1; padding: 1.5rem; padding-bottom: 120px; }
 
-        /* Footer Branding */
-        footer { 
-                background: black; 
-                border-top: 4px solid #b91c1c; 
-                padding: 3rem 1rem; 
-                text-align: center;
-                margin-top: auto;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .footer-logo { 
-                height: 5rem; 
-                width: auto; 
-                margin-bottom: 1.5rem; 
-            }
-
-            .social-container { 
-                display: flex; 
-                justify-content: center; 
-                gap: 2rem; 
-                margin-bottom: 2rem; 
-            }
-
-            .social-icon { 
-                height: 2rem; 
-                width: auto; 
-                transition: transform 0.2s;
-                display: inline-block;
-            }
-
-            .social-icon:hover { 
-                transform: scale(1.2); 
-            }
-
-            .tdl-branding {
-                display: block; 
-                font-size: 5rem; 
-                font-weight: 900; 
-                font-style: italic; 
-                text-transform: uppercase;
-                color: #b91c1c; 
-                line-height: 0.9; 
-                letter-spacing: -2px;
-                text-shadow: -2px -2px 0 #fff, 2px -2px 0 #fff, -2px 2px 0 #fff, 2px 2px 0 #fff;
-            }
+        /* Original Footer Branding */
+        .school-footer { 
+            background: black; 
+            border-top: 4px solid #b91c1c; 
+            padding: 3rem 1rem; 
+            text-align: center;
+            margin-top: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 60px; /* Room for Legal Bar */
+        }
+        .footer-logo { height: 5rem; width: auto; margin-bottom: 1.5rem; }
+        .social-container { display: flex; justify-content: center; gap: 2rem; margin-bottom: 2rem; }
+        .social-icon { height: 2rem; width: auto; transition: transform 0.2s; display: inline-block; }
+        .social-icon:hover { transform: scale(1.2); }
+        .tdl-branding {
+            display: block; font-size: 5rem; font-weight: 900; font-style: italic; text-transform: uppercase;
+            color: #b91c1c; line-height: 0.9; letter-spacing: -2px;
+            text-shadow: -2px -2px 0 #fff, 2px -2px 0 #fff, -2px 2px 0 #fff, 2px 2px 0 #fff;
+        }
     </style>
 </head>
 <body>
@@ -95,130 +69,100 @@
         
         <div id="auth-section">
             <div id="login-form" class="space-y-4">
-                <input type="email" id="email" placeholder="Email Address" 
-                    class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-sm focus:border-orange-500 outline-none">
-                
-                <input type="password" id="password" placeholder="Password" 
-                    class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-sm focus:border-orange-500 outline-none">
-                
-                <button type="button" onclick="handleLogin()" 
-                        class="w-full bg-orange-600 text-white font-black uppercase py-4 rounded-2xl shadow-xl hover:bg-orange-500 transition-all">
-                    Login
-                </button>
+                <input type="email" id="email" placeholder="Email Address" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-sm focus:border-orange-500 outline-none">
+                <input type="password" id="password" placeholder="Password" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-sm focus:border-orange-500 outline-none">
+                <button type="button" onclick="handleLogin()" class="w-full bg-orange-600 text-white font-black uppercase py-4 rounded-2xl shadow-xl hover:bg-orange-500 transition-all">Login</button>
             </div>
-
             <div class="mt-8 text-center">
                 <p class="text-gray-400 text-sm font-bold uppercase tracking-widest">
-                    Need Access? <a href="register.html" class="text-orange-500 hover:text-orange-400 underline">Create Account</a>
-                </p>
-            </div>
-        </div>
-
-            <div id="signup-form" class="hidden">
-                <h2 class="text-xl font-black mb-6 text-center text-blue-500 uppercase italic tracking-tighter">New Athlete Sign-up</h2>
-                <input id="new-name" type="text" placeholder="Full Name">
-                <input id="new-email" type="email" placeholder="Email Address">
-                <input id="new-password" type="password" placeholder="Create Password">
-                <button onclick="handleSignup()" class="w-full bg-blue-600 py-4 rounded-xl font-black uppercase text-sm mb-4">Register</button>
-                <p class="text-center text-[10px] font-bold text-gray-500 uppercase">
-                    Already registered? <a href="#" onclick="toggleAuth(false)" class="text-blue-500 underline">Back to Login</a>
+                    Need Access? <a href="signup.html" class="text-orange-500 hover:text-orange-400 underline">Create Account</a>
                 </p>
             </div>
         </div>
 
         <div id="main-menu" class="hidden w-full max-w-md mx-auto space-y-3 flex flex-col items-center">
-    
             <h2 id="welcome-msg" class="w-full text-center font-black italic uppercase text-gray-400 mb-2 tracking-widest text-xs">Welcome, Athlete</h2>
             
-            <button onclick="location.href='goals.html'" 
-                    class="w-full bg-red-700 hover:bg-red-600 py-6 rounded-2xl font-black uppercase italic shadow-2xl transition-all active:scale-95 flex items-center justify-center gap-3 border-b-4 border-red-900">
+            <button onclick="location.href='goals.html'" class="w-full bg-red-700 hover:bg-red-600 py-6 rounded-2xl font-black uppercase italic shadow-2xl transition-all active:scale-95 flex items-center justify-center gap-3 border-b-4 border-red-900">
                 <span class="text-2xl tracking-tighter">My Goals</span>
             </button>
 
-            <button onclick="location.href='rack.html'" class="menu-btn border-red-600 w-full">
-                <span>🏋️ The Rack</span><span class="text-red-600">→</span>
-            </button>
+            <button onclick="location.href='rack.html'" class="menu-btn border-red-600 w-full"><span>🏋️ The Rack</span><span class="text-red-600">→</span></button>
+            <button onclick="location.href='kitchen.html'" class="menu-btn border-orange-500 w-full"><span>🍳 The Kitchen</span><span class="text-orange-500">→</span></button>
+            <button onclick="location.href='board.html'" class="menu-btn border-yellow-600 w-full"><span>🏆 The Board</span><span class="text-yellow-600">→</span></button>
+            <button onclick="location.href='records.html'" class="menu-btn border-green-600 w-full"><span>🏅 Weight Class Records</span><span class="text-green-600">→</span></button>
 
-            <button onclick="location.href='kitchen.html'" class="menu-btn border-orange-500 w-full">
-                <span>🍳 The Kitchen</span><span class="text-orange-500">→</span>
-            </button>
-
-            <button onclick="location.href='board.html'" class="menu-btn border-yellow-600 w-full">
-                <span>🏆 The Board</span><span class="text-yellow-600">→</span>
-            </button>
-
-            <button onclick="location.href='records.html'" class="menu-btn border-green-600 w-full">
-                <span>🏅 Weight Class Records</span><span class="text-green-600">→</span>
-            </button>
-
-            <button onclick="location.href='next-level.html'" class="w-full bg-orange-600 hover:bg-orange-500 text-white font-black italic uppercase py-4 rounded-2xl shadow-xl transition-all border-b-4 border-orange-800 active:border-b-0 flex items-center justify-center gap-3">
+            <button onclick="location.href='next-level.html'" class="w-full bg-orange-600 hover:bg-orange-500 text-white font-black italic uppercase py-4 rounded-2xl shadow-xl transition-all border-b-4 border-orange-800 flex items-center justify-center gap-3">
                 <span>🎓</span> Next Level Recruiting
             </button>
 
-            <button onclick="location.href='recruiting-card.html'" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black italic uppercase py-4 rounded-2xl shadow-xl transition-all border-b-4 border-blue-800 active:border-b-0 flex items-center justify-center gap-3 mt-4">
+            <button onclick="location.href='recruiting-card.html'" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black italic uppercase py-4 rounded-2xl shadow-xl transition-all border-b-4 border-blue-800 mt-4 flex items-center justify-center gap-3">
                 <span>📇</span> My Recruiting Card
             </button>
 
-            <button onclick="location.href='engagement.html'" 
-                    class="w-full bg-indigo-900 hover:bg-indigo-800 py-4 rounded-xl font-black uppercase italic shadow-xl flex items-center justify-center gap-2 border-b-4 border-indigo-950">
+            <button onclick="location.href='engagement.html'" class="w-full bg-indigo-900 hover:bg-indigo-800 py-4 rounded-xl font-black uppercase italic shadow-xl flex items-center justify-center gap-2 border-b-4 border-indigo-950">
                 <span>🔥 Consistency Boards</span>
             </button>
 
-            <button onclick="location.href='guides.html'" class="menu-btn border-purple-500 w-full">
-                <span>📖 Guides</span><span class="text-purple-500">→</span>
-            </button>
-
-            <button onclick="location.href='history.html'" class="menu-btn border-blue-600 w-full">
-                <span>📈 My History</span><span class="text-blue-600">→</span>
-            </button>
+            <button onclick="location.href='guides.html'" class="menu-btn border-purple-500 w-full"><span>📖 Guides</span><span class="text-purple-500">→</span></button>
+            <button onclick="location.href='history.html'" class="menu-btn border-blue-600 w-full"><span>📈 My History</span><span class="text-blue-600">→</span></button>
 
             <div class="w-full mt-10 pt-6 border-t border-gray-800">
                 <h3 class="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 mb-4 text-center">Support & Feedback</h3>
-                
                 <div class="grid grid-cols-1 gap-3">
-                    <a href="tel:6149496195" 
-                    class="flex items-center justify-between bg-gray-800/50 p-4 rounded-xl border border-gray-700 hover:border-blue-500 transition-all">
-                        <div class="flex items-center gap-3">
-                            <span class="text-xl">📱</span>
-                            <div class="text-left">
-                                <p class="text-[10px] font-bold text-gray-400 uppercase">Call or Text</p>
-                                <p class="font-black text-blue-400">614-949-6195</p>
-                            </div>
-                        </div>
-                        <span class="text-gray-600">→</span>
+                    <a href="tel:6149496195" class="flex items-center justify-between bg-gray-800/50 p-4 rounded-xl border border-gray-700 hover:border-blue-500">
+                        <div class="flex items-center gap-3"><span>📱</span><div><p class="text-[10px] font-bold text-gray-400 uppercase">Call or Text</p><p class="font-black text-blue-400">614-949-6195</p></div></div>
                     </a>
-
-                    <a href="mailto:seandief@gmail.com?subject=Panther%20Tracker%20Support" 
-                    class="flex items-center justify-between bg-gray-800/50 p-4 rounded-xl border border-gray-700 hover:border-orange-500 transition-all">
-                        <div class="flex items-center gap-3">
-                            <span class="text-xl">✉️</span>
-                            <div class="text-left">
-                                <p class="text-[10px] font-bold text-gray-400 uppercase">Email Coach Dief</p>
-                                <p class="font-black text-orange-400">seandief@gmail.com</p>
-                            </div>
-                        </div>
-                        <span class="text-gray-600">→</span>
+                    <a href="mailto:seandief@gmail.com" class="flex items-center justify-between bg-gray-800/50 p-4 rounded-xl border border-gray-700 hover:border-orange-500">
+                        <div class="flex items-center gap-3"><span>✉️</span><div><p class="text-[10px] font-bold text-gray-400 uppercase">Email Coach Dief</p><p class="font-black text-orange-400">seandief@gmail.com</p></div></div>
                     </a>
                 </div>
-                
-                <p class="text-[9px] text-center text-gray-600 mt-4 uppercase font-bold px-4">
-                    Questions, comments, or suggestions? Reach out anytime.
-                </p>
             </div>
-        </div>
-            <button onclick="handleLogout()" class="w-full py-4 text-[10px] font-black uppercase text-gray-500 tracking-widest">Sign Out</button>
+
+            <button onclick="handleLogout()" class="w-full py-12 text-[10px] font-black uppercase text-gray-600 tracking-widest">Sign Out</button>
         </div>
     </div>
 
-    <footer>
+    <footer class="school-footer">
         <img src="logo1.png" alt="Panther" class="footer-logo">
         <div class="social-container">
-            <a href="https://www.facebook.com/profile.php?id=61573011830957" target="_blank"><img src="facebook.png" alt="Facebook" class="social-icon"></a>
-            <a href="https://www.instagram.com/hsfairbanksfb/" target="_blank"><img src="instagram.jpg" alt="Instagram" class="social-icon"></a>
-            <a href="https://www.hudl.com/library/35871L" target="_blank"><img src="hudl.png" alt="Hudl" class="social-icon"></a>
+            <a href="https://facebook.com/..." target="_blank"><img src="facebook.png" alt="FB" class="social-icon"></a>
+            <a href="https://instagram.com/..." target="_blank"><img src="instagram.jpg" alt="IG" class="social-icon"></a>
+            <a href="https://hudl.com/..." target="_blank"><img src="hudl.png" alt="Hudl" class="social-icon"></a>
         </div>
         <span class="tdl-branding">TDL</span>
     </footer>
+
+    <div class="fixed bottom-0 left-0 w-full p-4 bg-black/90 backdrop-blur-md border-t border-gray-900 flex justify-between items-center px-8 z-[50]">
+        <span class="text-[10px] font-black italic text-gray-600 uppercase tracking-widest">RACKSTAT</span>
+        <div class="flex gap-4">
+            <button onclick="openPrivacyModal()" class="text-[9px] font-bold uppercase text-gray-500 hover:text-white transition-colors">Privacy Policy</button>
+            <button onclick="openTermsModal()" class="text-[9px] font-bold uppercase text-gray-500 hover:text-white transition-colors">Terms</button>
+        </div>
+    </div>
+
+    <div id="privacy-modal" class="hidden fixed inset-0 bg-black/95 z-[100] flex items-center justify-center p-6">
+        <div class="bg-gray-900 border border-blue-900/30 max-w-lg w-full rounded-3xl p-8 max-h-[80vh] overflow-y-auto shadow-2xl">
+            <h2 class="text-xl font-black italic uppercase text-blue-500 mb-6">Privacy & Data Policy</h2>
+            <div class="space-y-6 text-xs text-gray-400 leading-relaxed font-medium">
+                <p><strong class="text-white">1. Data Ownership (SB29):</strong> All student athlete records remain the property of the Educational Institution. RACKSTAT acts as a service provider.</p>
+                <p><strong class="text-white">2. Collection:</strong> We collect student names and athletic metrics strictly for performance tracking.</p>
+                <p><strong class="text-white">3. Right to Deletion:</strong> Parents may request deletion via the school's athletic department.</p>
+            </div>
+            <button onclick="closePrivacyModal()" class="w-full mt-8 bg-blue-600 py-4 rounded-xl font-black uppercase italic">Close Policy</button>
+        </div>
+    </div>
+
+    <div id="terms-modal" class="hidden fixed inset-0 bg-black/95 z-[100] flex items-center justify-center p-6">
+        <div class="bg-gray-900 border border-blue-900/30 max-w-lg w-full rounded-3xl p-8 max-h-[80vh] overflow-y-auto shadow-2xl">
+            <h2 class="text-xl font-black italic uppercase text-blue-500 mb-6">Terms of Service</h2>
+            <div class="space-y-6 text-xs text-gray-400 leading-relaxed font-medium">
+                <p><strong class="text-white">1. Acceptance of Risk:</strong> Weightlifting carries inherent risks. RACKSTAT is not liable for training-related injuries.</p>
+                <p><strong class="text-white">2. Prohibited Use:</strong> Users may not scrape or redistribute RACKSTAT data.</p>
+            </div>
+            <button onclick="closeTermsModal()" class="w-full mt-8 bg-blue-600 py-4 rounded-xl font-black uppercase italic text-white">I Understand & Agree</button>
+        </div>
+    </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -238,71 +182,41 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // 1. THE WATCHER: Handles redirects and UI state
+        // GLOBAL MODAL CONTROLS
+        window.openPrivacyModal = () => document.getElementById('privacy-modal').classList.remove('hidden');
+        window.closePrivacyModal = () => document.getElementById('privacy-modal').classList.add('hidden');
+        window.openTermsModal = () => document.getElementById('terms-modal').classList.remove('hidden');
+        window.closeTermsModal = () => document.getElementById('terms-modal').classList.add('hidden');
+
+        // WATCHER
         onAuthStateChanged(auth, async (user) => {
             const authSection = document.getElementById('auth-section');
             const mainMenu = document.getElementById('main-menu');
-            
             if (user) {
-                try {
-                    const userSnap = await getDoc(doc(db, "players", user.uid));
-                    
-                    if (userSnap.exists()) {
-                        const userData = userSnap.data();
-                        
-                        // REDIRECT COACHES
-                        if (userData.role === "coach") {
-                            window.location.href = "coach.html";
-                            return; 
-                        }
-
-                        // SHOW PLAYER MENU
-                        if (authSection) authSection.classList.add('hidden');
-                        if (mainMenu) mainMenu.classList.remove('hidden');
-                        
-                        const welcomeEl = document.getElementById('welcome-msg');
-                        if (welcomeEl) {
-                            welcomeEl.innerText = `Welcome, ${userData.playerName || userData.firstName || 'Athlete'}`;
-                        }
-                    }
-                } catch (e) {
-                    console.error("Error fetching user profile:", e);
+                const userSnap = await getDoc(doc(db, "players", user.uid));
+                if (userSnap.exists()) {
+                    const userData = userSnap.data();
+                    if (userData.role === "coach") { window.location.href = "coach.html"; return; }
+                    authSection.classList.add('hidden');
+                    mainMenu.classList.remove('hidden');
+                    document.getElementById('welcome-msg').innerText = `Welcome, ${userData.playerName || userData.firstName || 'Athlete'}`;
                 }
             } else {
-                if (authSection) authSection.classList.remove('hidden');
-                if (mainMenu) mainMenu.classList.add('hidden');
+                authSection.classList.remove('hidden');
+                mainMenu.classList.add('hidden');
             }
         });
 
-        // 2. LOGIN LOGIC (Attached to Window for HTML visibility)
         window.handleLogin = async () => {
             const email = document.getElementById('email').value.trim();
             const pass = document.getElementById('password').value;
-
-            if (!email || !pass) {
-                alert("Please enter both email and password.");
-                return;
-            }
-
-            try { 
-                await signInWithEmailAndPassword(auth, email, pass);
-                // Redirection/UI toggle is handled by onAuthStateChanged above
-            } 
-            catch (e) { 
-                console.error("Login attempt failed:", e.code);
-                if (e.code === 'auth/invalid-credential') {
-                    alert("Incorrect email or password. Please try again.");
-                } else {
-                    alert("Login failed: " + e.message); 
-                }
-            }
+            if (!email || !pass) return alert("Please enter both email and password.");
+            try { await signInWithEmailAndPassword(auth, email, pass); } 
+            catch (e) { alert("Login failed: " + e.message); }
         };
 
-        // 3. LOGOUT LOGIC
         window.handleLogout = () => {
-            signOut(auth).then(() => {
-                window.location.reload(); // Refresh to clear state
-            });
+            signOut(auth).then(() => window.location.reload());
         };
     </script>
 </body>

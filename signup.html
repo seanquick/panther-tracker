@@ -3,129 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panther Power | Sign Up</title>
+    <title>RACKSTAT | Join the Program</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #0f172a; color: white; }
-        input, select { 
-            background-color: #1f2937 !important; color: white !important; 
-            border: 2px solid #374151 !important; padding: 0.8rem !important; 
-            border-radius: 0.75rem !important; width: 100%; margin-bottom: 0.75rem; 
-        }
-        label { font-size: 10px; font-weight: 900; text-transform: uppercase; color: #64748b; margin-left: 0.5rem; margin-bottom: 0.2rem; display: block; }
-               
-        /* Footer Branding */
-        footer { 
-                background: black; 
-                border-top: 4px solid #b91c1c; 
-                padding: 3rem 1rem; 
-                text-align: center;
-                margin-top: auto;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .footer-logo { 
-                height: 5rem; 
-                width: auto; 
-                margin-bottom: 1.5rem; 
-            }
-
-            .social-container { 
-                display: flex; 
-                justify-content: center; 
-                gap: 2rem; 
-                margin-bottom: 2rem; 
-            }
-
-            .social-icon { 
-                height: 2rem; 
-                width: auto; 
-                transition: transform 0.2s;
-                display: inline-block;
-            }
-
-            .social-icon:hover { 
-                transform: scale(1.2); 
-            }
-
-            .tdl-branding {
-                display: block; 
-                font-size: 5rem; 
-                font-weight: 900; 
-                font-style: italic; 
-                text-transform: uppercase;
-                color: #b91c1c; 
-                line-height: 0.9; 
-                letter-spacing: -2px;
-                text-shadow: -2px -2px 0 #fff, 2px -2px 0 #fff, -2px 2px 0 #fff, 2px 2px 0 #fff;
-            }
+        body { background-color: #020617; color: white; font-family: sans-serif; }
+        input[type="checkbox"] { accent-color: #2563eb; }
+        .glass-panel { background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(12px); border: 1px solid rgba(30, 41, 59, 0.5); }
     </style>
 </head>
-<body class="font-sans pb-10">
+<body class="min-h-screen flex flex-col items-center justify-center p-6 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-blue-900/20 via-slate-950 to-black">
 
-     <header class="bg-black p-6 border-b-4 border-red-700 text-center">
-        <img src="logo2.png" alt="Panthers Football" class="h-20 mx-auto mb-2">
-        <h1 class="text-2xl font-black italic uppercase tracking-tighter text-white">Panther <span class="text-red-600">Power</span></h1>
-        <h1 class="text-xl font-black italic uppercase tracking-tighter text-red-600">Join the Program</h1>
-        <button onclick="location.href='index.html'" class="nav-btn">← Lobby</button>
-    </header>
+    <div class="w-full max-w-md glass-panel p-8 rounded-3xl shadow-2xl">
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-black italic tracking-tighter text-white">RACK<span class="text-blue-600">STAT</span></h1>
+            <p class="text-[9px] font-bold text-gray-500 uppercase tracking-[0.3em] mt-2 text-center text-blue-500/80">Athlete Registration</p>
+        </div>
 
-    <div class="max-w-md mx-auto px-4">
-        <div class="bg-[#1e293b] p-6 rounded-2xl border border-gray-700 shadow-2xl">
-            
-            <div class="grid grid-cols-2 gap-2">
-                <div><label>First Name</label><input id="firstName" type="text" placeholder="e.g. John"></div>
-                <div><label>Last Name</label><input id="lastName" type="text" placeholder="e.g. Doe"></div>
+        <div class="space-y-4">
+            <div>
+                <label class="text-[10px] font-black uppercase text-gray-500 ml-2">Full Name</label>
+                <input type="text" id="reg-name" placeholder="First & Last Name" 
+                       class="w-full bg-black/50 border border-gray-800 rounded-xl px-4 py-3 text-sm focus:border-blue-500 outline-none transition-all placeholder:text-gray-700">
             </div>
 
-            <label>Grade Level</label>
-            <select id="grade">
-                <option value="">Select Grade...</option>
-                <option value="9">9th (Freshman)</option>
-                <option value="10">10th (Sophomore)</option>
-                <option value="11">11th (Junior)</option>
-                <option value="12">12th (Senior)</option>
-                <option value="Coach">Staff/Alumni</option>
-            </select>
+            <div>
+                <label class="text-[10px] font-black uppercase text-gray-500 ml-2">School Email</label>
+                <input type="email" id="reg-email" placeholder="student@school.edu" 
+                       class="w-full bg-black/50 border border-gray-800 rounded-xl px-4 py-3 text-sm focus:border-blue-500 outline-none transition-all placeholder:text-gray-700">
+            </div>
 
-            <label>Email Address</label>
-            <input id="email" type="email" placeholder="panther@school.com">
+            <div>
+                <label class="text-[10px] font-black uppercase text-gray-500 ml-2">Create Password</label>
+                <input type="password" id="reg-pass" placeholder="••••••••" 
+                       class="w-full bg-black/50 border border-gray-800 rounded-xl px-4 py-3 text-sm focus:border-blue-500 outline-none transition-all placeholder:text-gray-700">
+            </div>
 
-            <label>Phone Number</label>
-            <input id="phone" type="tel" placeholder="555-555-5555">
+            <div class="flex items-start gap-3 p-4 bg-blue-900/10 border border-blue-900/20 rounded-xl mt-4">
+                <input type="checkbox" id="legal-agree" class="mt-1 w-4 h-4 cursor-pointer">
+                <label for="legal-agree" class="text-[10px] leading-tight text-gray-400 font-medium">
+                    I have read and agree to the 
+                    <button onclick="openTermsModal()" class="text-blue-500 font-bold hover:underline">Terms of Service</button> 
+                    and the 
+                    <button onclick="openPrivacyModal()" class="text-blue-500 font-bold hover:underline">Privacy Policy</button>.
+                </label>
+            </div>
 
-            <label>Account Type</label>
-            <select id="role" onchange="checkCoachCode(this.value)">
-                <option value="player">Player</option>
-                <option value="coach">Coach</option>
-            </select>
+            <button onclick="handleSignUp()" id="signup-btn"
+                    class="w-full bg-blue-600 hover:bg-blue-500 py-4 rounded-xl font-black uppercase italic shadow-lg transition-all active:scale-95 text-sm mt-4 border-b-4 border-blue-900">
+                Create My Profile
+            </button>
+        </div>
 
-            <label>Create Password</label>
-            <input id="password" type="password" placeholder="••••••••">
+        <p class="text-center text-[10px] text-gray-600 mt-6 uppercase font-bold tracking-widest">
+            Already have an account? <a href="index.html" class="text-blue-500 hover:text-blue-400 transition-colors">Sign In</a>
+        </p>
+    </div>
 
-            <button onclick="handleSignUp()" class="w-full bg-red-700 py-4 rounded-xl font-black uppercase text-sm mt-4 shadow-lg active:scale-95 transition-all">Create Panther Profile</button>
-            
-            <button onclick="location.href='index.html'" class="w-full mt-4 text-[10px] font-bold text-gray-500 uppercase underline">Back to Login</button>
+    <div id="privacy-modal" class="hidden fixed inset-0 bg-black/95 z-[100] flex items-center justify-center p-6">
+        <div class="bg-gray-900 border border-blue-900/30 max-w-lg w-full rounded-3xl p-8 max-h-[80vh] overflow-y-auto shadow-2xl">
+            <h2 class="text-xl font-black italic uppercase text-blue-500 mb-6">Privacy & Data Policy</h2>
+            <div class="space-y-6 text-xs text-gray-400 leading-relaxed font-medium">
+                <section>
+                    <h3 class="text-white font-bold uppercase mb-2">1. Data Ownership (SB29)</h3>
+                    <p>All student athlete records remain the property of the participating Educational Institution. RACKSTAT acts as a service provider and does not claim ownership over student data.</p>
+                </section>
+                <section>
+                    <h3 class="text-white font-bold uppercase mb-2">2. Information We Collect</h3>
+                    <p>We collect names, grade levels, and performance metrics (height, weight, strength logs) strictly for tracking and recruitment visualization.</p>
+                </section>
+                <section>
+                    <h3 class="text-white font-bold uppercase mb-2">4. Right to Deletion</h3>
+                    <p>Parents may request the permanent deletion of a student's record at any time via the school's athletic department.</p>
+                </section>
+            </div>
+            <button onclick="closePrivacyModal()" class="w-full mt-8 bg-blue-600 py-4 rounded-xl font-black uppercase italic hover:bg-blue-500 transition-all text-white">Close Policy</button>
         </div>
     </div>
 
-    <footer>
-    <img src="logo1.png" alt="Panther" class="footer-logo">
-
-    <div class="social-container">
-        <a href="https://www.facebook.com/profile.php?id=61573011830957" target="_blank"><img src="facebook.png" alt="Facebook" class="social-icon"></a>
-        </a>
-        <a href="https://www.instagram.com/hsfairbanksfb/" target="_blank"><img src="instagram.jpg" alt="Instagram" class="social-icon"></a>
-        </a>
-        <a href="https://www.hudl.com/library/35871L" target="_blank"><img src="hudl.png" alt="Hudl" class="social-icon"></a>
-        </a>
+    <div id="terms-modal" class="hidden fixed inset-0 bg-black/95 z-[100] flex items-center justify-center p-6">
+        <div class="bg-gray-900 border border-blue-900/30 max-w-lg w-full rounded-3xl p-8 max-h-[80vh] overflow-y-auto shadow-2xl">
+            <h2 class="text-xl font-black italic uppercase text-blue-500 mb-6">Terms of Service</h2>
+            <div class="space-y-6 text-xs text-gray-400 leading-relaxed font-medium">
+                <section>
+                    <h3 class="text-white font-bold uppercase mb-2">1. Acceptance of Risk</h3>
+                    <p>RACKSTAT is a data-tracking tool. Users acknowledge that athletic training carries inherent risks. RACKSTAT is not liable for injuries sustained during training.</p>
+                </section>
+                <section>
+                    <h3 class="text-white font-bold uppercase mb-2">2. Accuracy</h3>
+                    <p>Users agree to provide accurate metrics. Falsification of data for recruiting advantages may result in account termination.</p>
+                </section>
+            </div>
+            <button onclick="closeTermsModal()" class="w-full mt-8 bg-blue-600 py-4 rounded-xl font-black uppercase italic hover:bg-blue-500 transition-all text-white">I Understand & Agree</button>
+        </div>
     </div>
-    
-    <span class="tdl-branding">TDL</span>
-</footer>
-
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -140,56 +110,54 @@
             messagingSenderId: "647881105335", 
             appId: "1:647881105335:web:bbb79bb3fe9740de1e1232" 
         };
-
+        
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        window.checkCoachCode = (role) => {
-            if (role === 'coach') {
-                const code = prompt("Enter Coach Authorization Code:");
-                if (code !== "PANTHERS2026") {
-                    alert("Unauthorized code. Setting role back to Player.");
-                    document.getElementById('role').value = 'player';
-                }
-            }
-        };
+        // --- MODAL LOGIC (Global Scope) ---
+        window.openTermsModal = () => document.getElementById('terms-modal').classList.remove('hidden');
+        window.closeTermsModal = () => document.getElementById('terms-modal').classList.add('hidden');
+        window.openPrivacyModal = () => document.getElementById('privacy-modal').classList.remove('hidden');
+        window.closePrivacyModal = () => document.getElementById('privacy-modal').classList.add('hidden');
 
+        // --- SIGNUP LOGIC ---
         window.handleSignUp = async () => {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const fName = document.getElementById('firstName').value;
-            const lName = document.getElementById('lastName').value;
-            const grade = document.getElementById('grade').value;
-            const phone = document.getElementById('phone').value;
-            const role = document.getElementById('role').value;
+            const isAgreed = document.getElementById('legal-agree').checked;
+            const fullName = document.getElementById('reg-name').value.trim();
+            const email = document.getElementById('reg-email').value.trim();
+            const pass = document.getElementById('reg-pass').value;
 
-            if(!email || !password || !fName || !lName) {
-                alert("Please fill in all required fields.");
-                return;
-            }
+            if (!fullName || !email || !pass) return alert("Please fill in all fields.");
+            if (!isAgreed) return alert("SB29 COMPLIANCE: You must agree to the Terms and Privacy Policy to create an account.");
+
+            const signupBtn = document.getElementById('signup-btn');
+            signupBtn.innerText = "VERIFYING...";
+            signupBtn.disabled = true;
 
             try {
-                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                // 1. Create User in Firebase Auth
+                const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
                 const user = userCredential.user;
 
-                // Save extended profile to Firestore
+                // 2. Create Profile in Firestore
                 await setDoc(doc(db, "players", user.uid), {
-                    playerName: `${fName} ${lName}`,
-                    firstName: fName,
-                    lastName: lName,
-                    grade: grade,
-                    phone: phone,
+                    firstName: fullName.split(' ')[0],
+                    lastName: fullName.split(' ').slice(1).join(' '),
+                    playerName: fullName,
                     email: email,
-                    role: role,
-                    dailyCalorieGoal: 0,
-                    createdAt: new Date().toISOString()
+                    role: 'player',
+                    grade: '9', // Default starting grade
+                    isVerified: false,
+                    createdAt: new Date().getTime()
                 });
 
                 alert("Account Created Successfully!");
-                location.href = 'index.html';
-            } catch (error) {
-                alert("Error: " + error.message);
+                window.location.href = 'index.html'; // Redirect to login
+            } catch (e) {
+                alert("Error: " + e.message);
+                signupBtn.innerText = "Create My Profile";
+                signupBtn.disabled = false;
             }
         };
     </script>
