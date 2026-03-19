@@ -54,16 +54,24 @@
         </div>
 
         <div class="mt-12 pt-8 border-t border-gray-800">
-            <h3 class="text-sm font-black uppercase italic text-gray-500 mb-4 tracking-widest text-center">Season Transition</h3>
-            <div class="grid grid-cols-1 gap-3">
+    <h3 class="text-sm font-black uppercase italic text-gray-500 mb-4 tracking-widest text-center">Data & Compliance</h3>
+    <div class="grid grid-cols-1 gap-3">
+        
+        <button onclick="exportRosterToCSV()" 
+                class="w-full bg-emerald-700 hover:bg-emerald-600 py-3 rounded-xl font-black uppercase italic shadow-lg transition-all flex items-center justify-center gap-2 border-b-4 border-emerald-900">
+            <span>📊 Export Roster (SB29 Audit)</span>
+        </button>
+
                 <button onclick="location.href='season-recap.html'" 
                         class="w-full bg-yellow-600 hover:bg-yellow-500 py-3 rounded-xl font-black uppercase italic shadow-lg transition-all flex items-center justify-center gap-2 border-b-4 border-yellow-800">
                     <span>🏆 View Season Recap</span>
                 </button>
+
                 <button onclick="massPromote()" 
                         class="w-full bg-blue-600 hover:bg-blue-500 py-4 rounded-xl font-black uppercase italic shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2 border-b-4 border-blue-900">
                     <span>🚀 Mass Promote All Grades</span>
                 </button>
+
                 <button onclick="resetLeaderboards()" 
                         class="w-full bg-red-900 hover:bg-red-800 py-4 rounded-xl font-black uppercase italic shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2 border-b-4 border-red-950">
                     <span>🧹 Reset Leaderboards (Wipe Logs)</span>
