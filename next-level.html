@@ -6,120 +6,151 @@
     <title>Next Level Recruiting | RACKSTAT</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #000000; color: #ffffff; font-family: 'Inter', sans-serif; }
-        .form-section { background: #111111; border: 1px solid #222222; padding: 2rem; border-radius: 1rem; margin-bottom: 2rem; border-top: 4px solid #b91c1c; }
-        label { display: block; font-size: 0.7rem; font-weight: 900; text-transform: uppercase; color: #999999; margin-bottom: 0.5rem; letter-spacing: 0.1em; }
-        input, select, textarea { 
-            width: 100%; background: #000000; border: 1px solid #333333; padding: 0.8rem; border-radius: 0.5rem; 
-            color: white; margin-bottom: 1.2rem; outline: none; transition: all 0.2s;
-        }
-        input:focus, select:focus, textarea:focus { border-color: #b91c1c; box-shadow: 0 0 10px rgba(185, 28, 28, 0.2); }
-        .section-title { font-size: 1.1rem; font-weight: 900; font-style: italic; text-transform: uppercase; color: #ffffff; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px; }
-        .section-number { color: #b91c1c; font-size: 1.5rem; }
-        /* Change 'grid-template-cols' to 'grid-template-columns' */
-        .checkbox-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1.5rem; }
-        .check-item { background: #000000; border: 1px solid #333333; padding: 10px; border-radius: 8px; font-size: 0.8rem; display: flex; align-items: center; gap: 10px; }
+        body { background-color: #000000; color: #ffffff; font-family: sans-serif; }
+        .form-section { background: #111111; border: 1px solid #222222; padding: 2rem; border-radius: 1.5rem; margin-bottom: 2rem; }
+        .section-title { color: #b91c1c; font-weight: 900; text-transform: uppercase; font-style: italic; margin-bottom: 1.5rem; border-left: 4px solid #b91c1c; padding-left: 10px; }
+        label { display: block; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; margin-bottom: 0.5rem; color: #999; }
+        input, select, textarea { width: 100%; background: #050505; border: 1px solid #333; padding: 1rem; border-radius: 0.75rem; color: white; margin-bottom: 1.25rem; outline: none; }
+        input:focus { border-color: #b91c1c; }
+        .slider-label { display: flex; justify-content: space-between; font-size: 0.65rem; font-weight: 900; color: #b91c1c; margin-top: -10px; margin-bottom: 15px; }
+        input[type="range"] { accent-color: #b91c1c; margin-bottom: 5px; }
+        .btn-submit { background: #b91c1c; color: white; font-weight: 900; text-transform: uppercase; padding: 1.5rem; border-radius: 1rem; width: 100%; border-bottom: 4px solid #7f1d1d; transition: all 0.2s; }
+        .btn-submit:active { transform: scale(0.98); border-bottom-width: 0; }
     </style>
 </head>
-<body class="pb-32">
+<body class="p-4 pb-20">
 
-    <header class="bg-black p-8 border-b-4 border-red-700 text-center sticky top-0 z-50 backdrop-blur-md bg-black/80">
-        <h1 class="text-3xl font-black italic uppercase tracking-tighter">Next Level <span class="text-red-600">Recruiting</span></h1>
-        <p class="text-[10px] text-gray-400 font-bold uppercase tracking-[0.3em] mt-1">College Football Prospect Profile</p>
+    <header class="max-w-2xl mx-auto py-8 text-center">
+        <h1 class="text-3xl font-black italic uppercase">Next Level <span class="text-red-600">Recruiting</span></h1>
+        <p class="text-gray-500 text-xs font-bold uppercase tracking-widest mt-2">Athlete Profile & Preferences</p>
     </header>
 
-    <main class="max-w-3xl mx-auto p-6 mt-4">
-        <form id="recruitingForm">
+    <form id="recruitingForm" class="max-w-2xl mx-auto">
+        
+        <div class="form-section">
+            <h2 class="section-title">College Interest (Scale 0-5)</h2>
             
-            <div class="form-section">
-                <h2 class="section-title"><span class="section-number">01</span> Basic Information</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4">
-                    <div><label>Full Name</label><input type="text" name="fullName" required></div>
-                    <div><label>Graduation Year</label><input type="number" name="gradYear" placeholder="2027"></div>
-                    <div><label>Height</label><input type="text" name="height" placeholder="6'2"></div>
-                    <div><label>Weight</label><input type="text" name="weight" placeholder="215 lbs"></div>
-                    <div><label>Primary Position</label><input type="text" name="primaryPos"></div>
-                    <div><label>Jersey Number</label><input type="text" name="jerseyNum"></div>
-                </div>
-                <label>X (Twitter) URL</label><input type="url" name="twitterUrl">
-                <label>HUDL Highlights URL</label><input type="url" name="hudlUrl">
-            </div>
+            <label>Overall Interest in College Football</label>
+            <input type="range" id="interest_overall" min="0" max="5" value="3">
+            <div class="slider-label"><span>0 - None</span><span>5 - Extreme</span></div>
 
-            <div class="form-section">
-                <h2 class="section-title"><span class="section-number">02</span> Interest & Goals</h2>
-                <label>Level you believe you can play at?</label>
-                <select name="levelBelief">
-                    <option>Division I (FBS/FCS)</option>
-                    <option>Division II</option>
-                    <option>Division III</option>
-                    <option>NAIA</option>
-                    <option>JUCO</option>
+            <label>Interest by Division</label>
+            <div class="grid grid-cols-2 gap-x-4">
+                <div>
+                    <label class="text-[10px]">NCAA D1 (FBS)</label>
+                    <input type="number" id="div_fbs" min="0" max="5" placeholder="0-5">
+                </div>
+                <div>
+                    <label class="text-[10px]">NCAA D1 (FCS)</label>
+                    <input type="number" id="div_fcs" min="0" max="5" placeholder="0-5">
+                </div>
+                <div>
+                    <label class="text-[10px]">NCAA D2</label>
+                    <input type="number" id="div_d2" min="0" max="5" placeholder="0-5">
+                </div>
+                <div>
+                    <label class="text-[10px]">NCAA D3</label>
+                    <input type="number" id="div_d3" min="0" max="5" placeholder="0-5">
+                </div>
+                <div>
+                    <label class="text-[10px]">NAIA</label>
+                    <input type="number" id="div_naia" min="0" max="5" placeholder="0-5">
+                </div>
+                <div>
+                    <label class="text-[10px]">JUCO</label>
+                    <input type="number" id="div_juco" min="0" max="5" placeholder="0-5">
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h2 class="section-title">Academic Profile</h2>
+            
+            <label>Intended Major (or UNDECIDED)</label>
+            <input type="text" id="major" placeholder="e.g. Business, Engineering, Undecided">
+
+            <label>Priority Balance</label>
+            <input type="range" id="academic_priority" min="0" max="5" value="3">
+            <div class="slider-label"><span>0 - Football Priority</span><span>5 - Academics Priority</span></div>
+
+            <label>Are you Academically Eligible?</label>
+            <select id="eligibility">
+                <option value="Yes">Yes</option>
+                <option value="Not Sure">Not Sure</option>
+                <option value="I need help">I need help understanding requirements</option>
+            </select>
+
+            <label>Long-Term Post-College Goal</label>
+            <select id="long_term_goal">
+                <option value="Professional Athletics">Professional Athletics</option>
+                <option value="Graduate School">Graduate School</option>
+                <option value="Career-Focused Employment">Career-Focused Employment</option>
+                <option value="Military">Military</option>
+                <option value="Undecided">Undecided</option>
+            </select>
+        </div>
+
+        <div class="form-section">
+            <h2 class="section-title">Location & Culture</h2>
+            
+            <label>Distance from Home</label>
+            <select id="distance_pref">
+                <option value="Within 2 hours">Within 2 hours drive</option>
+                <option value="Within the state">Within the state</option>
+                <option value="Neighboring states">Neighboring states</option>
+                <option value="Regional (Midwest)">Regional (Midwest area)</option>
+                <option value="Anywhere in the US">Anywhere in the US</option>
+            </select>
+
+            <label>Setting Preference</label>
+            <input type="range" id="setting_pref" min="0" max="5" value="3">
+            <div class="slider-label"><span>0 - Rural/Small Town</span><span>5 - Big City</span></div>
+
+            <label>Religious Affiliation Interests</label>
+            <div class="grid grid-cols-1 gap-2 mb-4">
+                <select id="religious_attend">
+                    <option value="">Would you attend a religious school?</option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                    <option value="Depends">Depends</option>
                 </select>
-                <label>Intended Major / Career Interest</label>
-                <input type="text" name="major">
-                <label>Why do you want to play college football?</label>
-                <textarea name="motivation" rows="3"></textarea>
+                <select id="religious_specific">
+                    <option value="">Specifically seeking a religious school?</option>
+                    <option value="No">No</option>
+                    <option value="Yes">Yes</option>
+                </select>
             </div>
 
-            <div class="form-section">
-                <h2 class="section-title"><span class="section-number">03</span> Academic Standing</h2>
-                <div class="grid grid-cols-2 gap-4">
-                    <div><label>Current GPA</label><input type="text" name="gpa"></div>
-                    <div><label>ACT/SAT Score</label><input type="text" name="testScore"></div>
-                </div>
-                <label>NCAA Eligibility Center Registered?</label>
-                <select name="ncaaStatus"><option>No</option><option>Yes</option></select>
-            </div>
+            <label>Preferred College Size</label>
+            <select id="school_size">
+                <option value="Small">Small (Under 3000)</option>
+                <option value="Medium">Medium (3000-10000)</option>
+                <option value="Large">Large (10000+)</option>
+                <option value="No Preference">No Preference</option>
+            </select>
+        </div>
 
-            <div class="form-section">
-                <h2 class="section-title"><span class="section-number">04</span> Performance Specs</h2>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div><label>Bench</label><input type="text" name="bench"></div>
-                    <div><label>Squat</label><input type="text" name="squat"></div>
-                    <div><label>Clean</label><input type="text" name="clean"></div>
-                    <div><label>40-Yard</label><input type="text" name="fortyDash"></div>
-                </div>
-                <label>Honors / Awards</label>
-                <textarea name="awards" rows="2" placeholder="All-Conference, Captain, etc."></textarea>
-            </div>
+        <div class="form-section">
+            <h2 class="section-title">Top 5 Target Schools</h2>
+            <input type="text" id="school1" placeholder="School 1">
+            <input type="text" id="school2" placeholder="School 2">
+            <input type="text" id="school3" placeholder="School 3">
+            <input type="text" id="school4" placeholder="School 4">
+            <input type="text" id="school5" placeholder="School 5">
+        </div>
 
-            <div class="form-section">
-                <h2 class="section-title"><span class="section-number">05</span> TDL & Character</h2>
-                <label>What does TDL (Toughness, Discipline, Love) mean to you personally?</label>
-                <textarea name="tdlMeaning" rows="4" required placeholder="This is your chance to stand out..."></textarea>
-                
-                <label>Commitment Level (Check all that apply)</label>
-                <div class="checkbox-group">
-                    <div class="check-item"><input type="checkbox" name="liftYearRound"> Lift Year-Round</div>
-                    <div class="check-item"><input type="checkbox" name="attendCamps"> Attend Camps</div>
-                    <div class="check-item"><input type="checkbox" name="improveGPA"> Improve GPA</div>
-                    <div class="check-item"><input type="checkbox" name="coachComm"> Comm. with Coaches</div>
-                </div>
-            </div>
-
-            <button type="submit" class="w-full bg-red-700 hover:bg-red-600 text-white font-black uppercase py-5 rounded-xl shadow-2xl transition-all border-b-4 border-red-900 active:transform active:scale-95">
-                Update Recruiting Profile
-            </button>
-        </form>
-    </main>
-
-    <div class="fixed bottom-0 left-0 w-full p-6 bg-black border-t-2 border-red-900 flex justify-between items-center px-10">
-        <span class="text-xs font-black italic text-red-600 tracking-widest">RACKSTAT</span>
-        <button onclick="location.href='index.html'" class="text-[10px] font-bold uppercase text-gray-500 hover:text-white">Cancel Changes</button>
-    </div>
+        <button type="submit" class="btn-submit">Submit Recruiting Profile</button>
+    </form>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-        // Your Config
         const firebaseConfig = { 
             apiKey: "AIzaSyBdY26nH0CAn05IpjzoFvG5E1H-bv8fPwA", 
             authDomain: "panthertracker-b8ff6.firebaseapp.com", 
             projectId: "panthertracker-b8ff6", 
-            storageBucket: "panthertracker-b8ff6.firebasestorage.app", 
-            messagingSenderId: "647881105335", 
             appId: "1:647881105335:web:bbb79bb3fe9740de1e1232" 
         };
 
@@ -127,25 +158,52 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        let uid = null;
-        onAuthStateChanged(auth, (user) => { if (user) { uid = user.uid; } else { window.location.href='index.html'; } });
+        let currentUser = null;
+        onAuthStateChanged(auth, (user) => { if (user) currentUser = user; else window.location.href='index.html'; });
 
         document.getElementById('recruitingForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            if(!uid) return;
+            if (!currentUser) return;
 
-            const formData = new FormData(e.target);
-            const data = Object.fromEntries(formData.entries());
-            data.lastUpdated = new Date().getTime();
-            data.school = localStorage.getItem('coach_school') || "General";
+            const profileData = {
+                uid: currentUser.uid,
+                lastUpdated: new Date().toISOString(),
+                // Interest
+                interestOverall: document.getElementById('interest_overall').value,
+                divInt: {
+                    fbs: document.getElementById('div_fbs').value,
+                    fcs: document.getElementById('div_fcs').value,
+                    d2: document.getElementById('div_d2').value,
+                    d3: document.getElementById('div_d3').value,
+                    naia: document.getElementById('div_naia').value,
+                    juco: document.getElementById('div_juco').value
+                },
+                // Academics
+                major: document.getElementById('major').value,
+                academicPriority: document.getElementById('academic_priority').value,
+                eligibility: document.getElementById('eligibility').value,
+                longTermGoal: document.getElementById('long_term_goal').value,
+                // Location/Culture
+                distancePref: document.getElementById('distance_pref').value,
+                settingPref: document.getElementById('setting_pref').value,
+                religiousAttend: document.getElementById('religious_attend').value,
+                religiousSpecific: document.getElementById('religious_specific').value,
+                schoolSize: document.getElementById('school_size').value,
+                // Targets
+                targetSchools: [
+                    document.getElementById('school1').value,
+                    document.getElementById('school2').value,
+                    document.getElementById('school3').value,
+                    document.getElementById('school4').value,
+                    document.getElementById('school5').value
+                ]
+            };
 
             try {
-                await setDoc(doc(db, "recruiting_profiles", uid), data);
-                alert("PROFILE SECURED. GET TO WORK.");
-                window.location.href = 'index.html';
-            } catch (err) {
-                alert("Save Failed: " + err.message);
-            }
+                await setDoc(doc(db, "recruiting_profiles", currentUser.uid), profileData, { merge: true });
+                alert("Recruiting Profile Updated!");
+                window.location.href = 'recruiting-card.html';
+            } catch (err) { alert("Error: " + err.message); }
         });
     </script>
 </body>
