@@ -35,7 +35,6 @@
         }
         .content-wrapper { flex: 1; padding: 1.5rem; padding-bottom: 120px; }
 
-        /* Original Footer Branding */
         .school-footer { 
             background: black; 
             border-top: 4px solid #b91c1c; 
@@ -45,7 +44,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            margin-bottom: 60px; /* Room for Legal Bar */
+            margin-bottom: 60px;
         }
         .footer-logo { height: 5rem; width: auto; margin-bottom: 1.5rem; }
         .social-container { display: flex; justify-content: center; gap: 2rem; margin-bottom: 2rem; }
@@ -107,18 +106,6 @@
             <button onclick="location.href='guides.html'" class="menu-btn border-purple-500 w-full"><span>📖 Guides</span><span class="text-purple-500">→</span></button>
             <button onclick="location.href='history.html'" class="menu-btn border-blue-600 w-full"><span>📈 My History</span><span class="text-blue-600">→</span></button>
 
-            <div class="w-full mt-10 pt-6 border-t border-gray-800">
-                <h3 class="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 mb-4 text-center">Support & Feedback</h3>
-                <div class="grid grid-cols-1 gap-3">
-                    <a href="tel:6149496195" class="flex items-center justify-between bg-gray-800/50 p-4 rounded-xl border border-gray-700 hover:border-blue-500">
-                        <div class="flex items-center gap-3"><span>📱</span><div><p class="text-[10px] font-bold text-gray-400 uppercase">Call or Text</p><p class="font-black text-blue-400">614-949-6195</p></div></div>
-                    </a>
-                    <a href="mailto:seandief@gmail.com" class="flex items-center justify-between bg-gray-800/50 p-4 rounded-xl border border-gray-700 hover:border-orange-500">
-                        <div class="flex items-center gap-3"><span>✉️</span><div><p class="text-[10px] font-bold text-gray-400 uppercase">Email Coach Dief</p><p class="font-black text-orange-400">seandief@gmail.com</p></div></div>
-                    </a>
-                </div>
-            </div>
-
             <button onclick="handleLogout()" class="w-full py-12 text-[10px] font-black uppercase text-gray-600 tracking-widest">Sign Out</button>
         </div>
     </div>
@@ -126,9 +113,9 @@
     <footer class="school-footer">
         <img src="logo1.png" alt="Panther" class="footer-logo">
         <div class="social-container">
-            <a href="https://facebook.com/..." target="_blank"><img src="facebook.png" alt="FB" class="social-icon"></a>
-            <a href="https://instagram.com/..." target="_blank"><img src="instagram.jpg" alt="IG" class="social-icon"></a>
-            <a href="https://hudl.com/..." target="_blank"><img src="hudl.png" alt="Hudl" class="social-icon"></a>
+            <a href="https://facebook.com/" target="_blank"><img src="facebook.png" alt="FB" class="social-icon"></a>
+            <a href="https://instagram.com/" target="_blank"><img src="instagram.jpg" alt="IG" class="social-icon"></a>
+            <a href="https://hudl.com/" target="_blank"><img src="hudl.png" alt="Hudl" class="social-icon"></a>
         </div>
         <span class="tdl-branding">TDL</span>
     </footer>
@@ -145,11 +132,10 @@
         <div class="bg-gray-900 border border-blue-900/30 max-w-lg w-full rounded-3xl p-8 max-h-[80vh] overflow-y-auto shadow-2xl">
             <h2 class="text-xl font-black italic uppercase text-blue-500 mb-6">Privacy & Data Policy</h2>
             <div class="space-y-6 text-xs text-gray-400 leading-relaxed font-medium">
-                <p><strong class="text-white">1. Data Ownership (SB29):</strong> All student athlete records remain the property of the Educational Institution. RACKSTAT acts as a service provider.</p>
-                <p><strong class="text-white">2. Collection:</strong> We collect student names and athletic metrics strictly for performance tracking.</p>
-                <p><strong class="text-white">3. Right to Deletion:</strong> Parents may request deletion via the school's athletic department.</p>
+                <p><strong class="text-white">1. Data Ownership (SB29):</strong> All records remain school property.</p>
+                <p><strong class="text-white">2. Collection:</strong> Names and metrics for athletic use only.</p>
             </div>
-            <button onclick="closePrivacyModal()" class="w-full mt-8 bg-blue-600 py-4 rounded-xl font-black uppercase italic">Close Policy</button>
+            <button onclick="closePrivacyModal()" class="w-full mt-8 bg-blue-600 py-4 rounded-xl font-black uppercase italic">Close</button>
         </div>
     </div>
 
@@ -157,17 +143,16 @@
         <div class="bg-gray-900 border border-blue-900/30 max-w-lg w-full rounded-3xl p-8 max-h-[80vh] overflow-y-auto shadow-2xl">
             <h2 class="text-xl font-black italic uppercase text-blue-500 mb-6">Terms of Service</h2>
             <div class="space-y-6 text-xs text-gray-400 leading-relaxed font-medium">
-                <p><strong class="text-white">1. Acceptance of Risk:</strong> Weightlifting carries inherent risks. RACKSTAT is not liable for training-related injuries.</p>
-                <p><strong class="text-white">2. Prohibited Use:</strong> Users may not scrape or redistribute RACKSTAT data.</p>
+                <p><strong class="text-white">1. Acceptance of Risk:</strong> Weightlifting involves risk.</p>
             </div>
-            <button onclick="closeTermsModal()" class="w-full mt-8 bg-blue-600 py-4 rounded-xl font-black uppercase italic text-white">I Understand & Agree</button>
+            <button onclick="closeTermsModal()" class="w-full mt-8 bg-blue-600 py-4 rounded-xl font-black uppercase italic text-white">Agree</button>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = { 
             apiKey: "AIzaSyBdY26nH0CAn05IpjzoFvG5E1H-bv8fPwA", 
@@ -182,21 +167,67 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // GLOBAL MODAL CONTROLS
+        // MODAL CONTROLS
         window.openPrivacyModal = () => document.getElementById('privacy-modal').classList.remove('hidden');
         window.closePrivacyModal = () => document.getElementById('privacy-modal').classList.add('hidden');
         window.openTermsModal = () => document.getElementById('terms-modal').classList.remove('hidden');
         window.closeTermsModal = () => document.getElementById('terms-modal').classList.add('hidden');
 
-        // WATCHER
+        // LOGIN FUNCTION
+        window.handleLogin = async () => {
+            const email = document.getElementById('email').value.trim();
+            const pass = document.getElementById('password').value;
+            if (!email || !pass) return alert("Please enter both email and password.");
+
+            try { 
+                const userCredential = await signInWithEmailAndPassword(auth, email, pass);
+                const user = userCredential.user;
+                
+                // Update Last Login
+                await updateDoc(doc(db, "players", user.uid), {
+                    lastLogin: new Date().getTime()
+                });
+
+                // Get role to redirect
+                const userSnap = await getDoc(doc(db, "players", user.uid));
+                if (userSnap.exists()) {
+                    const userData = userSnap.data();
+                    localStorage.setItem('user_role', userData.role);
+                    localStorage.setItem('coach_school', userData.school);
+
+                    if (userData.role === 'coach') {
+                        location.href = 'coach.html';
+                    } else {
+                        // Athlete stays on index.html but sees the menu
+                        location.reload(); 
+                    }
+                }
+            } catch (e) { 
+                alert("Login failed: " + e.message); 
+            }
+        };
+
+        // LOGOUT FUNCTION
+        window.handleLogout = async () => {
+            await signOut(auth);
+            localStorage.clear();
+            location.reload();
+        };
+
+        // AUTH WATCHER
         onAuthStateChanged(auth, async (user) => {
             const authSection = document.getElementById('auth-section');
             const mainMenu = document.getElementById('main-menu');
+            
             if (user) {
                 const userSnap = await getDoc(doc(db, "players", user.uid));
                 if (userSnap.exists()) {
                     const userData = userSnap.data();
-                    if (userData.role === "coach") { window.location.href = "coach.html"; return; }
+                    // If coach logs in, send them to their special page
+                    if (userData.role === "coach" && !window.location.href.includes("coach.html")) { 
+                        window.location.href = "coach.html"; 
+                        return; 
+                    }
                     authSection.classList.add('hidden');
                     mainMenu.classList.remove('hidden');
                     document.getElementById('welcome-msg').innerText = `Welcome, ${userData.playerName || userData.firstName || 'Athlete'}`;
@@ -206,37 +237,6 @@
                 mainMenu.classList.add('hidden');
             }
         });
-
-        window.handleLogin = async () => {
-            const email = document.getElementById('email').value.trim();
-            const pass = document.getElementById('password').value;
-
-            if (!email || !pass) return alert("Please enter both email and password.");
-
-            try { 
-                // 1. Authenticate with Firebase Auth
-                const userCredential = await signInWithEmailAndPassword(auth, email, pass);
-                const user = userCredential.user;
-
-                // 2. Update the Last Login timestamp in Firestore
-                // We use the Auth UID to reference the document
-                const userRef = doc(db, "players", user.uid);
-                
-                await updateDoc(userRef, {
-                    lastLogin: new Date().getTime()
-                });
-
-                // 3. Redirect based on role (assuming you have logic elsewhere to check if coach)
-                // location.href = 'dashboard.html'; 
-
-            } catch (e) { 
-                alert("Login failed: " + e.message); 
-            }
-        };
-
-        window.handleLogout = () => {
-            signOut(auth).then(() => window.location.reload());
-        };
     </script>
 </body>
 </html>
