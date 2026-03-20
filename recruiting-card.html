@@ -7,30 +7,35 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { background-color: #000000; color: #ffffff; font-family: sans-serif; }
-        .stat-card { background: #111111; border: 1px solid #222222; padding: 1.5rem; border-radius: 1rem; }
-        .label { font-size: 0.65rem; font-weight: 900; text-transform: uppercase; color: #b91c1c; letter-spacing: 0.1em; }
-        .value { font-size: 1.25rem; font-weight: 900; font-style: italic; text-transform: uppercase; }
-        .section-header { border-left: 4px solid #b91c1c; padding-left: 1rem; margin: 2rem 0 1rem 0; font-weight: 900; text-transform: uppercase; font-style: italic; }
+        .stat-card { background: #111111; border: 1px solid #222222; padding: 1.25rem; border-radius: 1rem; }
+        .label { font-size: 0.6rem; font-weight: 900; text-transform: uppercase; color: #b91c1c; letter-spacing: 0.1em; margin-bottom: 2px; }
+        .value { font-size: 1.15rem; font-weight: 900; font-style: italic; text-transform: uppercase; }
+        .section-header { border-left: 4px solid #b91c1c; padding-left: 1rem; margin: 2rem 0 1rem 0; font-weight: 900; text-transform: uppercase; font-style: italic; font-size: 1.1rem; }
         .btn-red { background: #b91c1c; color: white; font-weight: 900; text-transform: uppercase; padding: 1rem; border-radius: 0.75rem; transition: all 0.2s; border-bottom: 4px solid #7f1d1d; }
         .btn-red:active { transform: scale(0.95); border-bottom-width: 0; }
+        .badge { display: inline-block; background: #222; color: #aaa; font-size: 10px; padding: 4px 8px; border-radius: 4px; margin-right: 5px; margin-bottom: 5px; font-weight: 800; text-transform: uppercase; border: 1px solid #333; }
+        
         @media print {
             .no-print { display: none !important; }
             body { background: white !important; color: black !important; padding: 0 !important; }
-            .stat-card { border: 1px solid #000 !important; background: white !important; color: black !important; box-shadow: none !important; }
-            .section-header { color: black !important; border-left: 4px solid #000 !important; }
+            .stat-card { border: 1px solid #ddd !important; background: white !important; color: black !important; box-shadow: none !important; margin-bottom: 10px; }
+            .section-header { color: black !important; border-left: 4px solid #b91c1c !important; }
             .value { color: black !important; }
-            .label { color: #666 !important; }
+            .label { color: #b91c1c !important; }
+            .badge { border: 1px solid #ccc !important; color: black !important; }
         }
     </style>
 </head>
 <body class="pb-20">
 
-    <header class="p-6 border-b-4 border-red-700 bg-black sticky top-0 z-50 flex justify-between items-center">
+    <header class="p-6 border-b-4 border-red-700 bg-black sticky top-0 z-50 flex justify-between items-center no-print">
         <div>
-            <h1 class="text-2xl font-black italic uppercase">Recruiting <span class="text-red-600">Card</span></h1>
+            <h1 class="text-2xl font-black italic uppercase italic">Recruiting <span class="text-red-600">Card</span></h1>
             <p id="player-school" class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Loading Profile...</p>
         </div>
-        <button onclick="location.href='index.html'" class="text-xs font-bold uppercase bg-gray-900 px-4 py-2 rounded-lg border border-gray-700">Lobby</button>
+        <button onclick="location.href='coach-dash.html'" class="text-[10px] font-black uppercase bg-gray-900 px-4 py-2 rounded-lg border border-gray-700 hover:bg-red-700 hover:border-red-600 transition-all text-white">
+            Back to Roster
+        </button>
     </header>
 
     <div class="max-w-4xl mx-auto px-6 mt-4 no-print flex justify-end">
@@ -38,65 +43,78 @@
             Print / Save as PDF
         </button>
     </div>
+    
     <main class="max-w-4xl mx-auto p-6">
-        
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div class="stat-card text-center">
-                <p class="label">Name</p>
-                <p id="card-name" class="value">---</p>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="stat-card text-center"><p class="label">Name</p><p id="card-name" class="value">---</p></div>
+                <div class="stat-card text-center"><p class="label">Class</p><p id="card-class" class="value">---</p></div>
+                <div class="stat-card text-center"><p class="label">HT/WT</p><p id="card-htwt" class="value">---</p></div>
+                <div class="stat-card text-center"><p class="label">Position</p><p id="card-pos" class="value">---</p></div>
             </div>
-            <div class="stat-card text-center">
-                <p class="label">Class</p>
-                <p id="card-class" class="value">---</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <a id="link-hudl" href="#" target="_blank" class="stat-card flex items-center justify-between hover:border-red-600 transition-colors">
+                    <span class="label">Film / Highlights</span>
+                    <span class="text-red-600 font-black">VIEW HUDL →</span>
+                </a>
+                <div class="stat-card flex items-center justify-between">
+                    <span class="label">Status</span>
+                    <span id="card-wantsPlay" class="text-white font-black italic uppercase text-xs">---</span>
+                </div>
             </div>
-            <div class="stat-card text-center">
-                <p class="label">HT/WT</p>
-                <p id="card-htwt" class="value">---</p>
+
+            <h2 class="section-header">Performance Metrics</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="stat-card"><p class="label">Bench</p><p id="card-bench" class="value">---</p></div>
+                <div class="stat-card"><p class="label">Squat</p><p id="card-squat" class="value">---</p></div>
+                <div class="stat-card"><p class="label">Clean</p><p id="card-clean" class="value">---</p></div>
+                <div class="stat-card"><p class="label">40-Yard</p><p id="card-40" class="value">---</p></div>
             </div>
-            <div class="stat-card text-center">
-                <p class="label">Position</p>
-                <p id="card-pos" class="value">---</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                <div>
+                    <h2 class="section-header">Academic Profile</h2>
+                    <div class="stat-card space-y-4">
+                        <div class="flex justify-between">
+                            <div><p class="label">GPA</p><p id="card-gpa" class="value">---</p></div>
+                            <div><p class="label">NCAA ID</p><p id="card-ncaa" class="value">---</p></div>
+                        </div>
+                        <div><p class="label">Intended Major</p><p id="card-major" class="text-sm font-bold text-gray-300">---</p></div>
+                    </div>
+                </div>
+                <div>
+                    <h2 class="section-header">College Preferences</h2>
+                    <div class="stat-card space-y-2">
+                        <p class="label">Target Environment</p>
+                        <p id="card-env" class="text-sm font-bold text-gray-300 uppercase">---</p>
+                        <p class="label">Location Pref</p>
+                        <p id="card-loc" class="text-sm font-bold text-gray-300 uppercase">---</p>
+                    </div>
+                </div>
             </div>
-        </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-            <a id="link-hudl" href="#" target="_blank" class="stat-card flex items-center justify-between hover:border-red-600 transition-colors">
-                <span class="label">HUDL Highlights</span>
-                <span class="text-red-600 font-black">VIEW →</span>
-            </a>
-            <a id="link-twitter" href="#" target="_blank" class="stat-card flex items-center justify-between hover:border-blue-500 transition-colors">
-                <span class="label">X / Twitter</span>
-                <span class="text-blue-400 font-black">VISIT →</span>
-            </a>
-        </div>
-
-        <h2 class="section-header">Performance Metrics</h2>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div class="stat-card"><p class="label">Bench</p><p id="card-bench" class="value">---</p></div>
-            <div class="stat-card"><p class="label">Squat</p><p id="card-squat" class="value">---</p></div>
-            <div class="stat-card"><p class="label">Clean</p><p id="card-clean" class="value">---</p></div>
-            <div class="stat-card"><p class="label">40-Yard</p><p id="card-40" class="value">---</p></div>
-        </div>
-
-        <h2 class="section-header">Academics</h2>
-        <div class="stat-card">
-            <div class="flex justify-between items-center mb-4">
-                <div><p class="label">GPA</p><p id="card-gpa" class="value">---</p></div>
-                <div><p class="label">NCAA Registered</p><p id="card-ncaa" class="value">---</p></div>
+            <h2 class="section-header">Commitment & Training</h2>
+            <div class="stat-card">
+                <div id="card-commitments" class="flex flex-wrap">
+                    </div>
             </div>
-            <p class="label">Intended Major</p>
-            <p id="card-major" class="text-sm font-bold text-gray-300">---</p>
-        </div>
 
-        <h2 class="section-header">TDL Statement</h2>
-        <div class="stat-card bg-red-900/10 border-red-900/30">
-            <p id="card-tdl" class="text-sm italic leading-relaxed text-gray-300">Profile statement not yet provided...</p>
-        </div>
+            <h2 class="section-header">TDL Personal Statement</h2>
+            <div class="stat-card bg-red-900/10 border-red-900/30">
+                <p id="card-tdl" class="text-sm italic leading-relaxed text-gray-300">"Statement pending..."</p>
+            </div>
 
-        <div class="mt-10">
-            <button onclick="location.href='next-level.html'" class="btn-red w-full">Edit My Profile</button>
-        </div>
-    </main>
+            <div class="mt-10 no-print space-y-3">
+                <button onclick="window.print()" class="btn-red w-full">
+                    Download PDF Scouting Sheet
+                </button>
+                
+                <button id="edit-profile-btn" onclick="location.href='next-level.html'" class="w-full bg-gray-900 text-gray-400 font-bold uppercase py-4 rounded-xl border border-gray-800 hover:text-white hover:border-gray-600 transition-all hidden">
+                    Edit My Profile
+                </button>
+            </div>
+        </main>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -107,8 +125,6 @@
             apiKey: "AIzaSyBdY26nH0CAn05IpjzoFvG5E1H-bv8fPwA", 
             authDomain: "panthertracker-b8ff6.firebaseapp.com", 
             projectId: "panthertracker-b8ff6", 
-            storageBucket: "panthertracker-b8ff6.firebasestorage.app", 
-            messagingSenderId: "647881105335", 
             appId: "1:647881105335:web:bbb79bb3fe9740de1e1232" 
         };
 
@@ -116,46 +132,73 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                const docRef = doc(db, "recruiting_profiles", user.uid);
-                const docSnap = await getDoc(docRef);
+    onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    // NEW: Check if a specific athlete ID was passed in the URL (Coach View)
+                    // Otherwise, use the currently logged-in user's ID (Athlete View)
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const targetUid = urlParams.get('uid') || user.uid; 
 
-                if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    
-                    // Fill Vitals
-                    document.getElementById('card-name').innerText = data.fullName || "N/A";
-                    document.getElementById('card-class').innerText = data.gradYear || "N/A";
-                    document.getElementById('card-htwt').innerText = `${data.height || '--'} / ${data.weight || '--'}`;
-                    document.getElementById('card-pos').innerText = data.primaryPos || "N/A";
-                    document.getElementById('player-school').innerText = data.school || "RACKSTAT ATHLETE";
+                    const docRef = doc(db, "recruiting_profiles", targetUid);
+                    const docSnap = await getDoc(docRef);
 
-                    // Links
-                    if(data.hudlUrl) document.getElementById('link-hudl').href = data.hudlUrl;
-                    if(data.twitterUrl) document.getElementById('link-twitter').href = data.twitterUrl;
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        
+                        // Basic Info
+                        document.getElementById('card-name').innerText = data.fullName || "---";
+                        document.getElementById('card-class').innerText = data.gradYear || "---";
+                        document.getElementById('card-htwt').innerText = `${data.height || '--'} / ${data.weight || '--'}`;
+                        document.getElementById('card-pos').innerText = data.primaryPos || "---";
+                        document.getElementById('player-school').innerText = `${data.school || 'Fairbanks'} ATHLETICS`;
+                        document.getElementById('card-wantsPlay').innerText = data.wantsToPlay || "---";
 
-                    // Performance
-                    document.getElementById('card-bench').innerText = data.bench || "---";
-                    document.getElementById('card-squat').innerText = data.squat || "---";
-                    document.getElementById('card-clean').innerText = data.clean || "---";
-                    document.getElementById('card-40').innerText = data.fortyDash || "---";
+                        // Links
+                        const hudl = document.getElementById('link-hudl');
+                        if(data.highlightUrl) { 
+                            hudl.href = data.highlightUrl; 
+                            hudl.classList.remove('opacity-50','pointer-events-none');
+                        } else { 
+                            hudl.classList.add('opacity-50','pointer-events-none'); 
+                        }
 
-                    // Academics
-                    document.getElementById('card-gpa').innerText = data.gpa || "N/A";
-                    document.getElementById('card-ncaa').innerText = data.ncaaStatus || "N/A";
-                    document.getElementById('card-major').innerText = data.major || "N/A";
+                        // Performance
+                        document.getElementById('card-bench').innerText = data.bench || "---";
+                        document.getElementById('card-squat').innerText = data.squat || "---";
+                        document.getElementById('card-clean').innerText = data.clean || "---";
+                        document.getElementById('card-40').innerText = data.fortyDash || "---";
 
-                    // Character
-                    document.getElementById('card-tdl').innerText = `"${data.tdlMeaning}"` || "Statement pending...";
-                } else {
-                    alert("No recruiting profile found. Please fill out the form first!");
-                    window.location.href = 'next-level.html';
+                        // Academics
+                        document.getElementById('card-gpa').innerText = data.gpa || "---";
+                        document.getElementById('card-ncaa').innerText = data.ncaaReg || "NO";
+                        document.getElementById('card-major').innerText = data.major || "---";
+
+                        // Preferences
+                        document.getElementById('card-env').innerText = data.prefEnv || "---";
+                        document.getElementById('card-loc').innerText = data.prefLoc || "---";
+
+                        // Commitments (Badges)
+                        const commitBox = document.getElementById('card-commitments');
+                        commitBox.innerHTML = "";
+                        if(data.commitments && data.commitments.length > 0) {
+                            data.commitments.forEach(c => {
+                                const b = document.createElement('span');
+                                b.className = "badge";
+                                b.innerText = c;
+                                commitBox.appendChild(b);
+                            });
+                        } else { commitBox.innerText = "No specific commitments selected."; }
+
+                        // TDL
+                        document.getElementById('card-tdl').innerText = data.tdlMeaning ? `"${data.tdlMeaning}"` : "Character statement pending...";
+                    } else {
+                        // Fallback if the profile doesn't exist
+                        document.getElementById('card-name').innerText = "Profile Not Found";
+                    }
+                } else { 
+                    window.location.href = 'index.html'; 
                 }
-            } else {
-                window.location.href = 'index.html';
-            }
-        });
+            });
     </script>
 </body>
 </html>

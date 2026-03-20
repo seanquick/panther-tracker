@@ -7,45 +7,61 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { background-color: #000000; color: #ffffff; font-family: sans-serif; }
-        .roster-card { background: #111111; border: 1px solid #222222; transition: all 0.2s; }
-        .roster-card:hover { border-color: #b91c1c; background: #161616; }
-        .badge { font-size: 0.6rem; font-weight: 900; padding: 2px 8px; border-radius: 4px; text-transform: uppercase; }
+        .badge { font-size: 0.55rem; font-weight: 900; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
         .status-complete { background: #065f46; color: #34d399; }
         .status-pending { background: #7c2d12; color: #fb923c; }
+        th { font-size: 0.65rem; color: #666; text-transform: uppercase; letter-spacing: 0.1em; border-bottom: 2px solid #222; padding-bottom: 10px; }
+        
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white; color: black; }
+            th, td { border: 1px solid #ddd; padding: 8px; color: black !important; }
+        }
     </style>
 </head>
 <body class="pb-20">
 
-    <header class="p-8 border-b-4 border-red-700 bg-black sticky top-0 z-50 flex justify-between items-center">
+    <header class="p-6 border-b-4 border-red-700 bg-black sticky top-0 z-50 flex justify-between items-center no-print">
         <div>
             <h1 class="text-2xl font-black italic uppercase">Coach <span class="text-red-600">Dashboard</span></h1>
-            <p id="school-name" class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Roster Management</p>
+            <p id="school-name" class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Recruiting Management</p>
         </div>
-        <button onclick="location.href='index.html'" class="text-xs font-bold uppercase bg-gray-900 px-4 py-2 rounded-lg">Lobby</button>
+        <div class="flex gap-3">
+            <button onclick="window.print()" class="text-[10px] font-black uppercase bg-red-700 px-4 py-2 rounded-lg hover:bg-red-600 transition-colors">Print Roster</button>
+            <button onclick="location.href='index.html'" class="text-[10px] font-black uppercase bg-gray-900 px-4 py-2 rounded-lg border border-gray-700 text-white">Lobby</button>
+        </div>
     </header>
 
-    <main class="max-w-5xl mx-auto p-6">
-        <div class="flex justify-between items-center mb-6">
-            <h2 class="text-xl font-black italic uppercase">Recruiting Roster</h2>
+    <main class="max-w-6xl mx-auto p-6">
+        <div class="flex justify-between items-end mb-8">
+            <div>
+                <h2 class="text-2xl font-black italic uppercase">Prospect Roster</h2>
+                <p class="text-xs text-gray-500 font-bold uppercase">Recruiting Pipeline</p>
+            </div>
             <div class="text-right">
-                <p id="roster-count" class="text-xs font-bold text-gray-500">0 ATHLETES FOUND</p>
+                <p id="roster-count" class="text-2xl font-black text-red-600 italic">0</p>
+                <p class="text-[10px] font-bold text-gray-500 uppercase">Active Profiles</p>
             </div>
         </div>
 
+        <div class="mb-6 no-print">
+            <input type="text" id="rosterSearch" placeholder="SEARCH BY NAME OR POSITION..." class="w-full bg-black border border-gray-800 p-3 rounded-lg text-xs font-bold uppercase tracking-widest focus:border-red-600 outline-none text-white">
+        </div>
+
         <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
+            <table class="w-full text-left">
                 <thead>
-                    <tr class="text-[10px] uppercase tracking-widest text-gray-500 border-b border-gray-800">
-                        <th class="pb-4 px-2">Athlete</th>
-                        <th class="pb-4 px-2">Class</th>
-                        <th class="pb-4 px-2">Position</th>
-                        <th class="pb-4 px-2">GPA</th>
-                        <th class="pb-4 px-2">Status</th>
-                        <th class="pb-4 px-2 text-right">Action</th>
+                    <tr>
+                        <th class="px-2">Athlete</th>
+                        <th class="px-2 text-center">Class</th>
+                        <th class="px-2 text-center">Pos</th>
+                        <th class="px-2 text-center">HT/WT</th>
+                        <th class="px-2 text-center">GPA</th>
+                        <th class="px-2 text-center">TDL</th>
+                        <th class="px-2 text-right">Action</th>
                     </tr>
                 </thead>
-                <tbody id="roster-list">
-                    </tbody>
+                <tbody id="roster-list"></tbody>
             </table>
         </div>
     </main>
@@ -58,8 +74,6 @@
             apiKey: "AIzaSyBdY26nH0CAn05IpjzoFvG5E1H-bv8fPwA", 
             authDomain: "panthertracker-b8ff6.firebaseapp.com", 
             projectId: "panthertracker-b8ff6", 
-            storageBucket: "panthertracker-b8ff6.firebasestorage.app", 
-            messagingSenderId: "647881105335", 
             appId: "1:647881105335:web:bbb79bb3fe9740de1e1232" 
         };
 
@@ -67,39 +81,45 @@
         const db = getFirestore(app);
 
         async function loadRoster() {
-            const school = localStorage.getItem('coach_school') || "Fairbanks";
+            const school = "Fairbanks"; 
             document.getElementById('school-name').innerText = `${school} High School`;
 
             const q = query(collection(db, "recruiting_profiles"), where("school", "==", school));
             const querySnapshot = await getDocs(q);
             const list = document.getElementById('roster-list');
             list.innerHTML = "";
-
-            document.getElementById('roster-count').innerText = `${querySnapshot.size} ATHLETES FOUND`;
+            document.getElementById('roster-count').innerText = querySnapshot.size;
 
             querySnapshot.forEach((doc) => {
                 const p = doc.data();
                 const tr = document.createElement('tr');
-                tr.className = "border-b border-gray-900 hover:bg-red-950/10 transition-colors cursor-pointer";
-                tr.onclick = () => { location.href = `recruiting-card.html?id=${doc.id}`; };
-
+                tr.className = "border-b border-gray-900 hover:bg-red-950/10 transition-colors";
+                
                 tr.innerHTML = `
-                    <td class="py-4 px-2 font-black italic uppercase">${p.fullName || 'Unknown'}</td>
-                    <td class="py-4 px-2 text-gray-400 font-bold">${p.gradYear || '----'}</td>
-                    <td class="py-4 px-2 text-red-500 font-bold">${p.primaryPos || '---'}</td>
-                    <td class="py-4 px-2 text-green-400 font-mono">${p.gpa || '0.00'}</td>
-                    <td class="py-4 px-2">
+                    <td class="py-5 px-2 font-black italic uppercase text-sm">${p.fullName || '---'}</td>
+                    <td class="py-5 px-2 text-center text-gray-400 font-bold text-xs">${p.gradYear || '----'}</td>
+                    <td class="py-5 px-2 text-center text-red-500 font-black italic text-xs">${p.primaryPos || '---'}</td>
+                    <td class="py-5 px-2 text-center text-gray-300 font-bold text-[11px]">${p.height || '--'}/${p.weight || '--'}</td>
+                    <td class="py-5 px-2 text-center text-green-400 font-mono text-xs font-bold">${p.gpa || '0.0'}</td>
+                    <td class="py-5 px-2 text-center">
                         <span class="badge ${p.tdlMeaning ? 'status-complete' : 'status-pending'}">
-                            ${p.tdlMeaning ? 'Profile Ready' : 'Incomplete'}
+                            ${p.tdlMeaning ? 'READY' : 'INCOMPLETE'}
                         </span>
                     </td>
-                    <td class="py-4 px-2 text-right">
-                        <button class="text-[10px] font-black uppercase text-gray-500 hover:text-white underline">View Card</button>
+                    <td class="py-5 px-2 text-right">
+                        <button onclick="location.href='recruiting-card.html?uid=${doc.id}'" class="bg-gray-900 hover:bg-red-700 text-[9px] font-black uppercase px-3 py-1 rounded transition-all text-white">View Card</button>
                     </td>
                 `;
                 list.appendChild(tr);
             });
         }
+
+        document.getElementById('rosterSearch').addEventListener('input', (e) => {
+            const val = e.target.value.toLowerCase();
+            document.querySelectorAll('#roster-list tr').forEach(row => {
+                row.style.display = row.innerText.toLowerCase().includes(val) ? '' : 'none';
+            });
+        });
 
         loadRoster();
     </script>
