@@ -210,9 +210,28 @@
         window.handleLogin = async () => {
             const email = document.getElementById('email').value.trim();
             const pass = document.getElementById('password').value;
+
             if (!email || !pass) return alert("Please enter both email and password.");
-            try { await signInWithEmailAndPassword(auth, email, pass); } 
-            catch (e) { alert("Login failed: " + e.message); }
+
+            try { 
+                // 1. Authenticate with Firebase Auth
+                const userCredential = await signInWithEmailAndPassword(auth, email, pass);
+                const user = userCredential.user;
+
+                // 2. Update the Last Login timestamp in Firestore
+                // We use the Auth UID to reference the document
+                const userRef = doc(db, "players", user.uid);
+                
+                await updateDoc(userRef, {
+                    lastLogin: new Date().getTime()
+                });
+
+                // 3. Redirect based on role (assuming you have logic elsewhere to check if coach)
+                // location.href = 'dashboard.html'; 
+
+            } catch (e) { 
+                alert("Login failed: " + e.message); 
+            }
         };
 
         window.handleLogout = () => {

@@ -7,11 +7,16 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { background-color: #0f172a; color: white; min-height: 100vh; font-family: sans-serif; }
-        input, select { background-color: #1e293b !important; color: white !important; border: 1px solid #334155 !important; padding: 0.75rem !important; border-radius: 0.75rem !important; }
+        input, select { background-color: #1e293b !important; color: white !important; border: 1px solid #334155 !important; padding: 0.6rem !important; border-radius: 0.5rem !important; }
+        .table-container { overflow-x: auto; background: rgba(15, 23, 42, 0.8); border-radius: 1rem; border: 1px solid #1e293b; }
+        th { text-align: left; padding: 1rem; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: #64748b; border-bottom: 1px solid #1e293b; }
+        td { padding: 1rem; font-size: 13px; border-bottom: 1px solid #0f172a; }
+        tr:hover { background: rgba(37, 99, 235, 0.05); }
+        .date-cell { font-family: monospace; font-size: 10px; color: #94a3b8; }
     </style>
 </head>
-<body class="p-6">
-    <header class="max-w-2xl mx-auto mb-6 flex justify-between items-center">
+<body class="p-4 md:p-6">
+    <header class="max-w-4xl mx-auto mb-6 flex justify-between items-center">
         <div>
             <h1 class="text-2xl font-black italic uppercase">Manage <span class="text-blue-600">Personnel</span></h1>
             <p id="school-display" class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Loading School...</p>
@@ -19,44 +24,70 @@
         <button onclick="location.href='coach.html'" class="bg-gray-800 px-4 py-2 rounded text-[10px] font-black uppercase tracking-tighter hover:bg-gray-700">← Back</button>
     </header>
 
-    <main class="max-w-2xl mx-auto space-y-4 pb-20">
+    <main class="max-w-4xl mx-auto space-y-6 pb-20">
         
-        <section class="bg-gray-900/50 border border-blue-900/30 p-6 rounded-2xl mb-8 shadow-xl">
-            <h2 class="text-xs font-black uppercase italic text-blue-500 mb-4 tracking-widest text-center">Quick Add New Member</h2>
-            <div class="grid grid-cols-2 gap-3">
+        <section class="bg-gray-900/50 border border-blue-900/30 p-6 rounded-2xl shadow-xl">
+            <h2 class="text-xs font-black uppercase italic text-blue-500 mb-4 tracking-widest">Quick Add New Member</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
                 <input type="text" id="new-first" placeholder="First Name" class="text-sm">
                 <input type="text" id="new-last" placeholder="Last Name" class="text-sm">
                 <select id="new-role" class="text-sm">
                     <option value="player">Athlete</option>
                     <option value="coach">Coach</option>
                 </select>
-                <button onclick="manualAddUser()" class="bg-blue-600 hover:bg-blue-500 font-black uppercase italic text-[10px] rounded-xl transition-all active:scale-95">Add to System</button>
+                <button onclick="manualAddUser()" class="bg-blue-600 hover:bg-blue-500 font-black uppercase italic text-[10px] rounded-lg transition-all active:scale-95">Add to System</button>
             </div>
         </section>
 
-        <div class="grid grid-cols-2 gap-3 mb-6">
-            <input type="text" id="name-search" placeholder="Search Name..." onkeyup="filterRoster()" class="text-sm">
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-3 bg-gray-900/30 p-4 rounded-xl border border-gray-800">
+            <div class="md:col-span-2 flex gap-2">
+                <input type="text" id="name-search" placeholder="Search Name..." class="text-sm w-full">
+                <button onclick="filterRoster()" class="bg-blue-600 px-3 rounded-lg text-[10px] font-black uppercase">Search</button>
+            </div>
             <select id="role-filter" onchange="filterRoster()" class="text-sm">
                 <option value="all">All Roles</option>
-                <option value="player">Athletes Only</option>
-                <option value="coach">Coaches Only</option>
+                <option value="player">Athletes</option>
+                <option value="coach">Coaches</option>
+            </select>
+            <select id="grade-filter" onchange="filterRoster()" class="text-sm">
+                <option value="all">All Grades</option>
+                <option value="9">9th Grade</option>
+                <option value="10">10th Grade</option>
+                <option value="11">11th Grade</option>
+                <option value="12">12th Grade</option>
+                <option value="Graduated">Graduated</option>
+            </select>
+            <select id="sort-by" onchange="filterRoster()" class="text-sm">
+                <option value="name">Sort: A-Z</option>
+                <option value="grade">Sort: Grade</option>
+                <option value="role">Sort: Role</option>
             </select>
         </div>
 
-        <div id="roster-list" class="space-y-3">
-            <p class="text-center animate-pulse uppercase font-bold text-xs text-gray-600">Loading Personnel...</p>
+        <div class="table-container">
+            <table class="w-full border-collapse">
+                <thead>
+                    <tr>
+                        <th>Role</th>
+                        <th>Full Name</th>
+                        <th>Grade</th>
+                        <th>Registered</th>
+                        <th>Last Login</th>
+                        <th>Verified</th>
+                        <th class="text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="roster-tbody">
+                </tbody>
+            </table>
+            <div id="empty-state" class="hidden py-20 text-center">
+                <p class="uppercase font-bold text-xs text-gray-600">No personnel found.</p>
+            </div>
         </div>
 
-        <div class="mt-12 pt-8 border-t border-gray-800">
-            <h3 class="text-sm font-black uppercase italic text-gray-500 mb-4 tracking-widest text-center">System Tools</h3>
-            <div class="grid grid-cols-1 gap-3">
-                <button onclick="massPromote()" class="w-full bg-blue-600 hover:bg-blue-500 py-4 rounded-xl font-black uppercase italic shadow-lg transition-all border-b-4 border-blue-900">
-                    🚀 Mass Promote Athlete Grades
-                </button>
-                <button onclick="resetLeaderboards()" class="w-full bg-red-900/50 hover:bg-red-800 py-4 rounded-xl font-black uppercase italic shadow-lg transition-all border border-red-500/30 text-red-400">
-                    🧹 Reset All Logs (Wipe Data)
-                </button>
-            </div>
+        <div class="mt-12 pt-8 border-t border-gray-800 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <button onclick="massPromote()" class="bg-blue-600/20 hover:bg-blue-600/40 p-3 rounded-xl text-[10px] font-black uppercase border border-blue-500/30">🚀 Mass Promote Grades</button>
+            <button onclick="resetLeaderboards()" class="bg-red-900/10 hover:bg-red-900/30 p-3 rounded-xl text-[10px] font-black uppercase border border-red-900/30 text-red-500">🧹 Wipe School Data</button>
         </div>
     </main>
 
@@ -66,9 +97,7 @@
                 <h2 class="text-xl font-black italic uppercase">Edit <span id="edit-name-header" class="text-blue-500">Member</span></h2>
                 <button onclick="closeEditModal()" class="text-gray-500 hover:text-white text-2xl">&times;</button>
             </div>
-            
             <input type="hidden" id="edit-id">
-            
             <div class="space-y-4">
                 <div class="grid grid-cols-2 gap-3">
                     <div>
@@ -79,7 +108,7 @@
                         </select>
                     </div>
                     <div>
-                        <label class="text-[10px] font-black uppercase text-gray-500 ml-2">Grade (Athletes)</label>
+                        <label class="text-[10px] font-black uppercase text-gray-500 ml-2">Grade</label>
                         <select id="edit-grade" class="w-full mt-1">
                             <option value="9">9th Grade</option>
                             <option value="10">10th Grade</option>
@@ -90,7 +119,6 @@
                         </select>
                     </div>
                 </div>
-
                 <div class="bg-blue-950/20 border border-blue-900/30 p-4 rounded-xl flex items-center justify-between">
                     <div>
                         <p class="text-xs font-black uppercase italic text-blue-400">Verified Member</p>
@@ -98,10 +126,7 @@
                     </div>
                     <input type="checkbox" id="edit-verified" class="w-6 h-6 rounded accent-blue-600">
                 </div>
-
-                <button onclick="saveUserEdits()" class="w-full bg-blue-600 py-4 rounded-xl font-black uppercase italic shadow-xl hover:bg-blue-500 transition-all mt-4">
-                    Save Changes
-                </button>
+                <button onclick="saveUserEdits()" class="w-full bg-blue-600 py-4 rounded-xl font-black uppercase italic shadow-xl hover:bg-blue-500 mt-4">Save Changes</button>
             </div>
         </div>
     </div>
@@ -122,106 +147,117 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Get current coach school from login session
         const COACH_SCHOOL = localStorage.getItem('coach_school') || "Fairbanks";
         document.getElementById('school-display').innerText = COACH_SCHOOL + " Personnel Management";
 
         let allUsers = [];
 
+        // Helper to format timestamps to MM/DD/YY
+        function formatDate(ts) {
+            if (!ts) return "---";
+            const d = new Date(ts);
+            return d.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' });
+        }
+
         async function loadRoster() {
-            // SCALABILITY: Only fetch users belonging to this coach's school
             const usersRef = collection(db, "players");
             const q = query(usersRef, where("school", "==", COACH_SCHOOL));
-            
             const snap = await getDocs(q);
             allUsers = [];
             snap.forEach(docSnap => {
                 allUsers.push({ id: docSnap.id, ...docSnap.data() });
             });
-            renderRoster(allUsers);
+            filterRoster();
+        }
+
+        window.filterRoster = () => {
+            const term = document.getElementById('name-search').value.toLowerCase();
+            const roleFilter = document.getElementById('role-filter').value;
+            const gradeFilter = document.getElementById('grade-filter').value;
+            const sortBy = document.getElementById('sort-by').value;
+
+            let filtered = allUsers.filter(u => {
+                const name = (u.playerName || "").toLowerCase();
+                const matchesName = name.includes(term);
+                const matchesRole = roleFilter === 'all' || u.role === roleFilter;
+                const matchesGrade = gradeFilter === 'all' || String(u.grade) === gradeFilter;
+                return matchesName && matchesRole && matchesGrade;
+            });
+
+            filtered.sort((a, b) => {
+                if (sortBy === 'grade') return (parseInt(a.grade) || 99) - (parseInt(b.grade) || 99);
+                if (sortBy === 'role') return a.role.localeCompare(b.role);
+                return (a.lastName || "").localeCompare(b.lastName || "");
+            });
+
+            renderTable(filtered);
+        };
+
+        function renderTable(users) {
+            const tbody = document.getElementById('roster-tbody');
+            const emptyState = document.getElementById('empty-state');
+            tbody.innerHTML = '';
+            
+            if (users.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            users.forEach(u => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="font-bold uppercase text-[9px] ${u.role === 'coach' ? 'text-blue-500' : 'text-gray-500'}">${u.role}</td>
+                    <td class="font-black uppercase italic">${u.lastName}, ${u.firstName}</td>
+                    <td class="text-gray-400 font-bold">${u.grade || 'N/A'}</td>
+                    <td class="date-cell">${formatDate(u.createdAt)}</td>
+                    <td class="date-cell">${formatDate(u.lastLogin)}</td>
+                    <td>${u.isVerified ? '✅' : '❌'}</td>
+                    <td class="text-right flex justify-end gap-2">
+                        <button onclick="openEditModal('${u.id}')" class="bg-gray-800 hover:bg-gray-700 p-2 rounded text-[9px] font-black uppercase">Edit</button>
+                        <button onclick="removeUser('${u.id}', '${u.playerName}')" class="bg-red-900/10 hover:bg-red-900/30 p-2 rounded text-[9px] font-black uppercase text-red-500">Del</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
         }
 
         window.manualAddUser = async () => {
             const first = document.getElementById('new-first').value.trim();
             const last = document.getElementById('new-last').value.trim();
             const role = document.getElementById('new-role').value;
-
-            if (!first || !last) return alert("Enter first and last name.");
-
-            try {
-                await addDoc(collection(db, "players"), {
-                    firstName: first,
-                    lastName: last,
-                    playerName: `${first} ${last}`,
-                    role: role,
-                    school: COACH_SCHOOL, // Automatically tag with the coach's school
-                    grade: role === 'coach' ? 'N/A' : '9',
-                    createdAt: new Date().getTime()
-                });
-                location.reload();
-            } catch (e) { alert(e.message); }
+            if (!first || !last) return alert("Enter names.");
+            await addDoc(collection(db, "players"), {
+                firstName: first, lastName: last, playerName: `${first} ${last}`,
+                role: role, school: COACH_SCHOOL, grade: role === 'coach' ? 'N/A' : '9',
+                createdAt: new Date().getTime(),
+                lastLogin: null
+            });
+            loadRoster();
         };
 
         window.openEditModal = (id) => {
             const u = allUsers.find(user => user.id === id);
             if (!u) return;
             document.getElementById('edit-id').value = id;
-            document.getElementById('edit-name-header').innerText = u.playerName || "User";
-            document.getElementById('edit-role').value = u.role || "player";
-            document.getElementById('edit-grade').value = u.grade || "9";
+            document.getElementById('edit-name-header').innerText = u.playerName;
+            document.getElementById('edit-role').value = u.role;
+            document.getElementById('edit-grade').value = u.grade;
             document.getElementById('edit-verified').checked = u.isVerified || false;
             document.getElementById('edit-modal').classList.remove('hidden');
         };
 
         window.saveUserEdits = async () => {
             const id = document.getElementById('edit-id').value;
-            try {
-                await updateDoc(doc(db, "players", id), {
-                    role: document.getElementById('edit-role').value,
-                    grade: document.getElementById('edit-grade').value,
-                    isVerified: document.getElementById('edit-verified').checked
-                });
-                location.reload();
-            } catch (e) { alert(e.message); }
-        };
-
-        window.filterRoster = () => {
-            const term = document.getElementById('name-search').value.toLowerCase();
-            const roleFilter = document.getElementById('role-filter').value;
-            const filtered = allUsers.filter(u => {
-                const name = (u.playerName || "").toLowerCase();
-                const matchesName = name.includes(term);
-                const matchesRole = roleFilter === 'all' || u.role === roleFilter;
-                return matchesName && matchesRole;
+            await updateDoc(doc(db, "players", id), {
+                role: document.getElementById('edit-role').value,
+                grade: document.getElementById('edit-grade').value,
+                isVerified: document.getElementById('edit-verified').checked
             });
-            renderRoster(filtered);
+            closeEditModal();
+            loadRoster();
         };
-
-        function renderRoster(users) {
-            const list = document.getElementById('roster-list');
-            list.innerHTML = '';
-            users.sort((a,b) => (a.lastName || "").localeCompare(b.lastName || ""));
-            
-            users.forEach(u => {
-                const isCoach = u.role === 'coach';
-                const div = document.createElement('div');
-                div.className = `flex justify-between items-center p-4 rounded-xl border transition-all ${isCoach ? 'bg-blue-900/20 border-blue-500/30' : 'bg-gray-800/50 border-gray-700'}`;
-                div.innerHTML = `
-                    <div>
-                        <p class="font-black uppercase italic text-sm ${isCoach ? 'text-blue-400' : 'text-white'}">
-                            ${u.lastName}, ${u.firstName} 
-                            <span class="text-[8px] opacity-60 ml-2 font-normal">(${u.role})</span>
-                        </p>
-                        <p class="text-[9px] text-gray-500 font-bold uppercase">Status: ${u.grade || 'N/A'}</p>
-                    </div>
-                    <div class="flex gap-2">
-                        <button onclick="openEditModal('${u.id}')" class="bg-gray-700 text-[9px] font-black px-4 py-2 rounded-lg uppercase">Edit</button>
-                        <button onclick="removeUser('${u.id}', '${u.playerName}')" class="bg-red-900/20 text-red-500 border border-red-900/50 text-[9px] font-black px-3 py-2 rounded-lg uppercase">Delete</button>
-                    </div>
-                `;
-                list.appendChild(div);
-            });
-        }
 
         window.removeUser = async (id, name) => {
             if (confirm(`DELETE ${name.toUpperCase()}?`)) {
@@ -231,7 +267,7 @@
         };
 
         window.closeEditModal = () => document.getElementById('edit-modal').classList.add('hidden');
-
+        
         loadRoster();
     </script>
 </body>
