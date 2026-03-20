@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Roster</title>
+    <title>Manage Roster | RACKSTAT</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { background-color: #0f172a; color: white; min-height: 100vh; font-family: sans-serif; }
@@ -13,8 +13,8 @@
 <body class="p-6">
     <header class="max-w-2xl mx-auto mb-6 flex justify-between items-center">
         <div>
-            <h1 class="text-2xl font-black italic uppercase">Manage <span class="text-blue-600">Roster</span></h1>
-            <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Team Personnel Management</p>
+            <h1 class="text-2xl font-black italic uppercase">Manage <span class="text-blue-600">Personnel</span></h1>
+            <p id="school-display" class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Loading School...</p>
         </div>
         <button onclick="location.href='coach.html'" class="bg-gray-800 px-4 py-2 rounded text-[10px] font-black uppercase tracking-tighter hover:bg-gray-700">← Back</button>
     </header>
@@ -22,59 +22,39 @@
     <main class="max-w-2xl mx-auto space-y-4 pb-20">
         
         <section class="bg-gray-900/50 border border-blue-900/30 p-6 rounded-2xl mb-8 shadow-xl">
-            <h2 class="text-xs font-black uppercase italic text-blue-500 mb-4 tracking-widest text-center">Quick Add New Athlete</h2>
+            <h2 class="text-xs font-black uppercase italic text-blue-500 mb-4 tracking-widest text-center">Quick Add New Member</h2>
             <div class="grid grid-cols-2 gap-3">
                 <input type="text" id="new-first" placeholder="First Name" class="text-sm">
                 <input type="text" id="new-last" placeholder="Last Name" class="text-sm">
-                <select id="new-grade" class="text-sm">
-                    <option value="9">9th Grade</option>
-                    <option value="10">10th Grade</option>
-                    <option value="11">11th Grade</option>
-                    <option value="12">12th Grade</option>
-                    <option value="Graduated">Graduated</option>
+                <select id="new-role" class="text-sm">
+                    <option value="player">Athlete</option>
+                    <option value="coach">Coach</option>
                 </select>
-                <button onclick="manualAddAthlete()" class="bg-blue-600 hover:bg-blue-500 font-black uppercase italic text-[10px] rounded-xl transition-all active:scale-95">Add to Roster</button>
+                <button onclick="manualAddUser()" class="bg-blue-600 hover:bg-blue-500 font-black uppercase italic text-[10px] rounded-xl transition-all active:scale-95">Add to System</button>
             </div>
         </section>
 
         <div class="grid grid-cols-2 gap-3 mb-6">
             <input type="text" id="name-search" placeholder="Search Name..." onkeyup="filterRoster()" class="text-sm">
-            <select id="grade-filter" onchange="filterRoster()" class="text-sm">
-                <option value="all">All Statuses</option>
-                <option value="9">9th Grade</option>
-                <option value="10">10th Grade</option>
-                <option value="11">11th Grade</option>
-                <option value="12">12th Grade</option>
-                <option value="Graduated">Graduated</option>
+            <select id="role-filter" onchange="filterRoster()" class="text-sm">
+                <option value="all">All Roles</option>
+                <option value="player">Athletes Only</option>
+                <option value="coach">Coaches Only</option>
             </select>
         </div>
 
         <div id="roster-list" class="space-y-3">
-            <p class="text-center animate-pulse uppercase font-bold text-xs text-gray-600">Loading Roster...</p>
+            <p class="text-center animate-pulse uppercase font-bold text-xs text-gray-600">Loading Personnel...</p>
         </div>
 
         <div class="mt-12 pt-8 border-t border-gray-800">
-    <h3 class="text-sm font-black uppercase italic text-gray-500 mb-4 tracking-widest text-center">Data & Compliance</h3>
-    <div class="grid grid-cols-1 gap-3">
-        
-        <button onclick="exportRosterToCSV()" 
-                class="w-full bg-emerald-700 hover:bg-emerald-600 py-3 rounded-xl font-black uppercase italic shadow-lg transition-all flex items-center justify-center gap-2 border-b-4 border-emerald-900">
-            <span>📊 Export Roster (SB29 Audit)</span>
-        </button>
-
-                <button onclick="location.href='season-recap.html'" 
-                        class="w-full bg-yellow-600 hover:bg-yellow-500 py-3 rounded-xl font-black uppercase italic shadow-lg transition-all flex items-center justify-center gap-2 border-b-4 border-yellow-800">
-                    <span>🏆 View Season Recap</span>
+            <h3 class="text-sm font-black uppercase italic text-gray-500 mb-4 tracking-widest text-center">System Tools</h3>
+            <div class="grid grid-cols-1 gap-3">
+                <button onclick="massPromote()" class="w-full bg-blue-600 hover:bg-blue-500 py-4 rounded-xl font-black uppercase italic shadow-lg transition-all border-b-4 border-blue-900">
+                    🚀 Mass Promote Athlete Grades
                 </button>
-
-                <button onclick="massPromote()" 
-                        class="w-full bg-blue-600 hover:bg-blue-500 py-4 rounded-xl font-black uppercase italic shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2 border-b-4 border-blue-900">
-                    <span>🚀 Mass Promote All Grades</span>
-                </button>
-
-                <button onclick="resetLeaderboards()" 
-                        class="w-full bg-red-900 hover:bg-red-800 py-4 rounded-xl font-black uppercase italic shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2 border-b-4 border-red-950">
-                    <span>🧹 Reset Leaderboards (Wipe Logs)</span>
+                <button onclick="resetLeaderboards()" class="w-full bg-red-900/50 hover:bg-red-800 py-4 rounded-xl font-black uppercase italic shadow-lg transition-all border border-red-500/30 text-red-400">
+                    🧹 Reset All Logs (Wipe Data)
                 </button>
             </div>
         </div>
@@ -83,46 +63,44 @@
     <div id="edit-modal" class="hidden fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4">
         <div class="bg-gray-900 border border-blue-900/50 w-full max-w-md rounded-3xl p-6 shadow-2xl">
             <div class="flex justify-between items-center mb-6">
-                <h2 class="text-xl font-black italic uppercase italic">Edit <span id="edit-name-header" class="text-blue-500">Athlete</span></h2>
+                <h2 class="text-xl font-black italic uppercase">Edit <span id="edit-name-header" class="text-blue-500">Member</span></h2>
                 <button onclick="closeEditModal()" class="text-gray-500 hover:text-white text-2xl">&times;</button>
             </div>
             
             <input type="hidden" id="edit-id">
             
             <div class="space-y-4">
-                <div>
-                    <label class="text-[10px] font-black uppercase text-gray-500 ml-2">Grade / Status</label>
-                    <select id="edit-grade" class="w-full mt-1">
-                        <option value="9">9th Grade</option>
-                        <option value="10">10th Grade</option>
-                        <option value="11">11th Grade</option>
-                        <option value="12">12th Grade</option>
-                        <option value="Graduated">Graduated</option>
-                    </select>
-                </div>
-
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="text-[10px] font-black uppercase text-gray-500 ml-2">Height (Inches)</label>
-                        <input type="number" id="edit-height" placeholder="Total Inches" class="w-full mt-1">
-                        <p class="text-[8px] text-gray-600 mt-1 italic pl-2">72" = 6'0 | 74" = 6'2</p>
+                        <label class="text-[10px] font-black uppercase text-gray-500 ml-2">System Role</label>
+                        <select id="edit-role" class="w-full mt-1">
+                            <option value="player">Athlete</option>
+                            <option value="coach">Coach</option>
+                        </select>
                     </div>
                     <div>
-                        <label class="text-[10px] font-black uppercase text-gray-500 ml-2">Weight (Lbs)</label>
-                        <input type="number" id="edit-weight" placeholder="Lbs" class="w-full mt-1">
+                        <label class="text-[10px] font-black uppercase text-gray-500 ml-2">Grade (Athletes)</label>
+                        <select id="edit-grade" class="w-full mt-1">
+                            <option value="9">9th Grade</option>
+                            <option value="10">10th Grade</option>
+                            <option value="11">11th Grade</option>
+                            <option value="12">12th Grade</option>
+                            <option value="Graduated">Graduated</option>
+                            <option value="N/A">N/A (Coach)</option>
+                        </select>
                     </div>
                 </div>
 
                 <div class="bg-blue-950/20 border border-blue-900/30 p-4 rounded-xl flex items-center justify-between">
                     <div>
-                        <p class="text-xs font-black uppercase italic text-blue-400">Coach Verified</p>
-                        <p class="text-[9px] text-gray-500 leading-tight">Shows a badge on Recruiting Card</p>
+                        <p class="text-xs font-black uppercase italic text-blue-400">Verified Member</p>
+                        <p class="text-[9px] text-gray-500">Confirms official team status</p>
                     </div>
                     <input type="checkbox" id="edit-verified" class="w-6 h-6 rounded accent-blue-600">
                 </div>
 
-                <button onclick="savePlayerEdits()" class="w-full bg-blue-600 py-4 rounded-xl font-black uppercase italic shadow-xl hover:bg-blue-500 transition-all mt-4">
-                    Save Profile Changes
+                <button onclick="saveUserEdits()" class="w-full bg-blue-600 py-4 rounded-xl font-black uppercase italic shadow-xl hover:bg-blue-500 transition-all mt-4">
+                    Save Changes
                 </button>
             </div>
         </div>
@@ -130,7 +108,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, getDocs, doc, deleteDoc, updateDoc, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, query, where, getDocs, doc, deleteDoc, updateDoc, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = { 
             apiKey: "AIzaSyBdY26nH0CAn05IpjzoFvG5E1H-bv8fPwA", 
@@ -144,212 +122,117 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        let allPlayers = [];
+        // Get current coach school from login session
+        const COACH_SCHOOL = localStorage.getItem('coach_school') || "Fairbanks";
+        document.getElementById('school-display').innerText = COACH_SCHOOL + " Personnel Management";
+
+        let allUsers = [];
 
         async function loadRoster() {
-            const snap = await getDocs(collection(db, "players"));
-            allPlayers = [];
+            // SCALABILITY: Only fetch users belonging to this coach's school
+            const usersRef = collection(db, "players");
+            const q = query(usersRef, where("school", "==", COACH_SCHOOL));
+            
+            const snap = await getDocs(q);
+            allUsers = [];
             snap.forEach(docSnap => {
-                const data = docSnap.data();
-                if (data.role !== 'coach') {
-                    allPlayers.push({ id: docSnap.id, ...data });
-                }
+                allUsers.push({ id: docSnap.id, ...docSnap.data() });
             });
-            renderRoster(allPlayers);
+            renderRoster(allUsers);
         }
 
-        // --- NEW: ADMIN EDIT MODAL FUNCTIONS ---
-        window.openEditModal = (id) => {
-            const p = allPlayers.find(player => player.id === id);
-            if (!p) return;
+        window.manualAddUser = async () => {
+            const first = document.getElementById('new-first').value.trim();
+            const last = document.getElementById('new-last').value.trim();
+            const role = document.getElementById('new-role').value;
 
-            document.getElementById('edit-id').value = id;
-            document.getElementById('edit-name-header').innerText = `${p.firstName} ${p.lastName}`;
-            document.getElementById('edit-grade').value = p.grade || "9";
-            document.getElementById('edit-height').value = p.height || "";
-            document.getElementById('edit-weight').value = p.weight || "";
-            document.getElementById('edit-verified').checked = p.isVerified || false;
-
-            document.getElementById('edit-modal').classList.remove('hidden');
-        };
-
-        window.closeEditModal = () => {
-            document.getElementById('edit-modal').classList.add('hidden');
-        };
-
-        window.savePlayerEdits = async () => {
-            const id = document.getElementById('edit-id').value;
-            const saveBtn = event.target;
-            saveBtn.innerText = "SAVING...";
-            saveBtn.disabled = true;
-
-            try {
-                const playerRef = doc(db, "players", id);
-                await updateDoc(playerRef, {
-                    grade: document.getElementById('edit-grade').value,
-                    height: parseInt(document.getElementById('edit-height').value) || 0,
-                    weight: parseInt(document.getElementById('edit-weight').value) || 0,
-                    isVerified: document.getElementById('edit-verified').checked
-                });
-
-                closeEditModal();
-                await loadRoster(); // Refresh the list
-                alert("Athlete Profile Updated!");
-            } catch (e) {
-                alert("Error: " + e.message);
-            } finally {
-                saveBtn.innerText = "Save Profile Changes";
-                saveBtn.disabled = false;
-            }
-        };
-
-        // --- EXISTING FUNCTIONS (KEPT INTACT) ---
-        window.manualAddAthlete = async () => {
-            const firstName = document.getElementById('new-first').value.trim();
-            const lastName = document.getElementById('new-last').value.trim();
-            const grade = document.getElementById('new-grade').value;
-
-            if (!firstName || !lastName) return alert("Please enter both First and Last names.");
+            if (!first || !last) return alert("Enter first and last name.");
 
             try {
                 await addDoc(collection(db, "players"), {
-                    firstName: firstName,
-                    lastName: lastName,
-                    playerName: `${firstName} ${lastName}`,
-                    grade: grade,
-                    role: 'player',
+                    firstName: first,
+                    lastName: last,
+                    playerName: `${first} ${last}`,
+                    role: role,
+                    school: COACH_SCHOOL, // Automatically tag with the coach's school
+                    grade: role === 'coach' ? 'N/A' : '9',
                     createdAt: new Date().getTime()
                 });
-
-                document.getElementById('new-first').value = '';
-                document.getElementById('new-last').value = '';
-                alert(`${firstName} ${lastName} added to the roster!`);
-                loadRoster();
-            } catch (e) {
-                alert("Error adding athlete: " + e.message);
-            }
+                location.reload();
+            } catch (e) { alert(e.message); }
         };
 
-        window.updateIndividualGrade = async (pid, newGrade) => {
+        window.openEditModal = (id) => {
+            const u = allUsers.find(user => user.id === id);
+            if (!u) return;
+            document.getElementById('edit-id').value = id;
+            document.getElementById('edit-name-header').innerText = u.playerName || "User";
+            document.getElementById('edit-role').value = u.role || "player";
+            document.getElementById('edit-grade').value = u.grade || "9";
+            document.getElementById('edit-verified').checked = u.isVerified || false;
+            document.getElementById('edit-modal').classList.remove('hidden');
+        };
+
+        window.saveUserEdits = async () => {
+            const id = document.getElementById('edit-id').value;
             try {
-                const playerRef = doc(db, "players", pid);
-                await updateDoc(playerRef, { grade: newGrade });
-                const idx = allPlayers.findIndex(p => p.id === pid);
-                if(idx !== -1) allPlayers[idx].grade = newGrade;
-                console.log(`Updated player ${pid} to grade ${newGrade}`);
-            } catch (e) {
-                alert("Error updating grade: " + e.message);
-            }
+                await updateDoc(doc(db, "players", id), {
+                    role: document.getElementById('edit-role').value,
+                    grade: document.getElementById('edit-grade').value,
+                    isVerified: document.getElementById('edit-verified').checked
+                });
+                location.reload();
+            } catch (e) { alert(e.message); }
         };
 
         window.filterRoster = () => {
-            const searchTerm = document.getElementById('name-search').value.toLowerCase();
-            const gradeFilter = document.getElementById('grade-filter').value;
-            const filtered = allPlayers.filter(p => {
-                const fullName = `${p.firstName} ${p.lastName}`.toLowerCase();
-                const matchesName = fullName.includes(searchTerm);
-                const matchesGrade = gradeFilter === 'all' || String(p.grade) === gradeFilter;
-                return matchesName && matchesGrade;
+            const term = document.getElementById('name-search').value.toLowerCase();
+            const roleFilter = document.getElementById('role-filter').value;
+            const filtered = allUsers.filter(u => {
+                const name = (u.playerName || "").toLowerCase();
+                const matchesName = name.includes(term);
+                const matchesRole = roleFilter === 'all' || u.role === roleFilter;
+                return matchesName && matchesRole;
             });
             renderRoster(filtered);
         };
 
-        function renderRoster(players) {
+        function renderRoster(users) {
             const list = document.getElementById('roster-list');
             list.innerHTML = '';
-            if (players.length === 0) {
-                list.innerHTML = '<p class="text-center text-gray-600 text-xs font-bold uppercase py-10">No players found</p>';
-                return;
-            }
-            players.sort((a,b) => (a.lastName || "").localeCompare(b.lastName || ""));
-            players.forEach(p => {
-                const isGrad = p.grade === 'Graduated';
+            users.sort((a,b) => (a.lastName || "").localeCompare(b.lastName || ""));
+            
+            users.forEach(u => {
+                const isCoach = u.role === 'coach';
                 const div = document.createElement('div');
-                div.className = `flex justify-between items-center p-4 rounded-xl border transition-all ${isGrad ? 'bg-slate-900 border-slate-800' : 'bg-gray-800/50 border-gray-700'}`;
+                div.className = `flex justify-between items-center p-4 rounded-xl border transition-all ${isCoach ? 'bg-blue-900/20 border-blue-500/30' : 'bg-gray-800/50 border-gray-700'}`;
                 div.innerHTML = `
-                    <div class="flex-1">
-                        <p class="font-black uppercase italic tracking-tight text-sm">
-                            ${p.lastName || '??'}, ${p.firstName || '??'}
-                            ${p.isVerified ? '<span class="text-blue-500 ml-1 text-[10px]" title="Coach Verified">✓</span>' : ''}
+                    <div>
+                        <p class="font-black uppercase italic text-sm ${isCoach ? 'text-blue-400' : 'text-white'}">
+                            ${u.lastName}, ${u.firstName} 
+                            <span class="text-[8px] opacity-60 ml-2 font-normal">(${u.role})</span>
                         </p>
-                        <div class="flex items-center gap-2 mt-1">
-                            <label class="text-[8px] font-black text-gray-500 uppercase">Status:</label>
-                            <select onchange="updateIndividualGrade('${p.id}', this.value)" 
-                                    class="bg-black text-[10px] p-1 rounded border-gray-700 text-blue-400 font-bold !py-0 !px-2 !h-6 !w-auto">
-                                <option value="9" ${p.grade == '9' ? 'selected' : ''}>9th</option>
-                                <option value="10" ${p.grade == '10' ? 'selected' : ''}>10th</option>
-                                <option value="11" ${p.grade == '11' ? 'selected' : ''}>11th</option>
-                                <option value="12" ${p.grade == '12' ? 'selected' : ''}>12th</option>
-                                <option value="Graduated" ${p.grade == 'Graduated' ? 'selected' : ''}>Grad</option>
-                            </select>
-                        </div>
+                        <p class="text-[9px] text-gray-500 font-bold uppercase">Status: ${u.grade || 'N/A'}</p>
                     </div>
-                    <div class="flex gap-2 ml-4">
-                        <button onclick="openEditModal('${p.id}')" 
-                                class="bg-blue-600/20 text-blue-400 border border-blue-600/50 text-[9px] font-black px-4 py-2 rounded-lg hover:bg-blue-600 hover:text-white transition-all uppercase">
-                            Edit
-                        </button>
-                        <button onclick="removePlayer('${p.id}', '${p.firstName} ${p.lastName}')" 
-                                class="bg-red-950/30 text-red-500 border border-red-900/50 text-[9px] font-black px-3 py-2 rounded-lg hover:bg-red-600 hover:text-white transition-all uppercase">
-                            Remove
-                        </button>
+                    <div class="flex gap-2">
+                        <button onclick="openEditModal('${u.id}')" class="bg-gray-700 text-[9px] font-black px-4 py-2 rounded-lg uppercase">Edit</button>
+                        <button onclick="removeUser('${u.id}', '${u.playerName}')" class="bg-red-900/20 text-red-500 border border-red-900/50 text-[9px] font-black px-3 py-2 rounded-lg uppercase">Delete</button>
                     </div>
                 `;
                 list.appendChild(div);
             });
         }
 
-        window.removePlayer = async (id, name) => {
-            if (confirm(`PERMANENTLY REMOVE ${name.toUpperCase()}?\n\nThis will delete their profile.`)) {
+        window.removeUser = async (id, name) => {
+            if (confirm(`DELETE ${name.toUpperCase()}?`)) {
                 await deleteDoc(doc(db, "players", id));
-                loadRoster(); 
+                loadRoster();
             }
         };
 
-        window.massPromote = async () => {
-            const confirmFirst = confirm("ARE YOU SURE?\n\nSeniors will move to 'Graduated' status.");
-            if (!confirmFirst) return;
-            const confirmSecond = confirm("Proceed with bulk-editing?");
-            if (!confirmSecond) return;
-            let promotedCount = 0;
-            try {
-                for (let p of allPlayers) {
-                    let nextGrade = "";
-                    const currentGrade = parseInt(p.grade);
-                    if (!isNaN(currentGrade)) {
-                        if (currentGrade < 12) nextGrade = String(currentGrade + 1);
-                        else if (currentGrade === 12) nextGrade = "Graduated";
-                    }
-                    if (nextGrade !== "") {
-                        await updateDoc(doc(db, "players", p.id), { grade: nextGrade });
-                        promotedCount++;
-                    }
-                }
-                alert(`SUCCESS: ${promotedCount} athletes promoted!`);
-                loadRoster(); 
-            } catch (e) { alert("Error: " + e.message); }
-        };
-
-        window.resetLeaderboards = async () => {
-            const c1 = confirm("DANGER: Delete EVERY log for EVERY player?");
-            if (!c1) return;
-            const finalCode = prompt("Type 'RESET':");
-            if (finalCode !== "RESET") return;
-            try {
-                alert("Resetting logs...");
-                for (let p of allPlayers) {
-                    const rackSnap = await getDocs(collection(db, "players", p.id, "maxes"));
-                    for (let d of rackSnap.docs) await deleteDoc(doc(db, "players", p.id, "maxes", d.id));
-                    const kitchenSnap = await getDocs(collection(db, "players", p.id, "kitchen"));
-                    for (let d of kitchenSnap.docs) await deleteDoc(doc(db, "players", p.id, "kitchen", d.id));
-                }
-                alert("System Reset Complete!");
-                loadRoster();
-            } catch (e) { alert("Reset failed: " + e.message); }
-        };
+        window.closeEditModal = () => document.getElementById('edit-modal').classList.add('hidden');
 
         loadRoster();
     </script>
-
 </body>
 </html>

@@ -3,39 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coach Command Center</title>
+    <title>Coach Command Center | RACKSTAT</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { background-color: #0f172a; color: white; display: flex; flex-direction: column; min-height: 100vh; font-family: sans-serif; }
         .content-wrapper { flex: 1; padding: 1.5rem; }
-        footer { background: black; border-top: 4px solid #b91c1c; padding: 3rem 1rem; text-align: center; margin-top: auto; display: flex; flex-direction: column; align-items: center; }
-        .footer-logo { height: 5rem; width: auto; margin-bottom: 1.5rem; }
-        .tdl-branding { display: block; font-size: 5rem; font-weight: 900; font-style: italic; text-transform: uppercase; color: #b91c1c; line-height: 0.9; letter-spacing: -2px; text-shadow: -2px -2px 0 #fff, 2px -2px 0 #fff, -2px 2px 0 #fff, 2px 2px 0 #fff; }
+        footer { background: black; border-top: 4px solid #2563eb; padding: 3rem 1rem; text-align: center; margin-top: auto; display: flex; flex-direction: column; align-items: center; }
+        .footer-logo { height: 4rem; width: auto; margin-bottom: 1.5rem; opacity: 0.8; }
+        .tdl-branding { display: block; font-size: 4rem; font-weight: 900; font-style: italic; text-transform: uppercase; color: #1e293b; line-height: 0.9; letter-spacing: -2px; }
     </style>
 </head>
 <body class="pb-20">
 
-    <header class="bg-black p-6 border-b-4 border-red-700 text-center relative">
-        <img src="logo2.png" alt="Panthers Football" class="h-16 mx-auto mb-2">
-        <h1 class="text-2xl font-black italic uppercase tracking-tighter text-white">Coach <span class="text-red-600">Command Center</span></h1>
-        <button onclick="logout()" class="absolute top-4 right-4 text-[10px] font-black uppercase bg-gray-800 px-3 py-1 rounded border border-gray-600">Logout</button>
+    <header class="bg-black p-6 border-b-4 border-blue-700 text-center relative">
+        <h1 id="coach-welcome" class="text-xl font-black italic uppercase tracking-tighter text-white">Coach <span class="text-blue-600">Command Center</span></h1>
+        <p id="school-tag" class="text-[9px] font-bold text-gray-500 uppercase tracking-[0.3em] mt-1">Authenticating...</p>
+        <button onclick="logout()" class="absolute top-4 right-4 text-[9px] font-black uppercase bg-gray-800 px-3 py-1 rounded border border-gray-700 hover:bg-red-900 transition-colors">Logout</button>
     </header>
 
     <div class="content-wrapper max-w-md mx-auto w-full space-y-4">
         
         <button onclick="location.href='board.html'" 
-                class="w-full bg-red-700 hover:bg-red-600 py-6 rounded-2xl font-black uppercase italic shadow-2xl transition-all active:scale-95 flex items-center justify-center gap-3 border-b-4 border-red-900">
-            <span class="text-2xl tracking-tighter">The Board</span>
+                class="w-full bg-blue-700 hover:bg-blue-600 py-6 rounded-2xl font-black uppercase italic shadow-2xl transition-all active:scale-95 flex items-center justify-center gap-3 border-b-4 border-blue-900">
+            <span class="text-2xl tracking-tighter text-white">The Board</span>
         </button>
 
         <div class="grid grid-cols-2 gap-3">
             <button onclick="location.href='records.html'" 
-                    class="bg-amber-700 hover:bg-amber-600 py-4 rounded-xl font-black uppercase italic shadow-xl transition-all active:scale-95 text-[11px] border-b-4 border-amber-900">
-                Weight Class Records
+                    class="bg-slate-800 hover:bg-slate-700 py-4 rounded-xl font-black uppercase italic shadow-xl transition-all active:scale-95 text-[11px] border-b-4 border-slate-950">
+                Weight Records
             </button>
 
             <button onclick="location.href='historical-entry.html'" 
-                    class="bg-gray-700 hover:bg-gray-600 py-4 rounded-xl font-black uppercase italic shadow-xl transition-all active:scale-95 text-[11px] border-b-4 border-gray-900">
+                    class="bg-slate-800 hover:bg-slate-700 py-4 rounded-xl font-black uppercase italic shadow-xl transition-all active:scale-95 text-[11px] border-b-4 border-slate-950">
                 Historical Entry
             </button>
         </div>
@@ -45,78 +45,45 @@
             <span class="text-2xl tracking-tighter">Recruiting Audit</span>
         </button>
 
-        <button onclick="location.href='rack-audit.html'" 
-                class="w-full bg-gray-800 hover:bg-gray-700 py-6 rounded-2xl font-black uppercase italic shadow-2xl transition-all active:scale-95 flex items-center justify-center gap-3 border-b-4 border-black">
-            <span class="text-2xl tracking-tighter text-gray-300">Rack Audit</span>
-        </button>
+        <div class="space-y-2 pt-2">
+            <p class="text-[9px] font-black uppercase text-gray-600 tracking-widest ml-2">Team Monitoring</p>
+            <button onclick="location.href='rack-audit.html'" 
+                    class="w-full bg-gray-900/50 hover:bg-gray-800 py-5 rounded-xl font-black uppercase italic transition-all flex items-center justify-between px-6 border border-gray-800">
+                <span class="text-lg tracking-tighter text-gray-400">Rack Audit</span>
+                <span class="text-blue-500">→</span>
+            </button>
 
-        <button onclick="location.href='kitchen-audit.html'" 
-                class="w-full bg-gray-800 hover:bg-gray-700 py-6 rounded-2xl font-black uppercase italic shadow-2xl transition-all active:scale-95 flex items-center justify-center gap-3 border-b-4 border-black">
-            <span class="text-2xl tracking-tighter text-gray-300">Kitchen Audit</span>
+            <button onclick="location.href='kitchen-audit.html'" 
+                    class="w-full bg-gray-900/50 hover:bg-gray-800 py-5 rounded-xl font-black uppercase italic transition-all flex items-center justify-between px-6 border border-gray-800">
+                <span class="text-lg tracking-tighter text-gray-400">Kitchen Audit</span>
+                <span class="text-blue-500">→</span>
+            </button>
+        </div>
+
+        <button onclick="location.href='manage-roster.html'" 
+                class="w-full bg-blue-900/30 hover:bg-blue-900/50 py-6 rounded-2xl font-black uppercase italic shadow-2xl transition-all active:scale-95 flex items-center justify-center gap-3 border border-blue-500/30 mt-4">
+            <span class="text-2xl tracking-tighter text-blue-400">Manage Roster</span>
         </button>
 
         <button onclick="location.href='audit.html'" 
-                class="w-full bg-red-800 hover:bg-red-700 py-6 rounded-2xl font-black uppercase italic shadow-2xl transition-all active:scale-95 flex items-center justify-center gap-3 border-b-4 border-red-950">
-            <span class="text-2xl tracking-tighter">Export Data (CSV)</span>
+                class="w-full bg-emerald-900/20 hover:bg-emerald-900/40 py-4 rounded-xl font-black uppercase italic transition-all text-[11px] border border-emerald-500/20 text-emerald-500">
+            Export Team Data (CSV)
         </button>
 
-        <button id="personal-next-level-btn" onclick="location.href='next-level.html'" 
-                class="w-full bg-blue-700 hover:bg-blue-600 py-4 rounded-xl font-black uppercase italic shadow-xl transition-all active:scale-95 text-[11px] border-b-4 border-blue-900">
-            My Next Level Profile
-        </button>
-
-        <button onclick="location.href='manage-roster.html'" 
-                class="w-full bg-blue-900 hover:bg-blue-800 py-6 rounded-2xl font-black uppercase italic shadow-2xl transition-all active:scale-95 flex items-center justify-center gap-3 border-b-4 border-blue-950">
-            <span class="text-2xl tracking-tighter">Manage Roster</span>
-        </button>
-
-        <div class="pt-6">
-            <p class="text-[10px] font-black uppercase text-gray-500 italic tracking-widest mb-2 ml-2">Coaching Resources</p>
-            <button onclick="window.open('guidelines.pdf')" 
-                    class="w-full bg-white text-black py-4 rounded-xl font-black uppercase italic shadow-xl flex items-center justify-center gap-2">
-                <span>View Guidelines PDF</span>
-            </button>
-        </div>
-        
         <div class="mt-10 pt-6 border-t border-gray-800">
-            <h3 class="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 mb-4 text-center">Support & Feedback</h3>
-            
-            <div class="grid grid-cols-1 gap-3">
-                <a href="tel:6149496195" 
-                class="flex items-center justify-between bg-gray-800/50 p-4 rounded-xl border border-gray-700 hover:border-blue-500 transition-all">
-                    <div class="flex items-center gap-3">
-                        <span class="text-xl">📱</span>
-                        <div class="text-left">
-                            <p class="text-[10px] font-bold text-gray-400 uppercase">Call or Text</p>
-                            <p class="font-black text-blue-400">614-949-6195</p>
-                        </div>
-                    </div>
-                    <span class="text-gray-600">→</span>
-                </a>
-
-                <a href="mailto:seandief@gmail.com?subject=Panther%20Tracker%20Support" 
-                class="flex items-center justify-between bg-gray-800/50 p-4 rounded-xl border border-gray-700 hover:border-orange-500 transition-all">
-                    <div class="flex items-center gap-3">
-                        <span class="text-xl">✉️</span>
-                        <div class="text-left">
-                            <p class="text-[10px] font-bold text-gray-400 uppercase">Email Coach Dief</p>
-                            <p class="font-black text-orange-400">seandief@gmail.com</p>
-                        </div>
-                    </div>
-                    <span class="text-gray-600">→</span>
+            <h3 class="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 mb-4 text-center">RACKSTAT Support</h3>
+            <div class="grid grid-cols-1 gap-2">
+                <a href="tel:6149496195" class="flex items-center justify-between bg-gray-800/30 p-4 rounded-xl border border-gray-800 hover:border-blue-500 transition-all">
+                    <span class="text-[10px] font-bold text-gray-400 uppercase">Text Support</span>
+                    <span class="font-black text-blue-400">614-949-6195</span>
                 </a>
             </div>
-            
-            <p class="text-[9px] text-center text-gray-600 mt-4 uppercase font-bold px-4">
-                Questions, comments, or suggestions? Reach out anytime.
-            </p>
         </div>
 
     </div>
 
     <footer>
-        <img src="logo1.png" alt="Panther" class="footer-logo">
-        <span class="tdl-branding">TDL</span>
+        <span class="tdl-branding">RACKSTAT</span>
     </footer>
 
     <script type="module">
@@ -138,7 +105,6 @@
         const db = getFirestore(app);
 
         onAuthStateChanged(auth, async (user) => {
-            // SECURITY CHECK 1: Is anyone even logged in?
             if (!user) {
                 window.location.href = 'index.html';
                 return;
@@ -150,42 +116,41 @@
                 if (userDoc.exists()) {
                     const userData = userDoc.data();
                     
-                    // SECURITY CHECK 2: Does this user have the Coach role?
+                    // SECURITY: Ensure user is a coach
                     if (userData.role !== "coach") {
-                        console.warn("Unauthorized access attempt by athlete.");
                         window.location.href = 'index.html'; 
                         return;
                     }
 
-                    // PERSONALIZATION: Update the header to greet the coach
-                    const coachHeader = document.querySelector('h1');
-                    const coachName = userData.playerName || userData.firstName || "Coach";
-                    coachHeader.innerHTML = `${coachName}'s <span class="text-red-600">Command Center</span>`;
+                    // --- MULTI-TENANCY LOGIC ---
+                    // Store the school in local storage so other audit pages know which team to load
+                    const schoolName = userData.school || "Fairbanks"; 
+                    localStorage.setItem('coach_school', schoolName);
 
-                    // INTERFACE UPDATES
+                    // Update UI with Coach Name and School
+                    const welcomeHeader = document.getElementById('coach-welcome');
+                    const schoolTag = document.getElementById('school-tag');
+                    
+                    welcomeHeader.innerHTML = `${userData.playerName || "Coach"}'s <span class="text-blue-600">Center</span>`;
+                    schoolTag.innerText = schoolName + " Athletics";
+
+                    // Show audit tools
                     const auditBtn = document.getElementById('audit-btn');
-                    const personalBtn = document.getElementById('personal-next-level-btn');
-
                     if (auditBtn) auditBtn.classList.remove('hidden');
-                    if (personalBtn) personalBtn.classList.add('hidden'); // Coaches don't need their own prospect card view here
 
                 } else {
-                    // User exists in Auth but has no Firestore document
                     window.location.href = 'index.html';
                 }
             } catch (error) {
                 console.error("Auth Error:", error);
-                // On a critical error, safety first: boot to login
                 window.location.href = 'index.html';
             }
         });
 
-        // Logout Function (Attached to window so the button can see it)
         window.logout = () => {
             signOut(auth).then(() => {
+                localStorage.removeItem('coach_school');
                 location.href = 'index.html';
-            }).catch((error) => {
-                alert("Error logging out: " + error.message);
             });
         };
     </script>

@@ -3,85 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panther Power | The Board</title>
+    <title>The Board | RACKSTAT</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { background-color: #0f172a; color: white; display: flex; flex-direction: column; min-height: 100vh; }
         .club-card { background: #111827; border: 1px solid #1f2937; padding: 1.5rem; border-radius: 0.75rem; margin-bottom: 1.5rem; }
         .content-wrapper { flex: 1; padding: 1.5rem; }
         footer { 
-                background: black; 
-                border-top: 4px solid #b91c1c; 
-                padding: 3rem 1rem; 
-                text-align: center;
-                margin-top: auto;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-            }
-            .footer-logo { 
-                height: 5rem; 
-                width: auto; 
-                margin-bottom: 1.5rem; 
-            }
-            .social-container { 
-                display: flex; 
-                justify-content: center; 
-                gap: 2rem; 
-                margin-bottom: 2rem; 
-            }
-            .social-icon { 
-                height: 2rem; 
-                width: auto; 
-                transition: transform 0.2s;
-                display: inline-block;
-            }
-            .social-icon:hover { 
-                transform: scale(1.2); 
-            }
-            .tdl-branding {
-                display: block; 
-                font-size: 5rem; 
-                font-weight: 900; 
-                font-style: italic; 
-                text-transform: uppercase;
-                color: #b91c1c; 
-                line-height: 0.9; 
-                letter-spacing: -2px;
-                text-shadow: -2px -2px 0 #fff, 2px -2px 0 #fff, -2px 2px 0 #fff, 2px 2px 0 #fff;
-            }
+            background: black; 
+            border-top: 4px solid #2563eb; 
+            padding: 3rem 1rem; 
+            text-align: center;
+            margin-top: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .footer-logo { height: 5rem; width: auto; margin-bottom: 1.5rem; }
+        .tdl-branding {
+            display: block; 
+            font-size: 5rem; 
+            font-weight: 900; 
+            font-style: italic; 
+            text-transform: uppercase;
+            color: #2563eb; 
+            line-height: 0.9; 
+            letter-spacing: -2px;
+            text-shadow: -2px -2px 0 #fff, 2px -2px 0 #fff, -2px 2px 0 #fff, 2px 2px 0 #fff;
+        }
     </style>
 </head>
 <body class="font-sans">
 
-    <header class="bg-black p-6 border-b-4 border-red-700 text-center">
+    <header class="bg-black p-6 border-b-4 border-blue-700 text-center">
         <div class="flex justify-between items-center max-w-md mx-auto mb-2">
             <button onclick="location.href='index.html'" class="text-[10px] font-black uppercase bg-gray-800 px-3 py-1 rounded">← Lobby</button>
-            <img src="logo2.png" alt="Panthers" class="h-12">
+            <img src="logo2.png" alt="Logo" class="h-12">
             <div class="w-10"></div>
         </div>
-        <h1 class="text-2xl font-black italic uppercase tracking-tighter text-white">THE <span class="text-yellow-500">BOARD</span></h1>
+        <h1 class="text-2xl font-black italic uppercase tracking-tighter text-white">THE <span class="text-blue-500">BOARD</span></h1>
+        <p id="school-tag" class="text-[9px] font-bold text-gray-500 uppercase tracking-[0.2em] mt-1">Loading School Rankings...</p>
     </header>
 
     <div class="content-wrapper">
         <div id="player-club-grid" class="max-w-md mx-auto">
-            <p class="text-center text-xs animate-pulse text-yellow-500 font-black uppercase">Syncing Rankings...</p>
+            <p class="text-center text-xs animate-pulse text-blue-500 font-black uppercase">Syncing Rankings...</p>
         </div>
     </div>
 
     <footer>
-    <img src="logo1.png" alt="Panther" class="footer-logo">
-    <div class="social-container">
-        <a href="https://www.facebook.com/profile.php?id=61573011830957" target="_blank"><img src="facebook.png" alt="Facebook" class="social-icon"></a>
-        <a href="https://www.instagram.com/hsfairbanksfb/" target="_blank"><img src="instagram.jpg" alt="Instagram" class="social-icon"></a>
-        <a href="https://www.hudl.com/library/35871L" target="_blank"><img src="hudl.png" alt="Hudl" class="social-icon"></a>
-    </div>
-    <span class="tdl-branding">TDL</span>
-</footer>
+        <img src="logo1.png" alt="Logo" class="footer-logo">
+        <span class="tdl-branding">TDL</span>
+    </footer>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, query, orderBy, limit, getDocs, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = { 
             apiKey: "AIzaSyBdY26nH0CAn05IpjzoFvG5E1H-bv8fPwA", 
@@ -95,24 +72,38 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        // Fetch School Context
+        const COACH_SCHOOL = localStorage.getItem('coach_school') || "Fairbanks";
+        document.getElementById('school-tag').innerText = COACH_SCHOOL + " Weightroom Rankings";
+
         async function loadBoard() {
             const grid = document.getElementById('player-club-grid');
-            const pSnap = await getDocs(collection(db, "players"));
+            
+            // 1. Only fetch players belonging to the specific school
+            const usersRef = collection(db, "players");
+            const q = query(usersRef, where("school", "==", COACH_SCHOOL));
+            const pSnap = await getDocs(q);
+            
             let scores = [];
 
             for (const d of pSnap.docs) {
-                // Get the most recent max entry
-                const maxSnap = await getDocs(query(collection(db, "players", d.id, "maxes"), orderBy("timestamp", "desc"), limit(1)));
+                // 2. Get the most recent max entry for each athlete
+                const maxSnap = await getDocs(query(
+                    collection(db, "players", d.id, "maxes"), 
+                    orderBy("timestamp", "desc"), 
+                    limit(1)
+                ));
                 
                 if(!maxSnap.empty) {
                     const m = maxSnap.docs[0].data();
                     let finalScore = 0;
 
-                    // NEW LOGIC: Use Manual Board Score if it exists, otherwise calculate
+                    // Manual Board Score logic
                     if (m.manualBoardScore !== undefined && m.manualBoardScore !== null) {
                         finalScore = Number(m.manualBoardScore);
                     } else {
                         const totalLifts = (Number(m.bench)||0) + (Number(m.squat)||0) + (Number(m.clean)||0) + (Number(m.deadlift)||0);
+                        // Penalty capped at 200lbs bodyweight (x4 multiplier)
                         const bwPenalty = (Math.min(Number(m.weight)||Number(m.bodyWeight)||0, 200) * 4);
                         finalScore = totalLifts - bwPenalty;
                     }
@@ -137,8 +128,8 @@
                 
                 if(qualifiers.length > 0) {
                     grid.innerHTML += `
-                        <div class="club-card border-l-4 border-yellow-600">
-                            <p class="text-yellow-500 font-black italic text-lg border-b border-gray-800 mb-3 pb-1">${level} LB CLUB</p>
+                        <div class="club-card border-l-4 border-blue-600">
+                            <p class="text-blue-500 font-black italic text-lg border-b border-gray-800 mb-3 pb-1">${level} LB CLUB</p>
                             ${qualifiers.map(q => `
                                 <div class="flex justify-between items-center text-sm py-2 border-b border-white/5 last:border-0">
                                     <span class="font-bold uppercase tracking-tight">${q.name}</span>
@@ -149,7 +140,7 @@
             }
             
             if(grid.innerHTML === '') {
-                grid.innerHTML = '<p class="text-center text-gray-600 font-bold uppercase py-10">No qualifiers on the board yet.</p>';
+                grid.innerHTML = '<p class="text-center text-gray-600 font-bold uppercase py-10">No qualifiers found for ' + COACH_SCHOOL + '.</p>';
             }
         }
 
