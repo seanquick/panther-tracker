@@ -140,22 +140,20 @@
             const pBtn = document.getElementById('btn-player');
             const cBtn = document.getElementById('btn-coach');
             const subTitle = document.getElementById('reg-subtitle');
-            const codeLabel = document.getElementById('code-label');
+            const codeContainer = document.getElementById('school-code').parentElement; // Grab the container
 
             if (role === 'coach') {
                 cBtn.className = "flex-1 py-2 text-[10px] font-black uppercase rounded-lg bg-orange-600 text-white transition-all";
                 pBtn.className = "flex-1 py-2 text-[10px] font-black uppercase text-gray-500 transition-all";
                 subTitle.innerText = "Coach Registration";
                 subTitle.style.color = "#f97316"; 
-                codeLabel.innerText = "Coach Registration Code";
-                codeLabel.classList.replace('text-blue-500', 'text-orange-500');
+                codeContainer.classList.remove('hidden'); // Show for coach
             } else {
                 pBtn.className = "flex-1 py-2 text-[10px] font-black uppercase rounded-lg bg-blue-600 text-white transition-all";
                 cBtn.className = "flex-1 py-2 text-[10px] font-black uppercase text-gray-500 transition-all";
                 subTitle.innerText = "Athlete Registration";
                 subTitle.style.color = ""; 
-                codeLabel.innerText = "Athlete Registration Code";
-                codeLabel.classList.replace('text-orange-500', 'text-blue-500');
+                codeContainer.classList.add('hidden'); // Hide for athlete
             }
         };
 
@@ -173,36 +171,45 @@
             const pass = document.getElementById('reg-pass').value;
             const inputCode = document.getElementById('school-code').value.trim();
 
-            if (!fullName || !email || !pass || !inputCode) return alert("Please fill in all fields.");
+            // Basic Validation
+            if (!fullName || !email || !pass) return alert("Please fill in all fields.");
             if (!isAgreed) return alert("SB29 COMPLIANCE: You must agree to the Terms and Privacy Policy.");
 
-            // Verify the code against the role
-            const codeData = REGISTRATION_CODES[inputCode];
-            if (!codeData || codeData.role !== currentRole) {
-                return alert("Invalid registration code for the selected role.");
+            let schoolName = "Fairbanks"; // Default for Dev
+            
+            // ONLY check codes if the user is a Coach
+            if (currentRole === 'coach') {
+                if (!inputCode) return alert("Coaches must enter a registration code.");
+                const codeData = REGISTRATION_CODES[inputCode];
+                if (!codeData || codeData.role !== 'coach') {
+                    return alert("Invalid coach registration code.");
+                }
+                schoolName = codeData.school;
             }
 
             const signupBtn = document.getElementById('signup-btn');
-            signupBtn.innerText = "VERIFYING...";
+            signupBtn.innerText = "CREATING PROFILE...";
             signupBtn.disabled = true;
 
             try {
                 const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
                 const user = userCredential.user;
 
+                // Note: Using 'players' collection as per your original code
                 await setDoc(doc(db, "players", user.uid), {
                     firstName: fullName.split(' ')[0],
                     lastName: fullName.split(' ').slice(1).join(' '),
                     playerName: fullName,
                     email: email,
                     role: currentRole,
-                    school: codeData.school,
+                    school: schoolName,
+                    schoolId: "fairbanks_hs", // Added to link to the lifts we configured
                     grade: currentRole === 'coach' ? 'Staff' : '9',
                     isVerified: (currentRole === 'coach'), 
                     createdAt: new Date().getTime()
                 });
 
-                alert("Account Created Successfully for " + codeData.school + "!");
+                alert("Account Created Successfully!");
                 window.location.href = 'index.html';
             } catch (e) {
                 alert("Error: " + e.message);
